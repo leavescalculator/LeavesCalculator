@@ -139,19 +139,16 @@
   update_json_display();
 
   function treeLayout() {
-    console.log("Tree");
     cy.layout({
       name: 'breadthfirst'
     }).run();
   }
   function circleLayout() {
-    console.log("Circle");
     cy.layout({
       name: 'circle'
     }).run();
   }
   function randLayout() {
-    console.log("Random");
     cy.layout({
       name: 'random'
     }).run();
@@ -226,11 +223,8 @@
 
   function loadFromJSON() {
     var j = document.getElementById("json").value;
-    console.log("LOADING");
-    cy.json(j);
+    cy.json(JSON.parse(j));
     treeLayout();
-    console.log(cy.json());
-
   }
 
   console.log(cy.json());
