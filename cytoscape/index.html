@@ -226,8 +226,11 @@
 
   function loadFromJSON() {
     var j = document.getElementById("json").value;
+    console.log("LOADING");
     cy.json(j);
     treeLayout();
+    console.log(cy.json());
+
   }
 
   console.log(cy.json());
