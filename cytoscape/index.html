@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+<head>
+    <title>Tutorial 1: Getting Started</title>
+    
+    <script src='cytoscape.umd.js'></script>
+</head>
+
+<style>
+  #cy {
+      width: 100%;
+      height: 80%;
+      position: absolute;
+      top: 120px;
+      left: 0px;
+  }
+</style>
+
+<body>
+    <button id="circle" type="button" onclick="circleLayout()">Circle</button>
+    <button id="tree" type="button" onclick="treeLayout()">Tree</button>
+    <button id="random" type="button" onclick="randLayout()">Random</button>
+    <hr>
+    <tr>
+      <td><button type="button" onclick="addNode()">Add a Node</button>
+        <input type="text" id="name" placeholder="name"></input>
+        <input type="text" id="parent" placeholder="parent"></input></td>
+        <td>|</td>
+        <td><button type="button" onclick="addEdge()">Add an edge</button>
+          <input type="text" id="source" placeholder="source"></input>
+          <input type="text" id="dest" placeholder="destination"></input></td>
+        <td>|</td>
+        <td><button type="button" onclick="addData()">Add data to node</button>
+          <input type="text" id="dataNode" placeholder="node"></input>
+          <input type="text" id="key" placeholder="key"></input>
+          <input type="text" id="value" placeholder="value"></input>
+        </td>
+    </tr>
+    
+    <hr>
+    <button type="button" onclick="remNode()">Delete selected element</button>
+    <button type="button" onclick="remAllNode()">Delete graph</button>
+    <hr>
+    <div><div id="cy"></div></div>
+  
+  
+</body>
+
+<script>
+  var cy = cytoscape({
+    container: document.getElementById('cy'),
+    elements: [
+      // nodes
+      { data: { id: 'a' } },
+      { data: { id: 'b' } },
+      { data: { id: 'c' } },
+      { data: { id: 'd' } },
+      { data: { id: 'e' } },
+      { data: { id: 'f' } },
+      // edges
+      {
+        data: {
+          id: 'ab',
+          source: 'a',
+          target: 'b'
+        }
+      },
+      {
+        data: {
+          id: 'cd',
+          source: 'c',
+          target: 'd'
+        }
+      },
+      {
+        data: {
+          id: 'ef',
+          source: 'e',
+          target: 'f'
+        }
+      },
+      {
+        data: {
+          id: 'ac',
+          source: 'a',
+          target: 'c'
+        }
+      },
+      {
+        data: {
+          id: 'be',
+          source: 'b',
+          target: 'e'
+        }
+      }
+    ],
+    layout: {
+      name: 'grid'
+    },
+    style: [
+    {
+        selector: 'node',
+        style: {
+            shape: 'hexagon',
+            'background-color': 'green',
+            label: 'data(id)',
+            
+        }
+    },
+    {
+      selector: 'edge',
+      style: {
+        'curve-style': 'bezier',
+        'target-arrow-shape': 'triangle'
+      }
+    }
+    ]        
+  });
+
+  for (var i = 0; i < 10; i++) {
+    cy.add({
+        data: { id: 'node' + i }
+        }
+    );
+    var source = 'node' + i;
+    cy.add({
+        data: {
+            id: 'edge' + i,
+            target: source,
+            source: (i % 2 == 0 ? 'a' : 'b'),
+           
+        }
+    });
+  }
+
+  treeLayout();
+
+  function treeLayout() {
+    console.log("Tree");
+    cy.layout({
+      name: 'breadthfirst'
+    }).run();
+  }
+  function circleLayout() {
+    console.log("Circle");
+    cy.layout({
+      name: 'circle'
+    }).run();
+  }
+  function randLayout() {
+    console.log("Random");
+    cy.layout({
+      name: 'random'
+    }).run();
+  }
+
+  function addNode() {
+    var name = document.getElementById("name").value;
+    var parent = document.getElementById("parent").value;
+
+    console.log("Adding " + name + " child of " + parent);
+    if(name !== ""){
+      cy.add({
+        data: { id: name }
+      })
+      if(parent != "") {
+        cy.add({
+          data: {
+            id: parent + name,
+            source: parent,
+            target: name,
+            
+          }
+        })
+      }
+    }
+    console.log(cy.json());
+  }
+  
+  function addEdge() {
+    var source = document.getElementById("source").value;
+    var dest = document.getElementById("dest").value;
+
+    console.log("Adding " + source + " to " + dest);
+    if(source !== "" && dest !== ""){
+        cy.add({
+          data: {
+            id: source + '-' + dest,
+            source: source,
+            target: dest,
+            arrow: 'triangle'
+          }
+        })
+      }
+    console.log(cy.json());
+  }
+
+  function remNode() {  
+      cy.$(':selected').remove();
+      console.log(cy.json());
+  }
+  function remAllNode() {
+    cy.elements().remove();
+  }
+
+  function addData() {
+    var node = document.getElementById("dataNode").value;
+    var key = document.getElementById("key").value;
+    var value = document.getElementById("value").value;
+    j = cy.$('#' + node);
+    j.data(key, value);
+    console.log(cy.json());
+  }
+  console.log(cy.json());
+</script>
+</html>
