@@ -28,4 +28,5 @@ urlpatterns = [
     path('hello/', views.HelloView.as_view(), name='hello'),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('', TemplateView.as_view(template_name='vue-demo.html'), name='home'),
+    path('database/', include('database.urls')),
 ]
