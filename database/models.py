@@ -17,7 +17,7 @@ class goremal(models.Model):
 class gorsdav(models.Model):
     gorsdav_table_name = models.CharField(max_length=30)
     gorsdav_attr_name = models.CharField(max_length=30)
-    gorsdav_pk_parenttab = models.CharField(max_length=512)   
+    gorsdav_pk_parenttab = models.CharField(max_length=512)
     gorsdav_value = models.CharField(max_length=1)
     def _str_(self):
         return self.name
@@ -108,7 +108,7 @@ class ptearn(models.Model):
     id = models.CharField(max_length=3, primary_key=True)
     ptearn_fmla_eligible_hrs_ind = models.CharField(max_length=1)
 
-class pdrdedn(models.Model): 
+class pdrdedn(models.Model):
     id = models.IntegerField(primary_key=True)
     pdrdedn_bdca_code = models.CharField(max_length=3)
     pdrdedn_effective_date = models.DateField()
@@ -116,7 +116,15 @@ class pdrdedn(models.Model):
     def _str_(self):
         return self.name
 
-
-
-
-
+class Employee(models.Model):
+    employee_id  = models.IntegerField(default=0)
+    odin_username = models.CharField(max_length=200)
+    psu_id = models.IntegerField(default=0)
+    first_name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
+    email = models.CharField(max_length=200)
+    hire_date = models.DateTimeField('date_started')
+    FTE = models.IntegerField(default=0)
+    worked_hours = models.IntegerField(default=0)
+    deductions = models.IntegerField(default=0)
+    leave_balances = models.IntegerField(default=0)
