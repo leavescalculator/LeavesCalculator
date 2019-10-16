@@ -51,7 +51,7 @@ class spriden(models.Model):
 class pebempl(models.Model):
     id = models.IntegerField(primary_key=True)
     pebempl_empl_status = models.CharField(max_length=1)
-    pebempl_first_hire_date = models.DateField(auto_now=False)
+    pebempl_first_hire_date = models.DateField()
     def _str_(self):
         return self.name
 
