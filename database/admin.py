@@ -1,68 +1,67 @@
-from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
+from django.contrib import admin
 from .models import gobeacc, goremal, gorsdav, nbrjobs, nbrjob, spriden, pebempl, phraccr, perleav, perefml, perfmla, perbfml, perjtot, ptearn, pdrdedn
 
 
-
 @admin.register(gobeacc)
-class ViewAdmin(ImportExportModelAdmin):
+class gobeaccAdmin(ImportExportModelAdmin):
     pass
 
 @admin.register(goremal)
-class ViewAdmin(ImportExportModelAdmin):
+class goremalAdmin(ImportExportModelAdmin):
     pass
 
 
 @admin.register(gorsdav)
-class ViewAdmin(ImportExportModelAdmin):
+class gorsdavAdmin(ImportExportModelAdmin):
     pass
 
 
 @admin.register(nbrjob)
-class ViewAdmin(ImportExportModelAdmin):
+class nbrjobAdmin(ImportExportModelAdmin):
     pass
 
 
 @admin.register(spriden)
-class ViewAdmin(ImportExportModelAdmin):
+class spridenAdmin(ImportExportModelAdmin):
     pass
 
 @admin.register(pebempl)
-class ViewAdmin(ImportExportModelAdmin):
+class pebemplAdmin(ImportExportModelAdmin):
     pass
 
 @admin.register(phraccr)
-class ViewAdmin(ImportExportModelAdmin):
+class phraccrAdmin(ImportExportModelAdmin):
     pass
 
 
 @admin.register(perleav)
-class ViewAdmin(ImportExportModelAdmin):
+class perleavAdmin(ImportExportModelAdmin):
     pass
 
 
 @admin.register(perefml)
-class ViewAdmin(ImportExportModelAdmin):
+class perefmlAdmin(ImportExportModelAdmin):
     pass
 
 @admin.register(perfmla)
-class ViewAdmin(ImportExportModelAdmin):
+class perefmlaAdmin(ImportExportModelAdmin):
     pass
 
 @admin.register(perbfml)
-class ViewAdmin(ImportExportModelAdmin):
+class perebfmlAdmin(ImportExportModelAdmin):
     pass
 
 @admin.register(perjtot)
-class ViewAdmin(ImportExportModelAdmin):
+class perjtotAdmin(ImportExportModelAdmin):
     pass
 
 @admin.register(ptearn)
-class ViewAdmin(ImportExportModelAdmin):
+class ptearnAdmin(ImportExportModelAdmin):
     pass
 
 @admin.register(pdrdedn)
-class ViewAdmin(ImportExportModelAdmin):
+class pdedednAdmin(ImportExportModelAdmin):
     pass
 
 
