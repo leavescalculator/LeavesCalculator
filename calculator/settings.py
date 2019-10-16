@@ -25,7 +25,7 @@ SECRET_KEY = 'zwdpp#6&!uk)l$nd6y8ajzqkz5$bg^@v5&*!&cvfy&2&lwox&v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ella.sugar.coffee']
+ALLOWED_HOSTS = ['ella.sugar.coffee', '127.0.0.1']
 
 
 # Application definition
