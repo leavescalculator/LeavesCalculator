@@ -21,6 +21,10 @@ class gorsdavAdmin(ImportExportModelAdmin):
 class nbrjobAdmin(ImportExportModelAdmin):
     pass
 
+@admin.register(nbrjobs)
+class nbrjobsAdmin(ImportExportModelAdmin):
+    pass
+
 
 @admin.register(spriden)
 class spridenAdmin(ImportExportModelAdmin):

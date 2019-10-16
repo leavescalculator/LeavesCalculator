@@ -23,7 +23,7 @@ class gorsdav(models.Model):
         return self.name
 
 class nbrjobs(models.Model):
-    id = models.IntegerField(primary_key=True)
+    nbrjobs_pidm = models.IntegerField(default=0)
     nbrjobs_posn = models.CharField(max_length=6)
     nbrjobs_suff = models.CharField(max_length=2)
     nbrjobs_effective_date = models.DateField()
@@ -33,10 +33,12 @@ class nbrjobs(models.Model):
         return self.name
 
 class nbrjob(models.Model):
-    id = models.IntegerField(primary_key=True)
+    nbrjob_pidm = models.IntegerField(default=0)
     nbrjob_posn = models.CharField(max_length=6)
     nbrjob_suff = models.CharField(max_length=2)
     nbrjob_contract_type = models.CharField(max_length=1)
+    nbrjobs_begin_date = models.DateField(null=True, blank=True)
+    nbrjobs_end_date = models.DateField(null=True, blank=True)
     def _str_(self):
         return self.name
 
@@ -56,7 +58,7 @@ class pebempl(models.Model):
         return self.name
 
 class phraccr(models.Model):
-    id =  models.IntegerField(primary_key=True)
+    phraccr_pidm =  models.IntegerField(default=0)
     phraccr_leav_code = models.CharField(max_length=4)
     phraccr_curr_accr = models.IntegerField()
     phraccr_activity_date = models.DateField()
@@ -64,12 +66,12 @@ class phraccr(models.Model):
         return self.name
 
 class perleav(models.Model):
-    id = models.IntegerField(primary_key=True)
+    perleav_pidm = models.IntegerField(default=0)
     perleav_leave_code = models.CharField(max_length=4)
-    perleav_begin_balance = models.IntegerField()
-    perleav_accrued = models.IntegerField()
-    perleav_taken = models.IntegerField()
-    Current_Balance = models.IntegerField()
+    perleav_begin_balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    perleav_accrued = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    perleav_taken = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    Current_Balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     def _str_(self):
         return self.name
 
@@ -82,7 +84,7 @@ class perefml(models.Model):
         return self.name
 
 class perfmla(models.Model):
-    id = models.IntegerField(primary_key=True)
+    perfmla_pidm = models.IntegerField(default=0)
     perfmla_perbfml_id = models.IntegerField()
     perfmla_begin_date = models.DateField();
     def _str_(self):
@@ -90,17 +92,17 @@ class perfmla(models.Model):
 
 class perbfml(models.Model):
     id = models.IntegerField(primary_key=True)
-    perbfml_pidm = models.IntegerField()
-    perbfml_max_units = models.IntegerField()
+    perbfml_pidm = models.IntegerField(default=0)
+    perbfml_max_units = models.IntegerField(default=0)
     def _str_(self):
         return self.name
 
 class perjtot(models.Model):
-    id = models.IntegerField(primary_key=True)
+    perjtot_pidm = models.IntegerField(default=0)
     perjtot_earn_code = models.CharField(max_length=3)
     perjtot_year = models.IntegerField()
     perjtot_month = models.IntegerField()
-    perjtot_hrs = models.IntegerField()
+    perjtot_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     def _str_(self):
         return self.name
 
@@ -109,7 +111,7 @@ class ptearn(models.Model):
     ptearn_fmla_eligible_hrs_ind = models.CharField(max_length=1)
 
 class pdrdedn(models.Model): 
-    id = models.IntegerField(primary_key=True)
+    pdrdedn_pidm =models.IntegerField()
     pdrdedn_bdca_code = models.CharField(max_length=3)
     pdrdedn_effective_date = models.DateField()
     pdrdedn_status = models.CharField(max_length = 1)
