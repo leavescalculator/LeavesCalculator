@@ -137,8 +137,7 @@ class Employee(models.Model):
     FTE = models.IntegerField(default=0)
     # worked_hours[earn_code, hours_earned]; maybe should be another model
     worked_hours = [models.CharField(max_length=3), models.IntegerField(default=0)]
-    # deductions[deduction_codes, deduction_status]; maybe should be another model
-    deductions = [models.CharField(max_length=3), models.IntegerField(default=0)]
+    deductions = models.CharField(max_length=3)
     # leave_balances[leave_code, current_balance]; maybe should be another model
     leave_balances = models.IntegerField(default=0)
     month_lookback_12 = models.IntegerField(default=0)
