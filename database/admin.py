@@ -1,6 +1,6 @@
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
-from .models import gobeacc, goremal, gorsdav, nbrjobs, nbrjob, spriden, pebempl, phraccr, perleav, perefml, perfmla, perbfml, perjtot, ptrearn, pdrdedn
+from .models import gobeacc, goremal, gorsdav, nbrjobs, nbrbjob, spriden, pebempl, phraccr, perleav, perefml, perfmla, perbfml, perjtot, ptrearn, pdrdedn
 
 
 @admin.register(gobeacc)
