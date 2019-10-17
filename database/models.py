@@ -32,13 +32,13 @@ class nbrjobs(models.Model):
     def _str_(self):
         return self.name
 
-class nbrjob(models.Model):
-    nbrjob_pidm = models.IntegerField(default=0)
-    nbrjob_posn = models.CharField(max_length=6)
-    nbrjob_suff = models.CharField(max_length=2)
-    nbrjob_contract_type = models.CharField(max_length=1)
-    nbrjobs_begin_date = models.DateField(null=True, blank=True)
-    nbrjobs_end_date = models.DateField(null=True, blank=True)
+class nbrbjob(models.Model):
+    nbrbjob_pidm = models.IntegerField(default=0)
+    nbrbjob_posn = models.CharField(max_length=6)
+    nbrbjob_suff = models.CharField(max_length=2)
+    nbrbjob_contract_type = models.CharField(max_length=1)
+    nbrbjob_begin_date = models.DateField(null=True, blank=True)
+    nbrbjob_end_date = models.DateField(null=True, blank=True)
     def _str_(self):
         return self.name
 

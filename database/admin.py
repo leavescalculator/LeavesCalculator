@@ -17,8 +17,8 @@ class gorsdavAdmin(ImportExportModelAdmin):
     pass
 
 
-@admin.register(nbrjob)
-class nbrjobAdmin(ImportExportModelAdmin):
+@admin.register(nbrbjob)
+class nbrbjobAdmin(ImportExportModelAdmin):
     pass
 
 @admin.register(nbrjobs)
