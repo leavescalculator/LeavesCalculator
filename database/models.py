@@ -106,11 +106,11 @@ class perjtot(models.Model):
     def _str_(self):
         return self.name
 
-class ptearn(models.Model):
+class ptrearn(models.Model):
     id = models.CharField(max_length=3, primary_key=True)
-    ptearn_fmla_eligible_hrs_ind = models.CharField(max_length=1)
+    ptrearn_fmla_eligible_hrs_ind = models.CharField(max_length=1)
 
-class pdrdedn(models.Model): 
+class pdrdedn(models.Model):
     pdrdedn_pidm =models.IntegerField()
     pdrdedn_bdca_code = models.CharField(max_length=3)
     pdrdedn_effective_date = models.DateField()
@@ -118,6 +118,14 @@ class pdrdedn(models.Model):
     def _str_(self):
         return self.name
 
+'''
+class leavereports(models.Model):
+    id = models.IntegerField(primary_key=True)
+    leavereports_date = models.DateField()
+    leavereports_report = models.FileField()
+'''
+
+# Helper model
 class Employee(models.Model):
     employee_id  = models.IntegerField(default=0)
     odin_username = models.CharField(max_length=200)
@@ -127,6 +135,13 @@ class Employee(models.Model):
     email = models.CharField(max_length=200)
     hire_date = models.DateTimeField('date_started')
     FTE = models.IntegerField(default=0)
-    worked_hours = models.IntegerField(default=0)
-    deductions = models.IntegerField(default=0)
+    # worked_hours[earn_code, hours_earned]; maybe should be another model
+    worked_hours = [models.CharField(max_length=3), models.IntegerField(default=0)]
+    # deductions[deduction_codes, deduction_status]; maybe should be another model
+    deductions = [models.CharField(max_length=3), models.IntegerField(default=0)]
+    # leave_balances[leave_code, current_balance]; maybe should be another model
     leave_balances = models.IntegerField(default=0)
+    month_lookback_12 = models.IntegerField(default=0)
+    month_lookback_6 = models.IntegerField(default=0)
+    fmla_eligibility = models.CharField(max_length=1)
+    ofla_eligibility = models.CharField(max_length=1)

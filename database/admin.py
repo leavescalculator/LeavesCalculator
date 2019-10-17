@@ -1,6 +1,6 @@
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
-from .models import gobeacc, goremal, gorsdav, nbrjobs, nbrjob, spriden, pebempl, phraccr, perleav, perefml, perfmla, perbfml, perjtot, ptearn, pdrdedn
+from .models import gobeacc, goremal, gorsdav, nbrjobs, nbrjob, spriden, pebempl, phraccr, perleav, perefml, perfmla, perbfml, perjtot, ptrearn, pdrdedn
 
 
 @admin.register(gobeacc)
@@ -60,12 +60,10 @@ class perebfmlAdmin(ImportExportModelAdmin):
 class perjtotAdmin(ImportExportModelAdmin):
     pass
 
-@admin.register(ptearn)
-class ptearnAdmin(ImportExportModelAdmin):
+@admin.register(ptrearn)
+class ptrearnAdmin(ImportExportModelAdmin):
     pass
 
 @admin.register(pdrdedn)
 class pdedednAdmin(ImportExportModelAdmin):
     pass
-
-
