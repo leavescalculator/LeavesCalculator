@@ -133,15 +133,20 @@ class Employee(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
-    hire_date = models.DateTimeField('date_started')
-    FTE = models.IntegerField(default=0)
+    hire_date = models.DateField()
+    fte = models.IntegerField(default=0)
     max_protected_leave_hrs = models.IntegerField(default=0)
-    # worked_hours[earn_code, hours_earned]; maybe should be another model
-    worked_hours = [models.CharField(max_length=3), models.IntegerField(default=0)]
-    deductions = models.CharField(max_length=3)
-    # leave_balances[leave_code, current_balance]; maybe should be another model
-    leave_balances = models.IntegerField(default=0)
-    month_lookback_12 = models.IntegerField(default=0)
-    month_lookback_6 = models.IntegerField(default=0)
+    month_lookback_12 = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    month_lookback_6 = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     fmla_eligibility = models.CharField(max_length=1)
     ofla_eligibility = models.CharField(max_length=1)
+
+class Worked_hours(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    earn_code = models.CharField(max_length=3)
+    hours_earned = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+class Leave_balances(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    leave_code = models.CharField(max_length=4)
+    current_balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
