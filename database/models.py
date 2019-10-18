@@ -135,6 +135,7 @@ class Employee(models.Model):
     email = models.CharField(max_length=200)
     hire_date = models.DateTimeField('date_started')
     FTE = models.IntegerField(default=0)
+    max_protected_leave_hrs = models.IntegerField(default=0)
     # worked_hours[earn_code, hours_earned]; maybe should be another model
     worked_hours = [models.CharField(max_length=3), models.IntegerField(default=0)]
     deductions = models.CharField(max_length=3)
