@@ -43,6 +43,31 @@
 
 <body>
     <div id="app">
+      <table>
+        <tr>
+    <th>Week</th>
+    <th>LeaveType</th>
+    <th>LeaveUsed</th>
+      </tr>
+    <tr v-for = "(week, index) in leavePlan">
+      <td>[[index + 1]]</td>
+      <td><input type = "text" v-model= "week.leaveType" v-on:keyup= "updateSummary"/></td>
+      <td><input type = "number" v-model= "week.leaveUsed" v-on:keyup= "updateSummary"/></td>
+    </tr>
+  </table>
+    <h3>Summary</h3>
+    <table>
+      <tr>
+      <th>LeaveType</th>
+      <th>LeaveUsed</th>
+    </tr>
+      <tr v-for = "type in leaveSummary" >
+      <td>[[type.name]]</td>
+      <td>[[type.hours]]</td>
+    </tr>
+    </table>
+    <tr></tr>
+      </table>
             <button v-on:click="changeLink">Click to Change Link</button>
             <a v-bind:href="link">Link</a>
             <hr>
@@ -58,7 +83,7 @@
                 <p>[[ value ]]</p>
             </div>
             <hr>
-        
+
             <div>
                 <div class="demo" @click="attachRed = !attachRed" :class="{red: attachRed}"></div>
                 <div class="demo" @click="attachBlue = !attachBlue" :class="{blue: attachBlue}"></div>
@@ -110,7 +135,7 @@
                 </li>
             </ul>
     </div>
-            
+
 </body>
 </html>
 <script>
@@ -143,7 +168,26 @@
             testData: {
                 name: 'TESTOBJECT',
                 data: [1.67, 1.33, 0.98, 2.21]
-            }
+            },
+            leavePlan: [
+              {leaveType: '', leaveUsed: 0 },
+              {leaveType: '', leaveUsed: 0 },
+              {leaveType: '', leaveUsed: 0 },
+              {leaveType: '', leaveUsed: 0 },
+              {leaveType: '', leaveUsed: 0 },
+              {leaveType: '', leaveUsed: 0 },
+              {leaveType: '', leaveUsed: 0 },
+              {leaveType: '', leaveUsed: 0 },
+              {leaveType: '', leaveUsed: 0 },
+              {leaveType: '', leaveUsed: 0 },
+            ],
+            leaveSummary: [
+              {name: 'LTS', hours: 0},
+              {name: 'LTV', hours: 0},
+              {name: 'LW1', hours: 0},
+              {name: 'LW3', hours: 0},
+            ],
+
         },
         computed: {
             result: function() {
@@ -185,9 +229,23 @@
                     if(width < 200) {
                         width = width + 10;
                     }
-                    vm.progressBar.width = width + 'px'; 
+                    vm.progressBar.width = width + 'px';
                 }, 500)
+            },
+          updateSummary: function() {
+            this.leaveSummary = [
+              {name: 'LTS', hours: 0},
+              {name: 'LTV', hours: 0},
+              {name: 'LW1', hours: 0},
+              {name: 'LW3', hours: 0},
+            ]
+            for(week in this.leavePlan){
+              for(type in this.leaveSummary){
+                if(this.leavePlan[week].leaveType==this.leaveSummary[type].name)
+                  this.leaveSummary[type].hours += parseInt(this.leavePlan[week].leaveUsed)
+              }
             }
+          },
         }
     })
 </script>
