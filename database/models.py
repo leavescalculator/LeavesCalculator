@@ -84,7 +84,7 @@ class perefml(models.Model):
         return self.name
 
 class perfmla(models.Model):
-    perfmla_pidm = models.IntegerField(default=0)
+    perfmla_id = models.IntegerField(default=0)
     perfmla_perbfml_id = models.IntegerField()
     perfmla_begin_date = models.DateField();
     def _str_(self):
