@@ -10,6 +10,8 @@ else
         source env/bin/activate
         pip3 install -r requirements.txt
         npm install
+        python3 manage.py makemigrations
+        python3 manage.py migrate
     fi
     if [ "$1" == "norun" ];
         then echo "Server not starting"
