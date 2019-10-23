@@ -1,3 +1,7 @@
 env/
- *.pyc
+
+# Pycache files
+ **/__pycache__
+
+ # Mac OS file system files
 .DS_Store

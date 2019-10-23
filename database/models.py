@@ -120,7 +120,7 @@ class pdrdedn(models.Model):
 
 '''
 class leavereports(models.Model):
-    id = models.IntegerField(primary_key=True)
+    leavereports_pidm = models.IntegerField(primary_key=True)
     leavereports_date = models.DateField()
     leavereports_report = models.FileField()
 '''
@@ -135,18 +135,14 @@ class Employee(models.Model):
     email = models.CharField(max_length=200)
     hire_date = models.DateField()
     fte = models.IntegerField(default=0)
-    max_protected_leave_hrs = models.IntegerField(default=0)
     month_lookback_12 = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     month_lookback_6 = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     fmla_eligibility = models.CharField(max_length=1)
     ofla_eligibility = models.CharField(max_length=1)
+    deductions_eligibility = models.CharField(max_length=200)
+    max_protected_leave_hrs = models.IntegerField(default=0)
 
-class Worked_hours(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    earn_code = models.CharField(max_length=3)
-    hours_earned = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-
-class Leave_balances(models.Model):
+class Paid_leave_balances(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     leave_code = models.CharField(max_length=4)
-    current_balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
