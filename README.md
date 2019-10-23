@@ -13,6 +13,7 @@ This app uses Django, REST, Vue.js, NPM, and SQLite3 frameworks, and is released
 2. `chmod +x startup_script` Might be necessary, which gives startup_script executable permission
 3. `./startup_script` Runs a script that will install dependencies and spin up Django and Vue servers
 4. `./startup_script norun` Will install dependencies without running the servers if you so desire
-5. Make changes to the code base as you require
-6. To kill the server, use `ps` to find the server's PID, and use `kill [pid]` to kill the process
-7. When you are done making changes, use `deactivate` to close the virtual environment
+5. `./startup_script runonly` Will spin up the servers without attempting to install dependencies
+6. Make changes to the code base as you require
+7. To kill the server, use `ps` to find the server's PID, and use `kill [pid]` to kill the process
+8. When you are done making changes, use `deactivate` to close the virtual environment
