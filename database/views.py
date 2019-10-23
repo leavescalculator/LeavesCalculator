@@ -16,26 +16,30 @@ def index(request):
 def employee(request):
     e = Employee()
     e.odin_username = USERNAME
-    get_employee_id(e)
-    return HttpResponse(USERNAME)
-    if (e.employee_id == null):
+    e = get_employee_id(e)
+    if (not e.employee_id):
         return HttpResponse("Invalid username.")
     #employee = JSON.dump(e)
     #return HttpResponse(employee)
-    return HttpResponse(e.employee_id)
+    response = hit_spriden(e)
+    return HttpResponse(response)
 
 def get_employee_id(e: Employee):
     gobeacc_user = gobeacc.objects.filter(gobeacc_username=USERNAME)
-    if (gobeacc_user != 'null'):
+    if gobeacc_user:
         e.employee_id = gobeacc_user[0].id
-        return HttpResponse(e.employee_id)
-'''
+    return e
+
+
 def hit_spriden(e: Employee):
     spriden_user = spriden.objects.filter(spriden_id=e.employee_id)
+    if not spriden_user:
+        return "not found"
     e.psu_id = spriden_user[0].spriden_id
     e.first_name = spriden_user[0].spriden_first_name
     e.last_name = spriden_user[0].spriden_last_name
-
+    return e
+'''
 def get_hire_date(e: Employee):
     pebempl_user = pebempl.objects.filter(id=e.employee_id, pebempl_empl_status = 'A')
     e.hire_date=pebempl_user[0].pebempl_first_hire_date
