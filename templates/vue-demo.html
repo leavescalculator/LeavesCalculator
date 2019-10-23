@@ -46,13 +46,29 @@
       <table>
         <tr>
     <th>Week</th>
+    <th>Protected?</th>
     <th>LeaveType</th>
+    <th>% Paid</th>
     <th>LeaveUsed</th>
+    <th>Cont/Inter</th>
+    <th>%</th>
+    <th>Pay</th>
       </tr>
     <tr v-for = "(week, index) in leavePlan">
       <td>[[index + 1]]</td>
+      <td><input type = "protect"/></td>
       <td><input type = "text" v-model= "week.leaveType" v-on:keyup= "updateSummary"/></td>
+      <td><input type = "paid"/></td>
       <td><input type = "number" v-model= "week.leaveUsed" v-on:keyup= "updateSummary"/></td>
+      <td>
+        <select id="CI-select">
+        <option value="">--Please choose an option--</option>
+        <option value="Cont">Cont</option>
+        <option value="Inter">Inter</option>
+        </select>
+     </td>
+     <td><input type = "percent"/></td>
+     <td><input type = "pay"/></td>
     </tr>
   </table>
     <h3>Summary</h3>
@@ -60,12 +76,15 @@
       <tr>
       <th>LeaveType</th>
       <th>LeaveUsed</th>
-    </tr>
+      </tr>
       <tr v-for = "type in leaveSummary" >
       <td>[[type.name]]</td>
       <td>[[type.hours]]</td>
     </tr>
+      <td>Total</td>
+      <td>[[total]]</td>
     </table>
+
     <tr></tr>
       </table>
             <button v-on:click="changeLink">Click to Change Link</button>
@@ -143,6 +162,7 @@
         el: '#app',
         delimiters: ['[[', ']]'],
         data: {
+            total: 0,
             link: 'http://google.com',
             value: 0,
             attachRed: false,
@@ -180,12 +200,17 @@
               {leaveType: '', leaveUsed: 0 },
               {leaveType: '', leaveUsed: 0 },
               {leaveType: '', leaveUsed: 0 },
+              {leaveType: '', leaveUsed: 0 },
+              {leaveType: '', leaveUsed: 0 },
             ],
             leaveSummary: [
               {name: 'LTS', hours: 0},
               {name: 'LTV', hours: 0},
               {name: 'LW1', hours: 0},
+              {name: 'STD', hours: 0},
               {name: 'LW3', hours: 0},
+              {name: 'FLSA', hours: 0},
+              {name: 'Personal', hours: 0},
             ],
 
         },
@@ -237,7 +262,10 @@
               {name: 'LTS', hours: 0},
               {name: 'LTV', hours: 0},
               {name: 'LW1', hours: 0},
+              {name: 'STD', hours: 0},
               {name: 'LW3', hours: 0},
+              {name: 'FLSA', hours: 0},
+              {name: 'Personal', hours: 0},
             ]
             for(week in this.leavePlan){
               for(type in this.leaveSummary){
@@ -245,6 +273,14 @@
                   this.leaveSummary[type].hours += parseInt(this.leavePlan[week].leaveUsed)
               }
             }
+            this.total = 0
+            for(week in this.leavePlan){
+              for(type in this.leaveSummary){
+                if(this.leavePlan[week].leaveType==this.leaveSummary[type].name)
+                  if(this.leavePlan[week].leaveUsed != 0){this.total += parseInt(this.leavePlan[week].leaveUsed)}
+                }
+            }
+
           },
         }
     })
