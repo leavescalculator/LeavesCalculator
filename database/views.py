@@ -1,31 +1,35 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-'''
-from models import *
+
+from database.models import *
 from datetime import date
 from django.db.models import Q, F, Sum
 
 
 USERNAME = 'HPRYNNE'
+#USERNAME = 'HI'
 TODAY = date.today()
-'''
+
 def index(request):
-    '''
+    return HttpResponse("At db.")
+
+def employee(request):
     e = Employee()
     e.odin_username = USERNAME
     get_employee_id(e)
+    return HttpResponse(USERNAME)
     if (e.employee_id == null):
         return HttpResponse("Invalid username.")
     #employee = JSON.dump(e)
     #return HttpResponse(employee)
-    '''
-    return HttpResponse("At db.")
-'''
+    return HttpResponse(e.employee_id)
+
 def get_employee_id(e: Employee):
     gobeacc_user = gobeacc.objects.filter(gobeacc_username=USERNAME)
-    if (gobeacc_user):
+    if (gobeacc_user != 'null'):
         e.employee_id = gobeacc_user[0].id
-
+        return HttpResponse(e.employee_id)
+'''
 def hit_spriden(e: Employee):
     spriden_user = spriden.objects.filter(spriden_id=e.employee_id)
     e.psu_id = spriden_user[0].spriden_id
