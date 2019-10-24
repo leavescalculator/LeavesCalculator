@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from database.models import *
 from datetime import date
@@ -19,10 +19,19 @@ def employee(request):
     e = get_employee_id(e)
     if (not e.employee_id):
         return HttpResponse("Invalid username.")
-    #employee = JSON.dump(e)
+    e = hit_spriden(e)
+    e = get_hire_date(e)
+    if not e.hire_date:
+        return HttpResponse("You are currently not an active employee.")
+    e = get_lookback_hrs(e)
+    #e = get_emails(e)
+    e = get_fte(e)
+    e = determine_leave_eligibility(e)
+    #e = get_deductions_info(e)
+    #employee = json.dumps(e)
     #return HttpResponse(employee)
-    response = hit_spriden(e)
-    return HttpResponse(response)
+    #return JsonResponse(e,safe=False)
+    return HttpResponse(e.employee_id)
 
 def get_employee_id(e: Employee):
     gobeacc_user = gobeacc.objects.filter(gobeacc_username=USERNAME)
@@ -32,32 +41,38 @@ def get_employee_id(e: Employee):
 
 
 def hit_spriden(e: Employee):
-    spriden_user = spriden.objects.filter(spriden_id=e.employee_id)
-    if not spriden_user:
-        return "not found"
-    e.psu_id = spriden_user[0].spriden_id
-    e.first_name = spriden_user[0].spriden_first_name
-    e.last_name = spriden_user[0].spriden_last_name
+    spriden_user = spriden.objects.filter(id=e.employee_id)
+    if spriden_user:
+        e.psu_id = spriden_user[0].id
+        e.first_name = spriden_user[0].spriden_first_name
+        e.last_name = spriden_user[0].spriden_last_name
     return e
-'''
+
 def get_hire_date(e: Employee):
     pebempl_user = pebempl.objects.filter(id=e.employee_id, pebempl_empl_status = 'A')
-    e.hire_date=pebempl_user[0].pebempl_first_hire_date
+    # if no hire date, that means they're not active right now
+    if pebempl_user:
+        e.hire_date=pebempl_user[0].pebempl_first_hire_date
+    return e
 
+##TODO: error handling for len is less than 12 and 6 months
 def get_lookback_hrs(e: Employee):
     pay_info = perjtot.objects.filter(perjtot_pidm = e.employee_id).filter(Q(perjtot_year = TODAY.year) | Q(perjtot_year = TODAY.year-1))
     ptrearn_eligible = ptrearn.objects.filter(ptrearn_fmla_eligible_hrs_ind='Y')
     pay_info = pay_info.filter(perjtot_earn_code__in=ptrearn_eligible)
     num = pay_info.count()
     pay_info = pay_info[num-12:num]
-    e.month_lookback_12 = pay_info.aggregate(Sum('perjtot_hrs'))
+    e.month_lookback_12 = pay_info.aggregate(Sum('perjtot_hrs')).get('perjtot_hrs__sum')
     num = pay_info.count()
     pay_info2 = pay_info[num-6:num]
-    e.month_lookback_6 = pay_info2.aggregate(Sum('perjtot_hrs'))
+    e.month_lookback_6 = pay_info2.aggregate(Sum('perjtot_hrs')).get('perjtot_hrs__sum')
+    return e
 
 def get_emails(e: Employee):
     emails = list(goremal.objects.filter(goremal_id=e.employee_id).values_list('goremal_email_address', flat=True))
-    e.email = emails
+    #e.email = emails
+    #print(e.email)
+    return e
 
 def get_fte(e: Employee):
     nbrjobs_user = nbrjobs.objects.filter(nbrjobs_pidm=e.employee_id)
@@ -67,12 +82,13 @@ def get_fte(e: Employee):
             positions = nbrjobs_user.filter(nbrjobs_posn=n.nbrbjob_posn).filter(nbrjobs_suff=n.nbrbjob_suff).exclude(Q(nbrjobs_ecls_code='XA') | Q(nbrjobs_ecls_code='XB') | Q(nbrjobs_ecls_code='XC')).values_list('nbrjobs_appt_pct').distinct()
             if (positions):
                 e.fte = max(max(positions))
+    return e
 
 def determine_leave_eligibility(e: Employee):
-    if (e.fte == null):
+    if not e.fte:
         e.fmla_eligibility = 'F' #not eligible
         e.ofla_eligibility = 'F'
-        return
+        return e
     len = (TODAY - e.hire_date).days / 30
     if (len >= 12  and e.month_lookback_12 >= 1250):
         e.fmla_eligibility = 'T' #eligible
@@ -80,15 +96,16 @@ def determine_leave_eligibility(e: Employee):
         e.fmla_eligibility = 'F'
     if (len < 6):
         e.ofla_eligibility = 'M' #military leave only
-        return
+        return e
     if (e.month_lookback_6 >= 650):
         e.ofla_eligibility = 'T'
-        return
+        return e
     elif (e.month_lookback_6 >= 520):
         e.ofla_eligibility = 'B' #both military and parental leave
     else:
         e.ofla_eligibility = 'P' #Parental leave only
-
+    return e
+'''
 def get_deductions_info(e: Employee):
     # stuff like short term disibility etc.
     deductions_info = []
@@ -99,6 +116,7 @@ def get_deductions_info(e: Employee):
     if (gorsdav_value == 'y'):
         deductions_info.append('AAUP')
     e.deductions_eligibility = deductions_info
+    return e
 '''
 #def get_leftover_protected_leave_balances(e: Employee):
     ## TODO: figure out when we get there
