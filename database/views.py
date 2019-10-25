@@ -25,10 +25,12 @@ def employee(request):
     if not e.hire_date:
         return HttpResponse("You are currently not an active employee.")
     e = get_lookback_hrs(e)
-    #e = get_emails(e)
+    e = get_emails(e)
     e = get_fte(e)
     e = determine_leave_eligibility(e)
     #e = get_deductions_info(e)
+    #e = get_protected_leave_hrs_taken(e)
+    #e = get_potential_paid_leaves_balances(e)
     return JsonResponse(model_to_dict(e))
 
 def get_employee_id(e: Employee):
@@ -68,8 +70,7 @@ def get_lookback_hrs(e: Employee):
 
 def get_emails(e: Employee):
     emails = list(goremal.objects.filter(goremal_id=e.employee_id).values_list('goremal_email_address', flat=True))
-    #e.email = emails
-    #print(e.email)
+    e.email = emails
     return e
 
 def get_fte(e: Employee):
@@ -117,31 +118,62 @@ def get_deductions_info(e: Employee):
     print(e.deductions_eligibility)
     return e
 
-def get_leftover_protected_leave_balances(e: Employee):
+def get_protected_leave_hrs_taken(e: Employee):
     ## TODO: figure out when we get there
-    perfmla_ids = perbfmla.objects.filter(perfmla_perbfml_id = perbfml_id).filter(perfmla_begin_date.year = TODAY.year).values_list('perfmla_id')
-    claim_units = 0
-    for p in perfmla_ids:
-	   p_unit = perefml.objects.filter(p=perefml_id).values_list('perefml_claim_units')
-	   claim_units+=p_unit
-	e.max_protected_leave_hrs = (eligible time based on eligible leave type)( e.fte/100)
-    protected_leave_balance = e.max_protected_leave_hrs - claim_units
+    anniversary = date.fromisoformat(str(e.hire_date))
+    if (TODAY.month > anniversary.month) and (TODAY.month <= 12):
+        anniversary.replace(year=TODAY.year)
+    elif (TODAY.month < anniversary.month) and (anniversary.month <= 12):
+        anniversary.replace(year=TODAY.year-1)
+    elif TODAY.month == anniversary.month:
+        if TODAY.day >= anniversary.day:
+            anniversary.replace(year=TODAY.year)
+        else:
+            anniversary.replace(year=TODAY.year-1)
+    perbfml_id = perbfml.objects.filter(perbfml_pidm=e.employee_id)[0].perbfml_id
+    perfmla_id_list = perfmla.objects.filter(perfmla_perbfml_id=perbfml_id).filter(perfmla_begin_date__gte=anniversary).values_list('perfmla_id')
+    hrs_claimed = 0
+    for p in perfmla_id_list:
+        hrs_claimed += perefml.objects.filter(p=perefml_id).values_list('perefml_claim_units')
+    e.protected_leave_hrs_taken = hrs_claimed
 
-
-#def get_potential_paid_leaves_balances(e: Employee):
+def get_potential_paid_leaves_balances(e: Employee):
     # current paid leave balances
-    # # TODO: test --> perleav_balances = perleav.objects.filter(perleav_pidm=e.employee_id).annotate(current_leave_total=F('perleav_begin_balance') + F('perleav_accrued') - F('perleav_taken')).values('perleav_leave_code', 'current_leave_total')
+    perleav_balances = perleav.objects.filter(perleav_pidm=e.employee_id).annotate(current_leave_total=F('perleav_begin_balance') + F('perleav_accrued') - F('perleav_taken')).values_list('perleav_leave_code', 'current_leave_total')
     # accrued paid leave Leave_balances
-    # # TODO: test --> phraccr_balances = phraccr.objects.filter(phraccr_pidm=e.employee_id).filter(Q(phraccr_activity_date.month = TODAY.month) & Q(phraccr_activity_date.year = TODAY.year)).values_list('phraccr_leav_code', 'phraccr_curr_accr')
+    phraccr_leav_codes = phraccr.objects.filter(phraccr_pidm=e.employee_id).values_list('phraccr_leav_code', flat=True).distinct()
+    phraccr_balances = []
+    for p in phraccr_leav_codes:
+        result = phraccr.objects.filter(phraccr_pidm=e.employee_id).filter(phraccr_leav_code=p).latest('phraccr_activity_date')
+        balance = 0
+        if result:
+            balance = result.phraccr_curr_accr
+        phraccr_balances.append((p, balance))
     # potential paid leave Leave_balances
-    # paid_leave_balances = [{leave_code, balance}]
-'''
+    paid_leave_balances = []
+    # for all of the accrued balances for each leave type, add them to the total of that leave type
+    for accrued in phraccr_balances:
+        pl_found = False
+        for pl in paid_leave_balances:
+            if pl[0] == accrued[0]:
+                pl[1]+=accrued[1]
+                pl_found = True
+        if not pl_found:
+            paid_leave_balances.append([accrued[0], accrued[1]])
+    # for all of the current balances for each leave type, add them to the total of that leave type
+    for current in perleav_balances:
+        pl_found = False
+        for pl in paid_leave_balances:
+            if pl[0] == current[0]:
+                pl[1]+=current[1]
+                pl_found = True
+        if not pl_found:
+            paid_leave_balances.append([current[0], current[1]])
+    #e.paid_leave_balances = paid_leave_balances
+    e.paid_leave_balances = []
     for p in paid_leave_balances:
-        for a in phraccr_balances:
-            if (a.phraccr_leav_code == p.leave_code):
-                p.balance+=a.phraccr_curr_accr
-        for c in perleav_balances:
-            if (c.perleav_leave_code == p.leave_code):
-                p.balance+=c.current_leave_total
-'''
-    ## TODO: store somewhere
+        paid_leave_info = Paid_leave_balances()
+        paid_leave_info.leave_code = p[0]
+        paid_leave_info.balance = p[1]
+        e.paid_leave_balances.append(paid_leave_info)
+    return e
