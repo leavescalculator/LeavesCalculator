@@ -127,7 +127,7 @@ class leavereports(models.Model):
 
 # Helper model
 class Employee(models.Model):
-    employee_id  = models.IntegerField(default=0)
+    employee_id  = models.IntegerField(primary_key=True)
     odin_username = models.CharField(max_length=200)
     psu_id = models.IntegerField(default=0)
     first_name = models.CharField(max_length=200)
@@ -141,7 +141,7 @@ class Employee(models.Model):
     fmla_eligibility = models.CharField(max_length=1)
     ofla_eligibility = models.CharField(max_length=1)
     #list
-    #deductions_eligibility = models.CharField(max_length=200)
+    deductions_eligibility = models.CharField(max_length=200)
     max_protected_leave_hrs = models.IntegerField(default=0)
 
 class Emails(models.Model):

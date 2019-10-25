@@ -103,7 +103,7 @@ def determine_leave_eligibility(e: Employee):
     else:
         e.ofla_eligibility = 'P' #Parental leave only
     return e
-'''
+
 def get_deductions_info(e: Employee):
     # stuff like short term disibility etc.
     deductions_info = []
@@ -114,20 +114,19 @@ def get_deductions_info(e: Employee):
     if (gorsdav_value == 'y'):
         deductions_info.append('AAUP')
     e.deductions_eligibility = deductions_info
+    print(e.deductions_eligibility)
     return e
-'''
-#def get_leftover_protected_leave_balances(e: Employee):
-    ## TODO: figure out when we get there
-'''
-    Leftover protected leave balances = perbfml_max_units - perefml_claim_units (for each perefml_earn_code)
 
+def get_leftover_protected_leave_balances(e: Employee):
+    ## TODO: figure out when we get there
     perfmla_ids = perbfmla.objects.filter(perfmla_perbfml_id = perbfml_id).filter(perfmla_begin_date.year = TODAY.year).values_list('perfmla_id')
-    For all P in perfmla_ids:
-	   p_unit = perefml.objects.filter(p = perefml_id).values_list('perefml_claim_units')
+    claim_units = 0
+    for p in perfmla_ids:
+	   p_unit = perefml.objects.filter(p=perefml_id).values_list('perefml_claim_units')
 	   claim_units+=p_unit
 	e.max_protected_leave_hrs = (eligible time based on eligible leave type)( e.fte/100)
     protected_leave_balance = e.max_protected_leave_hrs - claim_units
-'''
+
 
 #def get_potential_paid_leaves_balances(e: Employee):
     # current paid leave balances
