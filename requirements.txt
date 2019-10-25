@@ -1,5 +1,0 @@
-Django
-DjangoRestFramework
-Django-import-export
-django-cors-headers
-npm
