@@ -1,2 +1,4 @@
 Django
 DjangoRestFramework
+Django-import-export
+npm
