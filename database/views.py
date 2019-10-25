@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.forms.models import model_to_dict
 
 from database.models import *
 from datetime import date
@@ -28,10 +29,7 @@ def employee(request):
     e = get_fte(e)
     e = determine_leave_eligibility(e)
     #e = get_deductions_info(e)
-    #employee = json.dumps(e)
-    #return HttpResponse(employee)
-    #return JsonResponse(e,safe=False)
-    return HttpResponse(e.employee_id)
+    return JsonResponse(model_to_dict(e))
 
 def get_employee_id(e: Employee):
     gobeacc_user = gobeacc.objects.filter(gobeacc_username=USERNAME)
