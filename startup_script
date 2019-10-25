@@ -17,7 +17,7 @@ else
         then echo "Server not starting"
     else
         echo "Server starting"
-        python3 manage.py runserver &
+        python3 manage.py runserver 0:8000 &
         npm run dev &
     fi
 fi
