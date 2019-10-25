@@ -1,12 +1,65 @@
 <template>
   <div id="login">
-    Login Page!
-  </div>
+    <div v-if="username">
+        <p>Signed in as <b></b></p>
+
+        <a @click="signOut" href="javascript:void(0)">Sign out</a>
+
+    </div>
+    <form v-else onsubmit="return false">
+        <p>Login:</p>
+        <div class="input-field">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" />
+        </div>
+        <div class="input-field">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" />
+        </div>
+        <button @click="sendCredentials">Submit</button>
+        <p style="color:red;">{{ loginError }}</p>
+    </form>
+
+    <div id="includedContent"></div>    
+</div>
 </template>
 
 <script>
 export default {
-  name: 'login'
+  name: 'login',
+  data: () => ({
+    username: '',
+    loginError: '',
+  }),
+  methods: {
+    sendCredentials () {
+      var username = document.getElementById('username').value
+      var password = document.getElementById('password').value
+      var data = JSON.stringify({ username, password })
+
+      fetch('http://localhost:8000/api-token-auth/', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: data,
+      }).then(response => {
+          if(!response.ok) {
+              throw Error("Login failed.")
+          }
+          return response.json()
+      }).then(data => {
+          this.username = username
+          console.log(JSON.stringify(data))
+      }).catch(error => {
+          this.loginError = error
+      });
+    },
+    signOut () {
+        username  = ''
+        loginError = ''
+    }
+  }
 }
 </script>
 <!-- styling for the component -->
