@@ -141,10 +141,11 @@ class Employee(models.Model):
     fmla_eligibility = models.CharField(max_length=1)
     ofla_eligibility = models.CharField(max_length=1)
     deductions_eligibility = models.CharField(max_length=200)
-    #paid_leave_balances = Paid_leave_balances()
+    #paid_leave_balances = models.TextField()
     protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     max_protected_leave_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
 class Paid_leave_balances(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='paid_leaves')
     leave_code = models.CharField(max_length=4)
     balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
