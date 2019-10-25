@@ -169,11 +169,13 @@ def get_potential_paid_leaves_balances(e: Employee):
                 pl_found = True
         if not pl_found:
             paid_leave_balances.append([current[0], current[1]])
-    #e.paid_leave_balances = paid_leave_balances
+    e.paid_leave_balances = paid_leave_balances
+    '''
     e.paid_leave_balances = []
     for p in paid_leave_balances:
         paid_leave_info = Paid_leave_balances()
         paid_leave_info.leave_code = p[0]
         paid_leave_info.balance = p[1]
         e.paid_leave_balances.append(paid_leave_info)
+    '''
     return e
