@@ -1,11 +1,7 @@
 env/
 
 # Pycache files
- __pycache__
- **/__pycache__
- **/__pycache__/
- **/__pycache__/**
- *.pyc
+ **/*.pyc
 
  # Mac OS file system files
 .DS_Store
