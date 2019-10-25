@@ -6,7 +6,6 @@ from database.models import *
 from datetime import date
 from django.db.models import Q, F, Sum
 
-
 USERNAME = 'HPRYNNE'
 #USERNAME = 'HI'
 TODAY = date.today()
@@ -175,6 +174,7 @@ def get_potential_paid_leaves_balances(e: Employee):
         paid_leave_info.leave_code = p[0]
         paid_leave_info.balance = p[1]
         paid_leave_info.employee = e
+        paid_leave_info.save()
     info = e.paid_leaves.all()
     print(info)
     return e
