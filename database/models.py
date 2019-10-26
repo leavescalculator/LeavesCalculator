@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.db import models
+
 class gobeacc(models.Model):
     id = models.IntegerField(primary_key=True)
     gobeacc_username = models.CharField(max_length=30)
@@ -71,7 +73,6 @@ class perleav(models.Model):
     perleav_begin_balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     perleav_accrued = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     perleav_taken = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    Current_Balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     def _str_(self):
         return self.name
 
@@ -91,9 +92,9 @@ class perfmla(models.Model):
         return self.name
 
 class perbfml(models.Model):
-    id = models.IntegerField(primary_key=True)
     perbfml_pidm = models.IntegerField(default=0)
     perbfml_max_units = models.IntegerField(default=0)
+    perbfml_id = models.IntegerField(default=0)
     def _str_(self):
         return self.name
 
@@ -120,14 +121,15 @@ class pdrdedn(models.Model):
 
 '''
 class leavereports(models.Model):
-    id = models.IntegerField(primary_key=True)
+    leavereports_pidm = models.IntegerField(primary_key=True)
     leavereports_date = models.DateField()
     leavereports_report = models.FileField()
 '''
 
-# Helper model
+# Helper models below
+
 class Employee(models.Model):
-    employee_id  = models.IntegerField(default=0)
+    employee_id  = models.IntegerField(primary_key=True)
     odin_username = models.CharField(max_length=200)
     psu_id = models.IntegerField(default=0)
     first_name = models.CharField(max_length=200)
@@ -135,18 +137,17 @@ class Employee(models.Model):
     email = models.CharField(max_length=200)
     hire_date = models.DateField()
     fte = models.IntegerField(default=0)
-    max_protected_leave_hrs = models.IntegerField(default=0)
     month_lookback_12 = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     month_lookback_6 = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     fmla_eligibility = models.CharField(max_length=1)
     ofla_eligibility = models.CharField(max_length=1)
+    deductions_eligibility = models.CharField(max_length=200)
+    #paid_leave_balances = models.TextField()
+    protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    max_protected_leave_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
-class Worked_hours(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    earn_code = models.CharField(max_length=3)
-    hours_earned = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-
-class Leave_balances(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+class Paid_leave_balances(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='paid_leaves')
     leave_code = models.CharField(max_length=4)
-    current_balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+

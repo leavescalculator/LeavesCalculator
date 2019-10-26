@@ -67,3 +67,6 @@ class ptrearnAdmin(ImportExportModelAdmin):
 @admin.register(pdrdedn)
 class pdedednAdmin(ImportExportModelAdmin):
     pass
+
+
+
