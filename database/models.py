@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.db import models
+
 class gobeacc(models.Model):
     id = models.IntegerField(primary_key=True)
     gobeacc_username = models.CharField(max_length=30)
@@ -71,7 +73,6 @@ class perleav(models.Model):
     perleav_begin_balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     perleav_accrued = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     perleav_taken = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    Current_Balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     def _str_(self):
         return self.name
 

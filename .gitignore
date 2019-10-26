@@ -1,8 +1,15 @@
 env/
-
-# Pycache files
-*.pyc
-__pycache__
-
- # Mac OS file system files
 .DS_Store
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log
+
+# Editor directories and files
+.idea
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.pyc
