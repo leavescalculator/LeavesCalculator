@@ -139,14 +139,14 @@ class Employee(models.Model):
     last_name = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
     hire_date = models.DateField()
-    fte = models.IntegerField(default=0)
-    month_lookback_12 = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    month_lookback_6 = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    fte = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    month_lookback_12 = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    month_lookback_6 = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     fmla_eligibility = models.CharField(max_length=1)
     ofla_eligibility = models.CharField(max_length=1)
     deductions_eligibility = models.CharField(max_length=200)
     paid_leave_balances = models.TextField()
-    protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     max_protected_leave_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     def query_employee_id(self):
@@ -173,14 +173,16 @@ class Employee(models.Model):
         ptrearn_eligible = ptrearn.objects.filter(ptrearn_fmla_eligible_hrs_ind='Y')
         pay_info = pay_info.filter(perjtot_earn_code__in=ptrearn_eligible)
         num = pay_info.count()
-        pay_info = pay_info[num-12:num]
+        if num >= 12:
+            pay_info = pay_info[num-12:num]
         self.month_lookback_12 = pay_info.aggregate(Sum('perjtot_hrs')).get('perjtot_hrs__sum')
         num = pay_info.count()
-        pay_info2 = pay_info[num-6:num]
+        if num >= 6:
+            pay_info2 = pay_info[num-6:num]
         self.month_lookback_6 = pay_info2.aggregate(Sum('perjtot_hrs')).get('perjtot_hrs__sum')
 
     def query_emails(self):
-        emails = list(goremal.objects.filter(goremal_id=self.employee_id).values_list('goremal_email_address', flat=True))
+        emails = list(goremal.objects.filter(goremal_id=self.employee_id).distinct().values_list('goremal_email_address', flat=True))
         self.email = emails
 
     def query_fte(self):
@@ -219,15 +221,18 @@ class Employee(models.Model):
         deductions_info = []
         deductions_info = list(pdrdedn.objects.filter(pdrdedn_pidm=self.employee_id).filter(pdrdedn_status='A').values_list('pdrdedn_bdca_code', flat=True))
         # determine AAUP eligibility
-        perbfml_id = perbfml.objects.filter(perbfml_pidm=self.employee_id)[0].perbfml_id
-        gorsdav_obj = gorsdav.objects.filter(gorsdav_pk_parenttab__contains=perbfml_id).values_list('gorsdav_value')
-        if gorsdav_obj:
-            gorsdav_value = gorsdav_obj[0][0]
-            if (gorsdav_value == 'y'):
-                deductions_info.append('AAUP')
+        perbfml_obj = perbfml.objects.filter(perbfml_pidm=self.employee_id)
+        if perbfml_obj:
+            perbfml_id = perbfml_obj[0].perbfml_id
+            gorsdav_obj = gorsdav.objects.filter(gorsdav_pk_parenttab__contains=perbfml_id).values_list('gorsdav_value')
+            if gorsdav_obj:
+                gorsdav_value = gorsdav_obj[0][0]
+                if (gorsdav_value == 'y'):
+                    deductions_info.append('AAUP')
         self.deductions_eligibility = deductions_info
 
     def query_protected_leave_hrs_taken(self):
+        hrs_claimed = 0
         anniversary = date.fromisoformat(str(self.hire_date))
         if (TODAY.month > anniversary.month) and (TODAY.month <= 12):
             anniversary.replace(year=TODAY.year)
@@ -238,11 +243,13 @@ class Employee(models.Model):
                 anniversary.replace(year=TODAY.year)
             else:
                 anniversary.replace(year=TODAY.year-1)
-        perbfml_id = perbfml.objects.filter(perbfml_pidm=self.employee_id)[0].perbfml_id
-        perfmla_id_list = perfmla.objects.filter(perfmla_perbfml_id=perbfml_id).filter(perfmla_begin_date__gte=anniversary).values_list('perfmla_id')
-        hrs_claimed = 0
-        for p in perfmla_id_list:
-            hrs_claimed += perefml.objects.filter(p=perefml_id).values_list('perefml_claim_units')
+        perbfml_obj = perbfml.objects.filter(perbfml_pidm=self.employee_id)
+        if perbfml_obj:
+            perbfml_id = perbfml_obj[0].perbfml_id
+            perfmla_id_list = perfmla.objects.filter(perfmla_perbfml_id=perbfml_id).filter(perfmla_begin_date__gte=anniversary).values_list('perfmla_id')
+            for p in perfmla_id_list:
+                print("hi")
+                hrs_claimed += perefml.objects.filter(p=perefml_id).values_list('perefml_claim_units')
         self.protected_leave_hrs_taken = hrs_claimed
 
     def query_current_paid_leaves_balances(self):
