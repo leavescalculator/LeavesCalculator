@@ -5,6 +5,7 @@ from django.forms.models import model_to_dict
 from database.models import *
 from datetime import date
 from django.db.models import Q, F, Sum
+from django.db import connection
 
 USERNAME = 'HPRYNNE'
 #USERNAME = 'HI'
@@ -168,13 +169,10 @@ def get_potential_paid_leaves_balances(e: Employee):
                 pl_found = True
         if not pl_found:
             paid_leave_balances.append([current[0], current[1]])
-    e.paid_leave_balances = []
-    for p in paid_leave_balances:
-        paid_leave_info = Paid_leave_balances()
-        paid_leave_info.leave_code = p[0]
-        paid_leave_info.balance = p[1]
-        paid_leave_info.employee = e
-        paid_leave_info.save()
-    info = e.paid_leaves.all()
-    print(info)
+    with connection.cursor() as cursor:
+        cursor.execute("CREATE TEMPORARY TABLE paid_leave_table (leave_code varchar(4) NOT NULL, balance decimal NULL);")
+        for p in paid_leave_balances:
+            cursor.execute("INSERT into paid_leave_table (leave_code, balance) values (%s, %s);", [p[0], p[1]])
+        cursor.execute("SELECT * FROM paid_leave_table;")
+        e.paid_leave_balances = cursor.fetchall()
     return e
