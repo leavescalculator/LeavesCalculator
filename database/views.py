@@ -28,8 +28,8 @@ def employee(request):
     e = get_emails(e)
     e = get_fte(e)
     e = determine_leave_eligibility(e)
-    #e = get_deductions_info(e)
-    #e = get_protected_leave_hrs_taken(e)
+    e = get_deductions_info(e)
+    e = get_protected_leave_hrs_taken(e)
     e = get_potential_paid_leaves_balances(e)
     return JsonResponse(model_to_dict(e))
 

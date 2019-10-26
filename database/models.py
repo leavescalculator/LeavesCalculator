@@ -1,7 +1,5 @@
 from django.db import models
 
-from django.db import models
-
 class gobeacc(models.Model):
     id = models.IntegerField(primary_key=True)
     gobeacc_username = models.CharField(max_length=30)
