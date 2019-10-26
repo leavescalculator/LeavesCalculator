@@ -8,7 +8,6 @@ from django.db.models import Q, F, Sum
 from django.db import connection
 
 USERNAME = 'HPRYNNE'
-#USERNAME = 'HI'
 TODAY = date.today()
 
 def index(request):
@@ -30,7 +29,7 @@ def employee(request):
     e = determine_leave_eligibility(e)
     e = get_deductions_info(e)
     e = get_protected_leave_hrs_taken(e)
-    e = get_potential_paid_leaves_balances(e)
+    e = get_current_paid_leaves_balances(e)
     return JsonResponse(model_to_dict(e))
 
 def get_employee_id(e: Employee):
@@ -39,11 +38,10 @@ def get_employee_id(e: Employee):
         e.employee_id = gobeacc_user[0].id
     return e
 
-
 def hit_spriden(e: Employee):
     spriden_user = spriden.objects.filter(id=e.employee_id)
     if spriden_user:
-        e.psu_id = spriden_user[0].id
+        e.psu_id = spriden_user[0].spriden_id
         e.first_name = spriden_user[0].spriden_first_name
         e.last_name = spriden_user[0].spriden_last_name
     return e
@@ -80,7 +78,7 @@ def get_fte(e: Employee):
         for n in nbrbjob_user:
             positions = nbrjobs_user.filter(nbrjobs_posn=n.nbrbjob_posn).filter(nbrjobs_suff=n.nbrbjob_suff).exclude(Q(nbrjobs_ecls_code='XA') | Q(nbrjobs_ecls_code='XB') | Q(nbrjobs_ecls_code='XC')).values_list('nbrjobs_appt_pct').distinct()
             if (positions):
-                e.fte = max(max(positions))
+                e.fte = max(max(positions))/100
     return e
 
 def determine_leave_eligibility(e: Employee):
@@ -111,11 +109,14 @@ def get_deductions_info(e: Employee):
     deductions_info = list(pdrdedn.objects.filter(pdrdedn_pidm=e.employee_id).filter(pdrdedn_status='A').values_list('pdrdedn_bdca_code', flat=True))
     # determine AAUP eligibility
     perbfml_id = perbfml.objects.filter(perbfml_pidm=e.employee_id)[0].perbfml_id
-    gorsdav_value = gorsdav.objects.filter(gorsdav_pk_parenttab__contains=perbfml_id).values_list('gorsdav_value')[0].gorsdav_value
-    if (gorsdav_value == 'y'):
-        deductions_info.append('AAUP')
+    gorsdav_obj = gorsdav.objects.filter(gorsdav_pk_parenttab__contains=perbfml_id).values_list('gorsdav_value')
+    print(gorsdav_obj)
+    if gorsdav_obj:
+        gorsdav_value = gorsdav_obj[0][0]
+        print(gorsdav_value)
+        if (gorsdav_value == 'y'):
+            deductions_info.append('AAUP')
     e.deductions_eligibility = deductions_info
-    print(e.deductions_eligibility)
     return e
 
 def get_protected_leave_hrs_taken(e: Employee):
@@ -136,42 +137,13 @@ def get_protected_leave_hrs_taken(e: Employee):
     for p in perfmla_id_list:
         hrs_claimed += perefml.objects.filter(p=perefml_id).values_list('perefml_claim_units')
     e.protected_leave_hrs_taken = hrs_claimed
+    return e
 
-def get_potential_paid_leaves_balances(e: Employee):
-    # current paid leave balances
+def get_current_paid_leaves_balances(e: Employee):
     perleav_balances = perleav.objects.filter(perleav_pidm=e.employee_id).annotate(current_leave_total=F('perleav_begin_balance') + F('perleav_accrued') - F('perleav_taken')).values_list('perleav_leave_code', 'current_leave_total')
-    # accrued paid leave Leave_balances
-    phraccr_leav_codes = phraccr.objects.filter(phraccr_pidm=e.employee_id).values_list('phraccr_leav_code', flat=True).distinct()
-    phraccr_balances = []
-    for p in phraccr_leav_codes:
-        result = phraccr.objects.filter(phraccr_pidm=e.employee_id).filter(phraccr_leav_code=p).latest('phraccr_activity_date')
-        balance = 0
-        if result:
-            balance = result.phraccr_curr_accr
-        phraccr_balances.append((p, balance))
-    # potential paid leave Leave_balances
-    paid_leave_balances = []
-    # for all of the accrued balances for each leave type, add them to the total of that leave type
-    for accrued in phraccr_balances:
-        pl_found = False
-        for pl in paid_leave_balances:
-            if pl[0] == accrued[0]:
-                pl[1]+=accrued[1]
-                pl_found = True
-        if not pl_found:
-            paid_leave_balances.append([accrued[0], accrued[1]])
-    # for all of the current balances for each leave type, add them to the total of that leave type
-    for current in perleav_balances:
-        pl_found = False
-        for pl in paid_leave_balances:
-            if pl[0] == current[0]:
-                pl[1]+=current[1]
-                pl_found = True
-        if not pl_found:
-            paid_leave_balances.append([current[0], current[1]])
     with connection.cursor() as cursor:
         cursor.execute("CREATE TEMPORARY TABLE paid_leave_table (leave_code varchar(4) NOT NULL, balance decimal NULL);")
-        for p in paid_leave_balances:
+        for p in perleav_balances:
             cursor.execute("INSERT into paid_leave_table (leave_code, balance) values (%s, %s);", [p[0], p[1]])
         cursor.execute("SELECT * FROM paid_leave_table;")
         e.paid_leave_balances = cursor.fetchall()
