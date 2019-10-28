@@ -49,98 +49,98 @@
           "next_node": "Are you requesting"
         }
       ]
+    },
+    "Workers comp": {
+      "input": "Display",
+      "options": [
+        {
+          "title": "Talk to Jack",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          },
+          "next_node": "none"
+        }
+      ]
+    },
+    "What is your reason for requesting leave?": {
+      "input": "button",
+      "options": [
+        {
+          "title": "Serious Health Condition Family",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          },
+          "next_node": "Serious Health Condition Family"
+        },
+        {
+          "title": "Serious Health Condition Self",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          },
+          "next_node": "Serious Health Condition Self"
+        },
+        {
+          "title": "Pregnancy Disability",
+          "next_node": "Parental Leave",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          }
+        },
+        {
+          "title": "Parental Leave",
+          "next_node": "Parental Leave",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          }
+        },
+        {
+          "title": "Other",
+          "next_node": "Talk to Jack",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          }
+        }
+      ]
+    },
+    "Work Related Injury": {
+      "input": "display",
+      "options": [
+        {
+          "title": "Talk to Jack",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          },
+          "next_node": "none"
+        }
+      ]
+    },
+    "You are only entitled for ADA: Is it a Disability?": {
+      "input": "button",
+      "options": [
+        {
+          "title": "Yes",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          },
+          "next_node": "Talk to Jack"
+        },
+        {
+          "title": "No",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          },
+          "next_node": "Your reason does not qualify for protected leave"
+        }
+      ]
     }
-  },
-  "Workers comp": {
-    "input": "Display",
-    "options": [
-      {
-        "title": "Talk to Jack",
-        "add_hours": {
-          "hours": 0,
-          "type": "n/a"
-        },
-        "next_node": "none"
-      }
-    ]
-  },
-  "What is your reason for requesting leave?": {
-    "input": "button",
-    "options": [
-      {
-        "title": "Serious Health Condition Family",
-        "add_hours": {
-          "hours": 0,
-          "type": "n/a"
-        },
-        "next_node": "Serious Health Condition Family"
-      },
-      {
-        "title": "Serious Health Condition Self",
-        "add_hours": {
-          "hours": 0,
-          "type": "n/a"
-        },
-        "next_node": "Serious Health Condition Self"
-      },
-      {
-        "title": "Pregnancy Disability",
-        "next_node": "Parental Leave",
-        "add_hours": {
-          "hours": 0,
-          "type": "n/a"
-        }
-      },
-      {
-        "title": "Parental Leave",
-        "next_node": "Parental Leave",
-        "add_hours": {
-          "hours": 0,
-          "type": "n/a"
-        }
-      },
-      {
-        "title": "Other",
-        "next_node": "Talk to Jack",
-        "add_hours": {
-          "hours": 0,
-          "type": "n/a"
-        }
-      }
-    ]
-  },
-  "Work Related Injury": {
-    "input": "display",
-    "options": [
-      {
-        "title": "Talk to Jack",
-        "add_hours": {
-          "hours": 0,
-          "type": "n/a"
-        },
-        "next_node": "none"
-      }
-    ]
-  },
-  "You are only entitled for ADA: Is it a Disability?": {
-    "input": "button",
-    "options": [
-      {
-        "title": "Yes",
-        "add_hours": {
-          "hours": 0,
-          "type": "n/a"
-        },
-        "next_node": "Talk to Jack"
-      },
-      {
-        "title": "No",
-        "add_hours": {
-          "hours": 0,
-          "type": "n/a"
-        },
-        "next_node": "Your reason does not qualify for protected leave"
-      }
-    ]
   }
 }
