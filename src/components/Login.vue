@@ -1,23 +1,27 @@
 <template>
   <div id="login">
     <div v-if="username">
-        <p>Signed in as <b></b></p>
+      <p>Signed in as <b>{{ username }}</b></p>
 
-        <a @click="signOut" href="javascript:void(0)">Sign out</a>
+      <router-link v-if="isAdmin" v-bind:to="'/admin-dashboard'">
+        Admin Dashboard
+      </router-link>
+      <br v-if="isAdmin" />
 
+      <button @click="signOut">Sign out</button>
     </div>
     <form v-else onsubmit="return false">
-        <p>Login:</p>
-        <div class="input-field">
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username" />
-        </div>
-        <div class="input-field">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" />
-        </div>
-        <button @click="sendCredentials">Submit</button>
-        <p style="color:red;">{{ loginError }}</p>
+      <p>Login:</p>
+      <div class="input-field">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" />
+      </div>
+      <div class="input-field">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" />
+      </div>
+      <button @click="sendCredentials">Submit</button>
+      <p id="loginError"></p>
     </form>
 
     <div id="includedContent"></div>    
@@ -29,10 +33,10 @@ export default {
   name: 'login',
   data: () => ({
     username: '',
-    loginError: '',
+    isAdmin: false,
   }),
   methods: {
-    sendCredentials () {
+    sendCredentials() {
       var username = document.getElementById('username').value
       var password = document.getElementById('password').value
       var data = JSON.stringify({ username, password })
@@ -51,13 +55,14 @@ export default {
       }).then(data => {
           this.username = username
           console.log(JSON.stringify(data))
+          this.isAdmin = data.is_admin
       }).catch(error => {
-          this.loginError = error
+          document.getElementById('loginError').innerHTML = error
       });
     },
-    signOut () {
-        username  = ''
-        loginError = ''
+    signOut() {
+      this.username = ''
+      this.loginError = ''
     }
   }
 }
@@ -71,5 +76,9 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+#loginError {
+    color: red;
 }
 </style>
