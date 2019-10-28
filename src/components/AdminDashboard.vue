@@ -81,7 +81,7 @@
         for(const option of this.questions[question].options) {
             this.cy.add({
               data: {
-                id: question + option.title,
+                id: "`" + option.title + "` for:\n\n" + question,
                 source: question,
                 target: option.next_node,
               }
