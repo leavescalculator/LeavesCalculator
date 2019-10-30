@@ -3,7 +3,7 @@
         <h2>{{ title }}</h2>
         <hr>
         <select class="select-picker">
-          <option :value="option" v-for="option in options" :key="option">{{ option.title }}</option>
+          <option :value="option" v-for="(option, index) in options" :key="index">{{ option.title }}</option>
         </select>
         drop down
     </div>

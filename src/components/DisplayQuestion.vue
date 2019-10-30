@@ -2,7 +2,7 @@
     <div class="">
         <h2>{{ title }}</h2>
         <hr>
-        <p v-for="option in options" :key="option"> {{option.title }}</p>
+        <p v-for="(option, index) in options" :key="index"> {{option.title }}</p>
         display
     </div>
 </template>
