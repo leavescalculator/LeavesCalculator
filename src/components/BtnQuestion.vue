@@ -1,0 +1,29 @@
+<template>
+    <div class="">
+        <h2>{{ title }}</h2>
+        <hr>
+        <button class="btn btn-primary" v-for="(option, index) in options"
+            @click="selected(index)">{{ option.title }}</button>
+    </div>
+</template>
+
+<script>
+export default {
+    data: () => ({
+
+    }),
+    props: ['title', 'options'],
+    methods: {
+        selected (index) {
+            this.$emit('option-selected', index);
+        }
+    }
+        
+    
+}
+</script>
+<style scoped>
+    .btn {
+        margin-right: 5px;
+    }
+</style>

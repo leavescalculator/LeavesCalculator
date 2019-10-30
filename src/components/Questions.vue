@@ -1,17 +1,20 @@
 <template>
   <div id="questions">
     Questions Page!
+    <btn-question :title="currentNode" :options="Nodes[currentNode].options" 
+      @option-selected="optionSelected"></btn-question>
   </div>
 </template>
 
 <script>
+import BtnQuestion from './BtnQuestion.vue';
+
 export default {
-  name: 'questions'
-}
-
-
-let graph = {
-  "Nodes": {
+  name: 'questions',
+  data: () => ({
+    currentNode: "Do you have a work related injury?",
+    hours: 0,
+    Nodes: {
     "Do you have a work related injury?": {
       "input": "button",
       "options": [
@@ -276,7 +279,25 @@ let graph = {
       ]
     }
   }
+
+  }),
+  computed: {
+    
+  },
+  components: {
+    BtnQuestion,
+  },
+  methods: {
+    optionSelected(selected) {
+      console.log(selected)
+      //do any relevant stuff here
+      this.currentNode = this.Nodes[this.currentNode].options[selected].next_node;
+    }
+  }
 }
+
+
+
 </script>
 <!-- styling for the component -->
 <style>
