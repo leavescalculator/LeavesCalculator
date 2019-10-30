@@ -3,17 +3,28 @@
     Questions Page!
     <btn-question :title="currentNode" :options="Nodes[currentNode].options" 
       @option-selected="optionSelected" v-if="Nodes[currentNode].input == 'button'"></btn-question>
-      <p v-else>{{Nodes[currentNode].input}}</p>
+
+    <display-question :title="currentNode" :options="Nodes[currentNode].options"
+      v-else-if="Nodes[currentNode].input == 'display'"></display-question>
+
+    <drop-down-question :title="currentNode" :options="Nodes[currentNode].options"
+      v-else-if="Nodes[currentNode].input == 'drop down'"></drop-down-question>
+      
+    <database-question :title="currentNode" :options="Nodes[currentNode].options"
+      v-else-if="Nodes[currentNode].input == 'database'"></database-question>
   </div>
 </template>
 
 <script>
 import BtnQuestion from './BtnQuestion.vue';
+import DisplayQuestion from './DisplayQuestion.vue';
+import DropDownQuestion from './DropDownQuestion';
+import DatabaseQuestion from './DatabaseQuestion';
 
 export default {
   name: 'questions',
   data: () => ({
-    currentNode: "Do you have a work related injury?",
+    currentNode: "List of SERIOUS HEALTH CONDITIONS",
     hours: 0,
     Nodes: {
     "Do you have a work related injury?": {
@@ -67,7 +78,7 @@ export default {
       ]
     },
     "Workers comp": {
-      "input": "Display",
+      "input": "display",
       "options": [
         {
           "title": "Is this for woker's comp?",
@@ -286,7 +297,7 @@ export default {
     
   },
   components: {
-    BtnQuestion,
+    BtnQuestion, DisplayQuestion, DropDownQuestion, DatabaseQuestion,
   },
   methods: {
     optionSelected(selected) {
