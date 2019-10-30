@@ -23,10 +23,11 @@
     <hr>
     <button type="button" @click="remNode()">Delete selected element</button>
     <button type="button" @click="remAllNode()">Delete graph</button>
+    <button type="button" @click="loadFromJSON()">Load JSON</button>
+
     <hr>
     <div><div id="cy"></div></div>
     <textarea id="json" cols=50 rows=4></textarea>
-    <button type="button" @click="loadFromJSON()">Load JSON</button>
   </div>
 </template>
 <script>
@@ -79,15 +80,21 @@
       }
       for(const question of Object.keys(this.questions)) {
         for(const option of this.questions[question].options) {
-            this.cy.add({
-              data: {
-                id: "`" + option.title + "` for:\n\n" + question,
-                source: question,
-                target: option.next_node,
-              }
-            });
+            try{
+              this.cy.add({
+                data: {
+                  id: "`" + option.title + "` for:\n\n" + question,
+                  source: question,
+                  target: option.next_node,
+                }
+              });
+            }
+            catch(err){
+              console.log(err);
+            }
         }
       }
+      console.log(this.cy);
     },
     treeLayout() {
       this.cy.layout({
