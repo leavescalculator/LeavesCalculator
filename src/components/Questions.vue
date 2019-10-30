@@ -2,7 +2,9 @@
   <div id="questions">
     Questions Page!
     <btn-question :title="currentNode" :options="Nodes[currentNode].options" 
-      @option-selected="optionSelected"></btn-question>
+      @option-selected="optionSelected" v-if="Nodes[currentNode].input == 'button'"></btn-question>
+      <p v-else>{{Nodes[currentNode].input}}</p>
+      
   </div>
 </template>
 

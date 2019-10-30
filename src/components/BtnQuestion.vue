@@ -2,7 +2,7 @@
     <div class="">
         <h2>{{ title }}</h2>
         <hr>
-        <button class="btn btn-primary" v-for="(option, index) in options"
+        <button class="btn btn-success" v-for="(option, index) in options" :key='option'
             @click="selected(index)">{{ option.title }}</button>
     </div>
 </template>
