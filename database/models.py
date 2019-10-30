@@ -145,7 +145,7 @@ class Employee(models.Model):
     fmla_eligibility = models.CharField(max_length=1)
     ofla_eligibility = models.CharField(max_length=1)
     deductions_eligibility = models.CharField(max_length=200)
-    paid_leave_balances = models.TextField()
+    paid_leave_balances = models.TextField(default=0)
     protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     max_protected_leave_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
@@ -167,7 +167,6 @@ class Employee(models.Model):
         if pebempl_user:
             self.hire_date=pebempl_user[0].pebempl_first_hire_date
 
-    # TODO: error handling for len is less than 12 and 6 months
     def query_lookback_hrs(self):
         pay_info = perjtot.objects.filter(perjtot_pidm = self.employee_id).filter(Q(perjtot_year = TODAY.year) | Q(perjtot_year = TODAY.year-1))
         ptrearn_eligible = ptrearn.objects.filter(ptrearn_fmla_eligible_hrs_ind='Y')
@@ -248,7 +247,6 @@ class Employee(models.Model):
             perbfml_id = perbfml_obj[0].perbfml_id
             perfmla_id_list = perfmla.objects.filter(perfmla_perbfml_id=perbfml_id).filter(perfmla_begin_date__gte=anniversary).values_list('perfmla_id')
             for p in perfmla_id_list:
-                print("hi")
                 hrs_claimed += perefml.objects.filter(p=perefml_id).values_list('perefml_claim_units')
         self.protected_leave_hrs_taken = hrs_claimed
 
