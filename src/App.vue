@@ -31,12 +31,10 @@ export default {
       this.username = '';
     },
     goToHello() {
-      let token = 'Token ' + this.auth["token"];
-      console.log(this.auth["token"]);
       fetch('http://localhost:8000/hello/', {
           method: 'GET',
           headers: {
-              'Authorization': token
+              'Authorization': this.auth
           },
       }).then(response => {
           if(!response.ok) {
@@ -45,9 +43,7 @@ export default {
           return response.json()
       }).then(data => {
           console.log(JSON.stringify(data))
-          this.$emit('token-aquired', [JSON.stringify(data), username])
-      }).catch(error => {
-          this.loginError = error
+          
       });
     }
   }
