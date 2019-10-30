@@ -5,7 +5,7 @@
       <h3>Employee Information</h3>
       <table>
         <tr>
-          <td>Employee Name: {{1}} </td>
+          <td>Employee Name: {{3}} </td>
           <td>Date: {{2}}</td>
         </tr>
         <tr>
@@ -104,12 +104,12 @@
           <th>%</th>
           <th>Pay</th>
         </tr>
-        <tr v-for = "(week, index) in leavePlan">
+        <tr v-for="(week, index) in leavePlan">
           <td>{{index + 1}}</td>
           <td><input /></td>
           <td><input type = "text" v-model= "week.leaveType" v-on:keyup="updateSummary"/></td>
           <td><input /></td>
-          <td><input type = "number" v-model= "week.leaveUsed" v-on:keyup="updateSummary"/></td>
+          <td><input type = "text" v-model= "week.leaveUsed" v-on:keyup="updateSummary"/></td>
           <td>
             <select id="CI-select">
             <option value="">--Option--</option>
@@ -121,7 +121,9 @@
           <td><input /></td>
         </tr>
   </table>
+  <div id='addWeek'>
   <button v-on:click="addWeek">Add week</button>
+</div>
   <p><b>Notes:</b><textarea v-model="notes"></textarea></p>
     <h3>Leave Summary</h3>
     <table>
@@ -136,7 +138,6 @@
       </tr>
     </table>
     <hr>
-    <button v-on:click="GeneratePdf">Generate PDF</button>
   </div>
 </template>
 
@@ -147,51 +148,51 @@ export default {
     notes: '',
     total: 0,
     leavePlan: [
-      { leaveType: '', leaveUsed: 0 },
-      { leaveType: '', leaveUsed: 0 },
-      { leaveType: '', leaveUsed: 0 },
-      { leaveType: '', leaveUsed: 0 },
-      { leaveType: '', leaveUsed: 0 },
-      { leaveType: '', leaveUsed: 0 },
-      { leaveType: '', leaveUsed: 0 },
-      { leaveType: '', leaveUsed: 0 },
-      { leaveType: '', leaveUsed: 0 },
-      { leaveType: '', leaveUsed: 0 },
-      { leaveType: '', leaveUsed: 0 },
-      { leaveType: '', leaveUsed: 0 },
+      { leaveType: '', leaveUsed: 0.0 },
+      { leaveType: '', leaveUsed: 0.0 },
+      { leaveType: '', leaveUsed: 0.0 },
+      { leaveType: '', leaveUsed: 0.0 },
+      { leaveType: '', leaveUsed: 0.0 },
+      { leaveType: '', leaveUsed: 0.0 },
+      { leaveType: '', leaveUsed: 0.0 },
+      { leaveType: '', leaveUsed: 0.0 },
+      { leaveType: '', leaveUsed: 0.0 },
+      { leaveType: '', leaveUsed: 0.0 },
+      { leaveType: '', leaveUsed: 0.0 },
+      { leaveType: '', leaveUsed: 0.0 },
     ],
     leaveSummary: [
-      {real: 'Sick',name: 'LTS', hours: 0},
-      {real: 'Vacation',name: 'LTV', hours: 0},
-      {real: 'AAUP/SEIU',name: 'LW1', hours: 0},
-      {real: 'STD',name: 'STD', hours: 0},
-      {real: 'Unpaid Leave',name: 'LW3', hours: 0},
-      {real: 'FLSA/NLFA',name: 'LSA', hours: 0},
-      {real: 'Personal Day',name: 'Per', hours: 0},
+      {real: 'Sick',name: 'LTS', hours: 0.0},
+      {real: 'Vacation',name: 'LTV', hours: 0.0},
+      {real: 'AAUP/SEIU',name: 'LW1', hours: 0.0},
+      {real: 'STD',name: 'STD', hours: 0.0},
+      {real: 'Unpaid Leave',name: 'LW3', hours: 0.0},
+      {real: 'FLSA/NLFA',name: 'LSA', hours: 0.0},
+      {real: 'Personal Day',name: 'Per', hours: 0.0},
     ],
   }),
   methods: {
-    updateSummary() {
+    updateSummary () {
       this.leaveSummary = [
-        { real: 'Sick',         name: 'LTS', hours: 0 },
-        { real: 'Vacation',     name: 'LTV', hours: 0 },
-        { real: 'AAUP/SEIU',    name: 'LW1', hours: 0 },
-        { real: 'STD',          name: 'STD', hours: 0 },
-        { real: 'Unpaid Leave', name: 'LW3', hours: 0 },
-        { real: 'FLSA/NLFA',    name: 'LSA', hours: 0 },
-        { real: 'Personal Day', name: 'Per', hours: 0 },
+        { real: 'Sick',         name: 'LTS', hours: 0.0 },
+        { real: 'Vacation',     name: 'LTV', hours: 0.0 },
+        { real: 'AAUP/SEIU',    name: 'LW1', hours: 0.0 },
+        { real: 'STD',          name: 'STD', hours: 0.0 },
+        { real: 'Unpaid Leave', name: 'LW3', hours: 0.0 },
+        { real: 'FLSA/NLFA',    name: 'LSA', hours: 0.0 },
+        { real: 'Personal Day', name: 'Per', hours: 0.0 },
       ]
-      for(week in this.leavePlan){
-        for(type in this.leaveSummary){
+      for(var week in this.leavePlan){
+        for(var type in this.leaveSummary){
           if(this.leavePlan[week].leaveType==this.leaveSummary[type].name)
-            this.leaveSummary[type].hours += parseInt(this.leavePlan[week].leaveUsed)
+            this.leaveSummary[type].hours += parseFloat(this.leavePlan[week].leaveUsed)
         }
       }
       this.total = 0
-      for(week in this.leavePlan){
-        for(type in this.leaveSummary){
+      for(var week in this.leavePlan){
+        for(var type in this.leaveSummary){
           if(this.leavePlan[week].leaveType==this.leaveSummary[type].name)
-            if(this.leavePlan[week].leaveUsed != 0){this.total += parseInt(this.leavePlan[week].leaveUsed)}
+            if(this.leavePlan[week].leaveUsed != 0){this.total += parseFloat(this.leavePlan[week].leaveUsed)}
           }
       }
     },
