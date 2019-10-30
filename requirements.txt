@@ -2,4 +2,5 @@ Django
 DjangoRestFramework
 Django-import-export
 django-cors-headers
+xhtml2pdf
 npm
