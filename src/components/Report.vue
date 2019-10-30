@@ -5,7 +5,7 @@
       <h3>Employee Information</h3>
       <table>
         <tr>
-          <td>Employee Name: {{3}} </td>
+          <td>Employee Name: {{user.first_name}} </td>
           <td>Date: {{2}}</td>
         </tr>
         <tr>
@@ -144,6 +144,7 @@
 <script>
 export default {
   name: 'report',
+  props: ['user'],
   data: () => ({
     notes: '',
     total: 0,
