@@ -11,9 +11,8 @@ This app uses Django, REST, Vue.js, NPM, and SQLite3 frameworks, and is released
 ## Getting Started
 1. Change directory into the LeavesCalculator directory and run the following commands: 
 2. `chmod +x startup_script` Might be necessary, which gives startup_script executable permission
-3. `./startup_script` Runs a script that will install dependencies and spin up Django and Vue servers
-4. `./startup_script norun` Will install dependencies without running the servers if you so desire
-5. `./startup_script runonly` Will spin up the servers without attempting to install dependencies
+3. `./start` Runs a script that will install dependencies and spin up Django and Vue servers
+4. `./start install` Will install dependencies without running the servers
+5. `./start run` Will spin up the servers without attempting to install dependencies
 6. Make changes to the code base as you require
-7. To kill the server, use `ps` to find the server's PID, and use `kill [pid]` to kill the process
-8. When you are done making changes, use `deactivate` to close the virtual environment
+7. To kill the servers, use control+C to exit the script, which will in turn kill the servers
