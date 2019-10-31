@@ -5,43 +5,43 @@
       <h3>Employee Information</h3>
       <table>
         <tr>
-          <td>Employee Name: {{user.first_name}} </td>
-          <td>Date: {{2}}</td>
+          <td>Employee Name: {{user.first_name}} {{user.last_name}} </td>
+          <td>Date: {{0}}</td>
         </tr>
         <tr>
-          <td>Hire Date: {{1}}</td>
-          <td>PSU ID#:{{2}}</td>
+          <td>Hire Date: {{user.hire_date}}</td>
+          <td>PSU ID#:{{user.employee_id}}</td>
         </tr>
         <tr>
-          <td>Job Title: {{1}}  </td>
-          <td>Supervisor: {{2}} </td>
+          <td>Job Title: {{0}}  </td>
+          <td>Supervisor: {{0}} </td>
         </tr>
         <tr>
-          <td>Payrate {{1}}  </td>
+          <td>Payrate {{0}}  </td>
         </tr>
       </table>
       <hr>
     <h3>Eligibility</h3>
       <table>
         <tr>
-          <td>Look Back Hours: {{1}}  </td>
-          <td>FTE: {{2}}</td>
+          <td>Look Back Hours: {{user.month_lookback_12}}  </td>
+          <td>FTE: {{user.fte}}</td>
         </tr>
         <tr>
-          <td>Months : {{1}}  </td>
-          <td>E-Class: {{2}}</td>
+          <td>Months : {{0}}  </td>
+          <td>E-Class: {{0}}</td>
         </tr>
         <tr>
-          <td>FMLA: {{1}}  </td>
-          <td>OFLA: {{2}}</td>
+          <td>FMLA: {{user.fmla_eligibility}}  </td>
+          <td>OFLA: {{user.ofla_eligibility}}</td>
         </tr>
         <tr>
-          <td>Hours Eligible: {{1}}  </td>
-          <td>* {{2}}</td>
+          <td>Hours Eligible: {{0}}  </td>
+          <td>* {{0}}</td>
         </tr>
         <tr>
-          <td>Worksite Location: {{1}}  </td>
-          <td>Due to a Work Related Injury?		 {{2}}</td>
+          <td>Worksite Location: {{0}}  </td>
+          <td>Due to a Work Related Injury?		 {{0}}</td>
         </tr>
       </table>
 
@@ -49,46 +49,46 @@
     <h3>Leave Balance</h3>
     <table>
       <tr>
-        <td><b>Total Paid Leave Available: {{1}}</b></td>
-        <td><b>Total Leave Request: {{2}} </b></td>
+        <td><b>Total Paid Leave Available: {{0}}</b></td>
+        <td><b>Total Leave Request: {{0}} </b></td>
       </tr>
       <tr>
-        <td>Sick Leave: {{1}}  </td>
+        <td>Sick Leave: {{0}}  </td>
         <td>FSLA</td>
-        <td>Personal: {{2}} </td>
-        <td>AAUP DSLB: {{3}} </td>
+        <td>Personal: {{0}} </td>
+        <td>AAUP DSLB: {{0}} </td>
       </tr>
       <tr>
-        <td>Vacation Leave: {{1}}  </td>
+        <td>Vacation Leave: {{0}}  </td>
         <td>NSLA</td>
-        <td>Exchange: {{2}} </td>
-        <td>DSLB Total: {{3}} </td>
+        <td>Exchange: {{0}} </td>
+        <td>DSLB Total: {{0}} </td>
       </tr>
       <tr>
-        <td>ST Disability?: {{1}}  </td>
-        <td>PXS?:{{2}}</td>
-        <td>SEIU Hardship: {{2}} </td>
+        <td>ST Disability?: {{0}}  </td>
+        <td>PXS?:{{0}}</td>
+        <td>SEIU Hardship: {{0}} </td>
       </tr>
     </table>
     <hr>
     <h3>Leave Request</h3>
     <table>
       <tr>
-        <td>Leave Start: {{1}}  </td>
-        <td>Intermittent Start: {{2}} </td>
-        <td>HR/Week: {{3}}</td>
+        <td>Leave Start: {{0}}  </td>
+        <td>Intermittent Start: {{0}} </td>
+        <td>HR/Week: {{0}}</td>
       </tr>
       <tr>
-        <td>Leave End: {{1}}  </td>
-        <td>Intermittent End: {{2}} </td>
+        <td>Leave End: {{0}}  </td>
+        <td>Intermittent End: {{0}} </td>
       </tr>
       <tr>
-        <td>Reason: {{1}}  </td>
-        <td>Leave Status: {{2}} </td>
+        <td>Reason: {{0}}  </td>
+        <td>Leave Status: {{0}} </td>
       </tr>
       <tr>
-        <td>Full Time Leave {{1}}  </td>
-        <td>Intermittent Leave {{2}} </td>
+        <td>Full Time Leave {{0}}  </td>
+        <td>Intermittent Leave {{0}} </td>
       </tr>
     </table>
     <hr>
