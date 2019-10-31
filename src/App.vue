@@ -15,10 +15,6 @@ export default {
 </script>
 <!-- styling for the component -->
 <style>
-/*
-
- *** Had to temporarily comment out parent styling so admin-dashboard would look better.
- 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -26,5 +22,5 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-}*/
+}
 </style>
