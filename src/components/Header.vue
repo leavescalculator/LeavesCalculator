@@ -1,0 +1,21 @@
+<template>
+    <ul class="nav nav-tabs">
+      <router-link to="/" class="nav-item nav-link" tag="li" active-class="active" exact>
+        <a v-if="username ===''">Login</a>
+        <a v-else>Log out</a>
+      </router-link>
+      <router-link to="/questions" class="nav-item nav-link" tag="li" active-class="active"><a>Questions</a></router-link>
+      <router-link to="/report" class="nav-item nav-link" tag="li" active-class="active"><a>Report</a></router-link>
+    </ul>
+</template>
+
+<script>
+    export default {
+        name: "Header",
+        props: ['username'],
+    }
+</script>
+
+<style scoped>
+
+</style>

@@ -6,7 +6,7 @@
         <a @click="signOut" href="javascript:void(0)">Sign out</a>
 
     </div>
-    <form v-if="(auth == '')" onsubmit="return false">
+    <form v-if="(auth === '')" onsubmit="return false">
         <p>Login:</p>
         <div class="input-field">
             <label for="username">Username</label>
@@ -20,7 +20,7 @@
         <p style="color:red;">{{ loginError }}</p>
     </form>
 
-    <div id="includedContent"></div>    
+    <div id="includedContent"></div>
 </div>
 </template>
 
