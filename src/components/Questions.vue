@@ -10,8 +10,11 @@
     <drop-down-question :title="currentNode" :options="Nodes[currentNode].options"
       @option-selected="optionSelected" v-else-if="Nodes[currentNode].input == 'drop down'"></drop-down-question>
       
-    <database-question :title="currentNode" :options="Nodes[currentNode].options"
-      @option-selected="optionSelected" v-else-if="Nodes[currentNode].input == 'database'"></database-question>
+    <btn-question :title="currentNode" :options="Nodes[currentNode].options" 
+      @option-selected="optionSelected" v-if="Nodes[currentNode].input == 'database'"></btn-question>
+
+   <!-- <database-question :title="currentNode" :options="Nodes[currentNode].options"
+      @option-selected="optionSelected" v-else-if="Nodes[currentNode].input == 'database'"></database-question> -->
     <br>
     <button class="btn btn-success" @click="goBack()" v-if="stack[0]">Back</button>
   </div>
@@ -313,7 +316,7 @@ export default {
       ]
     },
     "Disability Info": {
-      "input": "Display",
+      "input": "display",
       "options": [
         {
           "title": "An individual with a disability is a person who: \n Has a physical or mental impairment that substantially limits one or more major life activities; \n Has a record of such impairment; or \n Is regarded as having such an impairment \n Under the ADAAA (ADA Amendments Act) Major life Activities now additionally includes Major Bodily Functions. In total a disability would be any impairment that substantially limits any of the following: Major life activities include, but are not limited to, caring for oneself, performing manual tasks, seeing, hearing, eating, sleeping, walking, standing, lifting, bending, speaking, breathing, learning, reading, concentrating, thinking, communicating, and working. Major Bodily Functions include, but are not limited to, functions of the immune system, normal cell growth, digestive, bowel, bladder, neurological, brain, respiratory, circulatory, endocrine, and reproductive functions. \n The term “substantially limits” should be construed broadly in favor of expansive coverage to the maximum extent permitted by the terms of the ADA. The primary focus of the ADA is on whether discrimination occurred, the determination of disability should not require extensive analysis. \n A qualified employee or applicant with a disability is an individual who, with or without reasonable accommodation, can perform the essential functions of the job in question \n Please note that HR will never disclose and a supervisor should never discuss or request disability-specific medical information. The employee's privacy will be maintained at all times. All medical certification and any determination of an underlying disability will be performed exclusively by HR. \n More info: https://www.pdx.edu/hr/employee-accommodations ",
@@ -400,7 +403,7 @@ export default {
       ]
     },
     "Report": {
-      "input": "Display",
+      "input": "display",
       "options": [
         {
           "title": "Show the report somehow",
@@ -434,7 +437,7 @@ export default {
       ]
     },
     "ADA Info": {
-      "input": "Display",
+      "input": "display",
       "options": [
         {
           "title": "Title I of the Americans with Disabilities Act of 1990 prohibits private employers, state and local governments, employment agencies and labor unions from discriminating against qualified individuals with disabilities in job application procedures, hiring, firing, advancement, compensation, job training, and other terms, conditions, and privileges of employment. Briefly Title I of the ADA \n Helps people with disabilities access the same employment opportunities and benefits available to people without disabilities. \n Applies to employers with 15 or more employees. \n Requires employers to provide reasonable accommodations to qualified applicants or employees. A “reasonable accommodation” is a change that accommodates employees with disabilities so they can do the job without causing the employer “undue hardship” (too much difficulty or expense). \n Defines disability, establishes guidelines for the reasonable accommodation process, and addresses medical examinations and inquiries. \n Regulated and enforced by the U.S. Equal Employment Opportunity Commission. ",
