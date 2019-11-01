@@ -17,8 +17,6 @@
         ></router-view>
       </div>
     </div>
-
-    <button @click="goToHello">Hello</button>
   </div>
 </template>
 
