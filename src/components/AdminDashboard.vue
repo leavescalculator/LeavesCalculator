@@ -16,6 +16,7 @@
     <button class="btn btn-success" @click="changeView">Change view</button>
 
     <hr>
+    <textarea id="json" cols=50 rows=4></textarea>
     <button type="button" @click="remAllNode">Delete graph</button>
     <button type="button" @click="loadFromJSON">Load JSON</button>
 
@@ -25,7 +26,7 @@
       {{ selectedElement }}
       <button type="button" @click="remNode" style="pointer-events: auto;">Remove element</button>
     </div>
-    <textarea id="json" cols=50 rows=4></textarea>
+    
   </div>
 </template>
 <script>
