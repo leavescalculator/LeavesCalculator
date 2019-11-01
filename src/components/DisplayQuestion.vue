@@ -2,8 +2,7 @@
     <div class="">
         <h2>{{ title }}</h2>
         <hr>
-        <p v-for="(option, index) in options" :key="index"> {{option.title }}</p>
-        display
+        <p v-for="(option, index) in options" :key="index"> {{ option.title }}</p>
     </div>
 </template>
 
@@ -14,7 +13,7 @@ export default {
     }),
     props: ['title', 'options'],
     methods: {
-    
+
     }
         
     

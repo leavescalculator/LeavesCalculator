@@ -13,7 +13,7 @@ export default {
     }),
     props: ['title', 'options'],
     methods: {
-    
+
     }
         
     

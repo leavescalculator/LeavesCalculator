@@ -17,10 +17,8 @@ export default {
         selected (index) {
             console.log(index)
             this.$emit('option-selected', index);
-        }
+        },
     }
-        
-    
 }
 </script>
 <style scoped>
