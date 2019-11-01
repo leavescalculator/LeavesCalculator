@@ -14,26 +14,26 @@ export default {
   data: () => ({
     user: {
       "employee_id": 800009,
-      "odin_username": "HPRYNNE", //
+      "odin_username": "HPRYNNE", 
       "psu_id": "953125510",
       "first_name": "Hester",
       "last_name": "Prynne",
-      "email": [              //
+      "email": [
           "leaves@pdx.edu",
           "hrc-tech-team-group@pdx.edu"
       ],
       "hire_date": "2006-03-20",
       "fte": 1.0,
       "month_lookback_12": "1711.48000000000",
-      "month_lookback_6": "833.75", //
+      "month_lookback_6": "833.75",
       "fmla_eligibility": "T",
       "ofla_eligibility": "T",
-      "deductions_eligibility": [  //
+      "deductions_eligibility": [
           "LST",
           "LTD",
           "PXS"
       ],
-      "paid_leave_balances": [  //
+      "paid_leave_balances": [
           [
               "XBRV",
               0

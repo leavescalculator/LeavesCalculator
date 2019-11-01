@@ -6,16 +6,18 @@
       <table>
         <tr>
           <td>Employee Name: {{user.first_name}} {{user.last_name}} </td>
-          <td>Date: {{0}}</td>
+          <td>Date: {{new Date().toDateString()}}</td>
         </tr>
         <tr>
           <td>Hire Date: {{user.hire_date}}</td>
           <td>PSU ID#:{{user.employee_id}}</td>
         </tr>
+        <!--
         <tr>
           <td>Job Title: {{0}}  </td>
           <td>Supervisor: {{0}} </td>
         </tr>
+      -->
         <tr>
           <td>Payrate {{0}}  </td>
         </tr>
@@ -65,8 +67,10 @@
         <td>DSLB Total: {{0}} </td>
       </tr>
       <tr>
-        <td>ST Disability?: {{0}}  </td>
-        <td>PXS?:{{0}}</td>
+        <td>ST Disability?:
+             {{ lst}}
+          </td>
+        <td>PXS?:{{pxs}}</td>
         <td>SEIU Hardship: {{0}} </td>
       </tr>
     </table>
@@ -74,23 +78,38 @@
     <h3>Leave Request</h3>
     <table>
       <tr>
-        <td>Leave Start: {{0}}  </td>
-        <td>Intermittent Start: {{0}} </td>
-        <td>HR/Week: {{0}}</td>
+        <td>Leave Start:<input />  </td>
+        <td>Intermittent Start: <input /></td>
+        <td>HR/Week: <input /></td>
       </tr>
       <tr>
-        <td>Leave End: {{0}}  </td>
-        <td>Intermittent End: {{0}} </td>
+        <td>Leave End: <input /> </td>
+        <td>Intermittent End: <input /></td>
       </tr>
       <tr>
-        <td>Reason: {{0}}  </td>
-        <td>Leave Status: {{0}} </td>
+        <td>Reason:<select id="R-select">
+        <option value="">--Option--</option>
+        <option value="FMLA/OFLA Continuous Concurrent Leave">FMLA/OFLA Continuous Concurrent Leave</option>
+        <option value="Inter">Inter</option>
+        </select></td>
+        <td>Leave Status: <select id="L-select">
+        <option value="">--Option--</option>
+        <option value="FMLA-Female EE's pregnancy and care of newborn">FMLA-Female EE's pregnancy and care of newborn</option>
+        <option value="Inter">Inter</option>
+        </select> </td>
       </tr>
       <tr>
-        <td>Full Time Leave {{0}}  </td>
-        <td>Intermittent Leave {{0}} </td>
+        <td>Full Time Leave <input />  </td>
+        <td>Intermittent Leave <input /> </td>
       </tr>
     </table>
+    <hr>
+    <h3>Leave Balance</h3>
+    <div v-for='u in user.paid_leave_balances'>
+      <div v-if=" u[1] !== 0">
+        {{u[0]}}: {{u[1]}}
+      </div>
+  </div>
     <hr>
     <h3>Leave Plan</h3>
       <table>
@@ -145,9 +164,11 @@
 export default {
   name: 'report',
   props: ['user'],
+
   data: () => ({
     notes: '',
-    total: 0,
+    Lts: 'Yes',
+    total: 0.0,
     leavePlan: [
       { leaveType: '', leaveUsed: 0.0 },
       { leaveType: '', leaveUsed: 0.0 },
@@ -172,6 +193,15 @@ export default {
       {real: 'Personal Day',name: 'Per', hours: 0.0},
     ],
   }),
+  computed:{
+    lst: function () {
+      return this.user.deductions_eligibility.includes("LST") ? "Yes" : "No";
+    },
+    pxs: function () {
+      return this.user.deductions_eligibility.includes("PXS") ? "Yes" : "No";
+    }
+  },
+
   methods: {
     updateSummary () {
       this.leaveSummary = [
@@ -189,7 +219,7 @@ export default {
             this.leaveSummary[type].hours += parseFloat(this.leavePlan[week].leaveUsed)
         }
       }
-      this.total = 0
+      this.total = 0.0
       for(var week in this.leavePlan){
         for(var type in this.leaveSummary){
           if(this.leavePlan[week].leaveType==this.leaveSummary[type].name)
@@ -198,8 +228,9 @@ export default {
       }
     },
     addWeek() {
-      this.leavePlan.push({ leaveType: '', leaveUsed: 0 })
-    }
+      this.leavePlan.push({ leaveType: '', leaveUsed: 0.0 })
+    },
+
   }
 }
 </script>
