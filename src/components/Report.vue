@@ -105,7 +105,7 @@
     </table>
     <hr>
     <h3>Leave Balance</h3>
-    <div v-for='u in user.paid_leave_balances'>
+    <div v-for='(u, index) in user.paid_leave_balances' :key="index">
       <div v-if=" u[1] !== 0">
         {{u[0]}}: {{u[1]}}
       </div>
@@ -123,7 +123,7 @@
           <th>%</th>
           <th>Pay</th>
         </tr>
-        <tr v-for="(week, index) in leavePlan">
+        <tr v-for="(week, index) in leavePlan" :key="index">
           <td>{{index + 1}}</td>
           <td><input /></td>
           <td><input type = "text" v-model= "week.leaveType" v-on:keyup="updateSummary"/></td>
@@ -146,7 +146,7 @@
   <p><b>Notes:</b><textarea v-model="notes"></textarea></p>
     <h3>Leave Summary</h3>
     <table>
-      <tr v-for = "type in leaveSummary" >
+      <tr v-for="(type, index) in leaveSummary" :key="index">
         <td>{{type.real}}</td>
         <td>{{type.name}}</td>
         <td>{{type.hours}}</td>
