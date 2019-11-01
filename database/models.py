@@ -5,6 +5,12 @@ from django.db import connection
 
 TODAY = date.today()
 
+
+#The following schema was provided by PSU. They also provided mock information
+#that's supposed to simulate the information that they store in their own
+#database. The purpose of it was to provide a way to test the functinality of
+#the application as a whole.
+
 class gobeacc(models.Model):
     id = models.IntegerField(primary_key=True)
     gobeacc_username = models.CharField(max_length=30)
@@ -131,6 +137,9 @@ class leavereports(models.Model):
 
 # Helper models below
 
+#The employee class queries for all the information stored in the tables regarding one
+#particular employee. The employee's request is made with an employee's username. An example
+#of this can be observed in views.py. 
 class Employee(models.Model):
     employee_id  = models.IntegerField(primary_key=True)
     odin_username = models.CharField(max_length=200)
