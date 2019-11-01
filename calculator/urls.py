@@ -17,16 +17,15 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import TemplateView
 
-# Third-party
-from rest_framework.authtoken.views import obtain_auth_token
-
 # Local
 from calculator.api import views
 
 urlpatterns = [
     path('database/', include('database.urls')),
     path('admin/', admin.site.urls),
+    path('api-token-auth/', views.ObtainTokenAndIsAdmin.as_view(), name='api_token_auth'),
+
+    # Temporary for testing purposes
     path('hello/', views.HelloView.as_view(), name='hello'),
-    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
-    path('', TemplateView.as_view(template_name='vue-demo.html'), name='home'),
+    path('hello-admin/', views.HelloAdminView.as_view(), name='hello_admin'),
 ]

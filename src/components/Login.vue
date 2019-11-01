@@ -51,7 +51,7 @@ export default {
           return response.json()
       }).then(data => {
           console.log(JSON.stringify(data))
-          this.$emit('token-aquired', ['Token ' + data["token"], username])
+          this.$emit('token-acquired', ['Token ' + data["token"], username]);
       }).catch(error => {
           this.loginError = error
       });

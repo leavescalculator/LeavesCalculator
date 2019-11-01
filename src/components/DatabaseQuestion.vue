@@ -12,11 +12,9 @@ export default {
 
     }),
     props: ['title', 'options'],
-    methods: {
-    
-    }
-        
-    
+    methods: {}
+
+
 }
 </script>
 <style scoped>
