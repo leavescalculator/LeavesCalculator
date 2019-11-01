@@ -186,7 +186,7 @@ class Employee(models.Model):
 
     def query_fte(self):
         nbrjobs_user = nbrjobs.objects.filter(nbrjobs_pidm=self.employee_id)
-        nbrbjob_user = nbrbjob.objects.filter(nbrbjob_pidm=self.employee_id).filter(nbrbjob_end_date__isnull=True)
+        nbrbjob_user = nbrbjob.objects.filter(nbrbjob_pidm=self.employee_id).filter(Q(nbrbjob_begin_date__lte=TODAY) & (Q(nbrbjob_end_date__isnull=True) | Q(nbrbjob_end_date__gt=TODAY)))
         if (nbrbjob_user):
             for n in nbrbjob_user:
                 positions = nbrjobs_user.filter(nbrjobs_posn=n.nbrbjob_posn).filter(nbrjobs_suff=n.nbrbjob_suff).exclude(Q(nbrjobs_ecls_code='XA') | Q(nbrjobs_ecls_code='XB') | Q(nbrjobs_ecls_code='XC')).values_list('nbrjobs_appt_pct').distinct()
@@ -245,13 +245,44 @@ class Employee(models.Model):
         perbfml_obj = perbfml.objects.filter(perbfml_pidm=self.employee_id)
         if perbfml_obj:
             perbfml_id = perbfml_obj[0].perbfml_id
-            perfmla_id_list = perfmla.objects.filter(perfmla_perbfml_id=perbfml_id).filter(perfmla_begin_date__gte=anniversary).values_list('perfmla_id')
+            perfmla_id_list = perfmla.objects.filter(perfmla_id=perbfml_id).filter(perfmla_begin_date__gte=anniversary).values_list('perfmla_perbfml_id')
             for p in perfmla_id_list:
-                hrs_claimed += perefml.objects.filter(p=perefml_id).values_list('perefml_claim_units')
+                claim_unit = perefml.objects.filter(perefml_perbfmla_id=p[0]).values_list('perefml_claim_units')
+                for c in claim_unit:
+                    hrs_claimed += c[0]
         self.protected_leave_hrs_taken = hrs_claimed
 
     def query_current_paid_leaves_balances(self):
-        perleav_balances = perleav.objects.filter(perleav_pidm=self.employee_id).annotate(current_leave_total=F('perleav_begin_balance') + F('perleav_accrued') - F('perleav_taken')).values_list('perleav_leave_code', 'current_leave_total')
+        perleav_balances = perleav.objects.filter(perleav_pidm=self.employee_id).annotate(current_leave_total=F('perleav_begin_balance') - F('perleav_taken')).values_list('perleav_leave_code', 'current_leave_total')
+        # accrued paid leave Leave_balances
+        phraccr_leav_codes = phraccr.objects.filter(phraccr_pidm=self.employee_id).values_list('phraccr_leav_code', flat=True).distinct()
+        phraccr_balances = []
+        for p in phraccr_leav_codes:
+            result = phraccr.objects.filter(phraccr_pidm=self.employee_id).filter(phraccr_leav_code=p).latest('phraccr_activity_date')
+            balance = 0
+            if result:
+                balance = result.phraccr_curr_accr
+            phraccr_balances.append((p, balance))
+        # potential paid leave Leave_balances
+        paid_leave_balances = []
+        # for all of the accrued balances for each leave type, add them to the total of that leave type
+        for accrued in phraccr_balances:
+            pl_found = False
+            for pl in paid_leave_balances:
+                if pl[0] == accrued[0]:
+                    pl[1]+=accrued[1]
+                    pl_found = True
+            if not pl_found:
+                paid_leave_balances.append([accrued[0], accrued[1]])
+        # for all of the current balances for each leave type, add them to the total of that leave type
+        for current in perleav_balances:
+            pl_found = False
+            for pl in paid_leave_balances:
+                if pl[0] == current[0]:
+                    pl[1]+=current[1]
+                    pl_found = True
+            if not pl_found:
+                paid_leave_balances.append([current[0], current[1]])
         with connection.cursor() as cursor:
             cursor.execute("CREATE TEMPORARY TABLE paid_leave_table (leave_code varchar(4) NOT NULL, balance decimal NULL);")
             for p in perleav_balances:
