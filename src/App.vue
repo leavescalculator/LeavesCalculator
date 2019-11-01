@@ -1,18 +1,28 @@
 <template>
-  <div id="app">
-  <!-- the router outlet, where all matched components would ber viewed -->
-  <router-link v-bind:to="'/'">Login</router-link>
-  <router-link v-bind:to="'/questions'">Questions</router-link>
-  <router-link v-bind:to="'/report'">Report</router-link>
-  <router-view @token-aquired="authSuccess"
-    :auth='auth'
-    :username='username'
-    @logout='logOut'
-    :user="user"></router-view>
+  <div id="app" class="container">
+    <!-- the router outlet, where all matched components would ber viewed -->
+    <div class="row">
+      <div
+        class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
+      ><app-header :username="username"></app-header></div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+        <router-view
+          @token-acquired="authSuccess"
+          :auth="auth"
+          :username="username"
+          @logout="logOut"
+          :user="user"
+        ></router-view>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import Header from "./components/Header";
 export default {
   name: 'app',
   data: () => ({
@@ -85,6 +95,9 @@ export default {
           "max_protected_leave_hrs": null
       },
   }),
+  components: {
+      appHeader: Header,
+  },
   methods: {
     authSuccess(event) {
       this.auth = event[0];
@@ -109,4 +122,5 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+ */
 </style>
