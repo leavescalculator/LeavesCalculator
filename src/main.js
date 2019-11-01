@@ -9,18 +9,15 @@ import VueRouter from 'vue-router'
 //tell vue to use the router
 Vue.use(VueRouter)
 //define your routes
-//import the login component
-import Login from './components/Login'
-//import the login component
-import Questions from './components/Questions'
-//import the report component
-import Report from './components/Report'
+import Login          from './components/Login'
+import Report         from './components/Report'
+import Questions      from './components/Questions'
+import AdminDashboard from './components/AdminDashboard'
 const routes = [
-//route for the home route of the web page
-{ path: '/', component: Login },
-{ path: '/questions', component: Questions },
-//route for the about route of the web page
-{ path: '/report', component: Report }
+  { path: '/',                component: Login          },
+  { path: '/report',          component: Report         },
+  { path: '/questions',       component: Questions      },
+  { path: '/admin-dashboard', component: AdminDashboard },
 ]
 
 // Create the router instance and pass the `routes` option
