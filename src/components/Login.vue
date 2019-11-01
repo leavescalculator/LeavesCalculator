@@ -1,12 +1,12 @@
 <template>
   <div id="login">
     <div v-if="username">
-        <p>Signed in as <b></b></p>
+        <p>Signed in as <b>{{ username }}</b></p>
 
         <a @click="signOut" href="javascript:void(0)">Sign out</a>
 
     </div>
-    <form v-else onsubmit="return false">
+    <form v-if="(auth == '')" onsubmit="return false">
         <p>Login:</p>
         <div class="input-field">
             <label for="username">Username</label>
@@ -16,7 +16,7 @@
             <label for="password">Password</label>
             <input type="password" name="password" id="password" />
         </div>
-        <button @click="sendCredentials">Submit</button>
+        <button @click.prevent="sendCredentials">Submit</button>
         <p style="color:red;">{{ loginError }}</p>
     </form>
 
@@ -28,9 +28,10 @@
 export default {
   name: 'login',
   data: () => ({
-    username: '',
+    //username: '',
     loginError: '',
   }),
+  props: ['auth', 'username'],
   methods: {
     sendCredentials () {
       var username = document.getElementById('username').value
@@ -49,15 +50,15 @@ export default {
           }
           return response.json()
       }).then(data => {
-          this.username = username
           console.log(JSON.stringify(data))
+          this.$emit('token-aquired', ['Token ' + data["token"], username])
       }).catch(error => {
           this.loginError = error
       });
     },
     signOut () {
-        username  = ''
-        loginError = ''
+        this.loginError = '';
+        this.$emit('logout', 0);
     }
   }
 }

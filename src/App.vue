@@ -4,13 +4,30 @@
   <router-link v-bind:to="'/'">Login</router-link>
   <router-link v-bind:to="'/questions'">Questions</router-link>
   <router-link v-bind:to="'/report'">Report</router-link>
-  <router-view></router-view>
+  <router-view @token-aquired="authSuccess" 
+    :auth='auth' 
+    :username='username'
+    @logout='logOut'></router-view>
   </div>
 </template>
 
 <script>
 export default {
   name: 'app',
+  data: () => ({
+      auth: '',
+      username: '',
+  }),
+  methods: {
+    authSuccess(event) {
+      this.auth = event[0];
+      this.username = event[1];
+    },
+    logOut() {
+      this.auth = '';
+      this.username = '';
+    },
+  }
 }
 </script>
 <!-- styling for the component -->
