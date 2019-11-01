@@ -54,7 +54,7 @@
             "hours": 0,
             "type": "n/a"
           },
-          "next_node": "Talk to Jack"
+          "next_node": "Exceptions"
         }
       ]
     },
@@ -414,6 +414,27 @@
           },
           "next_node": "n/a"
         }
+      ]
+    },
+    "Exceptions": {
+      "input": "Database",
+      "options": [
+        {
+          "title": "Under 6 months",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          },
+          "next_node": "Are You Requesting Military Leave?"
+        },
+        {
+          "title": "Over 6 months, but less than 650 hours and 520 hrs or more",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          },
+          "next_node": "Are You Requesting Military Leave?"
+        },
       ]
     }
   }
