@@ -4,7 +4,7 @@
     <div class="row">
       <div
         class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
-      ><app-header :username="username"></app-header></div>
+      ><app-header :username="username" :is-admin="isAdmin"></app-header></div>
     </div>
 
     <div class="row">
@@ -26,8 +26,9 @@ import Header from "./components/Header";
 export default {
   name: 'app',
   data: () => ({
-      auth: '',
-      username: '',
+    auth: "",
+    username: "",
+    isAdmin: false,
       user: {
           "employee_id": 800009,
           "odin_username": "HPRYNNE",
@@ -102,13 +103,14 @@ export default {
     authSuccess(event) {
       this.auth = event[0];
       this.username = event[1];
+      this.isAdmin = event[2];
     },
     logOut() {
       this.auth = '';
       this.username = '';
     },
   }
-}
+};
 </script>
 <!-- styling for the component -->
 <style>
