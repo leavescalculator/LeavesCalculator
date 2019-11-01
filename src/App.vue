@@ -8,9 +8,6 @@
     :auth='auth' 
     :username='username'
     @logout='logOut'></router-view>
-  {{ auth }}
-
-  <button @click="goToHello">Hello</button>
   </div>
 </template>
 
@@ -30,22 +27,6 @@ export default {
       this.auth = '';
       this.username = '';
     },
-    goToHello() {
-      fetch('http://localhost:8000/hello/', {
-          method: 'GET',
-          headers: {
-              'Authorization': this.auth
-          },
-      }).then(response => {
-          if(!response.ok) {
-              throw Error("Login failed.")
-          }
-          return response.json()
-      }).then(data => {
-          console.log(JSON.stringify(data))
-          
-      });
-    }
   }
 }
 </script>

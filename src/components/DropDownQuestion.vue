@@ -6,9 +6,7 @@
           <option :value="index" v-for="(option, index) in options" :key="index">{{ option.title }}</option>
         </select>
         <br>
-        <button @click="selected(selectedIndex)">Next</button>
-        <br>
-        {{ selectedIndex }}
+        <button class="btn btn-success" @click="selected(selectedIndex)">Next</button>
     </div>
 </template>
 
@@ -29,5 +27,7 @@ export default {
 <style scoped>
     .btn {
         margin-right: 5px;
+        margin-top: 5px;
+
     }
 </style>
