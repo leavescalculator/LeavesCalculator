@@ -509,7 +509,7 @@
       ]
     },
     "You do not qualify for protected leave": {
-      "input": "Display",
+      "input": "button",
       "options": [
         {
           "title": "Your employee type does not receive protected leave \n You have not accumulated enough working hours to qualify \n You have not worked for the required length of time to qualify",
@@ -518,6 +518,14 @@
             "type": "n/a"
           },
           "next_node": "n/a"
+        },
+        {
+          "title": "If you feel this answer is not correct, please contact Jack Dorkey",
+          "add_hours": {
+            "hours": 0,
+            "type": "n/a"
+          },
+          "next_node": "Talk to Jack"
         }
       ]
     }
