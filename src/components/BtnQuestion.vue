@@ -15,6 +15,7 @@ export default {
     props: ['title', 'options'],
     methods: {
         selected (index) {
+            console.log(index)
             this.$emit('option-selected', index);
         }
     }

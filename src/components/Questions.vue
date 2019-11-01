@@ -5,21 +5,21 @@
       @option-selected="optionSelected" v-if="Nodes[currentNode].input == 'button'"></btn-question>
 
     <display-question :title="currentNode" :options="Nodes[currentNode].options"
-      v-else-if="Nodes[currentNode].input == 'display'"></display-question>
+      @option-selected="optionSelected" v-else-if="Nodes[currentNode].input == 'display'"></display-question>
 
     <drop-down-question :title="currentNode" :options="Nodes[currentNode].options"
-      v-else-if="Nodes[currentNode].input == 'drop down'"></drop-down-question>
+      @option-selected="optionSelected" v-else-if="Nodes[currentNode].input == 'drop down'"></drop-down-question>
       
     <database-question :title="currentNode" :options="Nodes[currentNode].options"
-      v-else-if="Nodes[currentNode].input == 'database'"></database-question>
+      @option-selected="optionSelected" v-else-if="Nodes[currentNode].input == 'database'"></database-question>
   </div>
 </template>
 
 <script>
 import BtnQuestion from './BtnQuestion.vue';
 import DisplayQuestion from './DisplayQuestion.vue';
-import DropDownQuestion from './DropDownQuestion';
-import DatabaseQuestion from './DatabaseQuestion';
+import DropDownQuestion from './DropDownQuestion.vue';
+import DatabaseQuestion from './DatabaseQuestion.vue';
 
 export default {
   name: 'questions',
