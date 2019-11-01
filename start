@@ -1,0 +1,43 @@
+#!/bin/bash
+
+trap "exit" INT TERM ERR
+trap "kill 0" EXIT
+
+if [ "$1" == "help" ];
+    then echo "----------------------------"
+    echo ""
+    echo "Usage: ./start [install | run | help]"
+    echo ""
+    echo "'./start' will install dependencies and spin up servers"
+    echo "'./start install' will install dependencies but not run servers"
+    echo "'./start run' will run servers without installing dependencies"
+    echo ""
+    echo "Use CONTROL+C to exit the script and kill the servers"
+    echo ""
+    echo "----------------------------"
+else
+    if [ "$1" != "run" ];
+        then
+        pip3 install virtualenv
+        virtualenv env
+        source env/bin/activate
+        pip3 install -r requirements.txt
+        npm install
+        python3 manage.py makemigrations
+        python3 manage.py migrate
+    fi
+    if [ "$1" == "install" ];
+        then echo ""
+        echo "Server not starting"
+        echo ""
+    else
+        echo "Server starting"
+        python3 manage.py runserver &
+        npm run dev &
+        sleep 15s
+        echo ""
+        echo Servers are running! Kill servers with CONTROL+C
+        echo ""
+        wait
+    fi
+fi
