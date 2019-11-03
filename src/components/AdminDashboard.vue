@@ -1,32 +1,52 @@
 <template>
   <div id="admin-dashboard">
-    <tr>
-      <td>
-        <button type="button" @click="addNode">Add a Node</button>
-        <input type="text" id="name" placeholder="name"></input>
-        <input type="text" id="parent" placeholder="parent"></input></td>
-      <td>|</td>
-      <td>
-        <button type="button" @click="addData">Add data to node</button>
-        <input type="text" id="dataNode" placeholder="node"></input>
-        <input type="text" id="key" placeholder="key"></input>
-        <input type="text" id="value" placeholder="value"></input>
-      </td>
-    </tr>
+    <label for="newNodeId">ID: </label>
+    <input type="text" id="newNodeId" name="newNodeId" placeholder="example id" />
+    <br />
+    <label for="newNodeInput">Input: </label>
+    <select id="newNodeInput" name="newNodeInput">
+        <option selected hidden disabled>Select one</option>
+        <option v-for="inputType in inputTypes">{{ inputType }}</option>
+    </select>
+    <br />
+    <button type="button" @click="addNode">Add a Node</button>
+    <hr />
+
     <button class="btn btn-success" @click="changeView">Change view</button>
+    <hr />
 
-    <hr>
     <textarea id="json" cols=50 rows=4></textarea>
-    <button type="button" @click="remAllNode">Delete graph</button>
     <button type="button" @click="loadFromJSON">Load JSON</button>
+    <hr />
 
-    <hr>
     <div id="cy" @click="showInfo"></div>
     <div id="elementInfo">
-      {{ selectedElement }}
-      <button type="button" @click="remNode" style="pointer-events: auto;">Remove element</button>
+        <div v-if="selectedElement && selectedElement.isEdge">
+          <b>Edge</b>
+          <br />
+          <label>Title: </label><textarea v-model="selectedElement.title" class="pointable"></textarea>
+          <br />
+          <label>Source node: </label>
+          <button @click="selectNode(selectedElement.source)" class="pointable">
+              {{ selectedElement.source }}
+          </button>
+          <br />
+          <label>Target node: </label>
+          <button @click="selectNode(selectedElement.target)" class="pointable">
+              {{ selectedElement.target }}
+          </button>
+        </div>
+        <div v-else-if="selectedElement">
+          <b>Node</b>
+          <br />
+          <label>Id: </label><textarea v-model="selectedElement.id" class="pointable"></textarea>
+          <br />
+          <label>Input: </label><select v-model="selectedElement.input" class="pointable">
+              <option v-for="inputType in inputTypes" :value="inputType" :selected="inputType==selectedElement.input">{{ inputType }}</option>
+          </select>
+        </div>
+        <button type="button" @click="removeElement" class="pointable">Remove element</button>
     </div>
-    
   </div>
 </template>
 <script>
@@ -43,7 +63,8 @@
         data: () => ({
             nodes: json.Nodes,
             bezierView: true,
-            selectedElement: '',
+            selectedElement: null,
+            inputTypes: [ 'button', 'drop down', 'display', 'database' ]
         }),
         mounted: function () {
             this.cy = cytoscape({
@@ -56,17 +77,16 @@
                         selector: 'node',
                         style: {
                             'shape': 'hexagon',
-                            //'background-color': 'green',
                             'label': 'data(label)',
+                            'background-color': 'green',
                         }
                     },
                     {
                         selector: 'edge',
                         style: {
                             'curve-style': 'bezier',
-                            'text-rotation': 'autorotate',
-                            'target-arrow-shape': 'triangle',
                             'label': 'data(label)',
+                            'target-arrow-shape': 'triangle',
                             'text-margin-y': -12,
                         }
                     },
@@ -126,28 +146,30 @@
 
             this.parseJson();
 
-            this.treeLayout();
+            this.cy.layout({
+                name: 'breadthfirst'
+            }).run();
             this.update_json_display();
         },
         methods: {
             parseJson() {
                 for (const node of Object.keys(this.nodes)) {
-                    this.cy.add({
+                    let element = this.cy.add({
                         data: {
                             id: node,
+                            label: node.substring(0, 30),
                             input: this.nodes[node].input,
-                            label: node.substring(0, 30)
                         }
                     });
                 }
                 for (const node of Object.keys(this.nodes)) {
                     for (const option of this.nodes[node].options) {
                         try {
-                            let node_color = this.cy.nodes('[id="' + option.next_node + '"]').style()['background-color'];
+                            let node_color = this.cy.$id(option.next_node).style()['background-color'];
                             let edge = this.cy.add({
                                 data: {
-                                    label: option.title.substring(0, 30),
                                     title: option.title,
+                                    label: option.title.substring(0, 30),
                                     add_hours: option.add_hours,
                                     source: node,
                                     target: option.next_node,
@@ -162,51 +184,25 @@
                         }
                     }
                 }
-            },
-            treeLayout() {
-                this.cy.layout({
-                    name: 'breadthfirst'
-                }).run();
-            },
-            circleLayout() {
-                this.cy.layout({
-                    name: 'circle'
-                }).run();
-            },
-            randLayout() {
-                this.cy.layout({
-                    name: 'random'
-                }).run();
+                this.update_json_display();
             },
             addNode() {
-                var name = document.getElementById("name").value;
-                var parent = document.getElementById("parent").value;
+                var id = document.getElementById("newNodeId").value;
+                var input = document.getElementById("newNodeInput").value;
 
-                console.log("Adding node `" + name + "`, child of `" + parent + "`");
-                if (name !== "") {
-                    this.cy.add({
-                        data: {id: name}
-                    })
-                    if (parent != "") {
-                        this.cy.add({
-                            data: {
-                                id: parent + name,
-                                source: parent,
-                                target: name,
-                            }
-                        })
+                let node = this.cy.add({
+                    data: {
+                        id: id,
+                        label: id.substring(0, 30),
+                        input: input,
                     }
-                }
-                update_json_display();
+                });
+                this.update_json_display();
             },
-            remNode() {
+            removeElement() {
                 this.cy.$(':selected').remove();
                 this.update_json_display();
                 document.getElementById("elementInfo").style.visibility = 'hidden';
-            },
-            remAllNode() {
-                this.cy.elements().remove();
-                this.update_json_display();
             },
             addData() {
                 var node = document.getElementById("dataNode").value;
@@ -222,7 +218,9 @@
             loadFromJSON() {
                 var j = document.getElementById("json").value;
                 this.cy.json(JSON.parse(j));
-                treeLayout();
+                this.cy.layout({
+                    name: 'breadthfirst'
+                }).run();
             },
             showInfo() {
                 let div = document.getElementById('elementInfo');
@@ -230,13 +228,37 @@
                     let element = this.cy.$(':selected')[0];
                     let popper = element.popper({
                         content: () => {
-                            if (element.isEdge()) {
-                                this.selectedElement = 'Edge: ' + element.data('title')
-                                    + '\nSource node: ' + element.data('source')
-                                    + '\nTarget node: ' + element.data('target');
+                            let isEdge = element.isEdge();
+                            if(isEdge) {
+                              this.selectedElement = {
+                                  isEdge: true,
+                                  get title() {
+                                      return element.data('title')
+                                  },
+                                  set title(title) {
+                                      element.data('title', title)
+                                      element.data('label', title.substring(0, 30))
+                                  },
+                                  source: element.data('source'),
+                                  target: element.data('target'),
+                              };
                             } else {
-                                this.selectedElement = 'Node: ' + element.data('id')
-                                    + '\nInput: ' + element.data('input');
+                              this.selectedElement = {
+                                  isEdge: false,
+                                  get id() {
+                                      return element.data('id')
+                                  },
+                                  set id(id) {
+                                      element.data('id', id)
+                                      element.data('label', id.substring(0, 30))
+                                  },
+                                  get input() {
+                                      return element.data('input')
+                                  },
+                                  set input(input) {
+                                      element.data('input', input)
+                                  },
+                              };
                             }
                             div.style.visibility = 'visible';
                             return div;
@@ -255,16 +277,19 @@
                 if (this.bezierView) {
                     this.cy.elements('edge').style({
                         'curve-style': 'taxi',
-                        'text-rotation': 'none',
                     })
                 } else {
                     this.cy.elements('edge').style({
                         'curve-style': 'bezier',
-                        'text-rotation': 'autorotate',
                     })
                 }
                 this.bezierView = !this.bezierView
-            }
+            },
+            selectNode(to_select) {
+                this.cy.$(':selected').unselect()
+                this.cy.$id(to_select).select()
+                this.showInfo()
+            },
         }
     }
 </script>
@@ -284,5 +309,9 @@
     background: #fff;
     pointer-events: none;
     width: 500px;
+  }
+
+  .pointable {
+    pointer-events: auto;
   }
 </style>
