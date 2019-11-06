@@ -11,16 +11,23 @@
       <button @click="signOut">Sign out</button>
     </div>
     <form v-if="(auth === '')" onsubmit="return false">
+      <div class="input-group">
         <p>Login:</p>
-        <div class="input-field">
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username" />
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Username</span>
+          </div>
+          <input type="text" class="form-control" name="username" id="username" />
         </div>
-        <div class="input-field">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" />
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Password</span>
+          </div>
+          <input type="password" class="form-control" name="password" id="password" />
         </div>
-        <button @click.prevent="sendCredentials">Submit</button>
+      </div>
+      <br>
+        <button class="btn btn-success" @click.prevent="sendCredentials">Submit</button>
         <p style="color:red;">{{ loginError }}</p>
     </form>
 

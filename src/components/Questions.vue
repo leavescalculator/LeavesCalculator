@@ -1,6 +1,5 @@
 <template>
   <div id="questions">
-    Questions Page!
     <btn-question :title="currentNode" :options="Nodes[currentNode].options"
                   @option-selected="optionSelected" v-if="Nodes[currentNode].input == 'button'"></btn-question>
 

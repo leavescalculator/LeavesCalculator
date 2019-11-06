@@ -1,24 +1,39 @@
 <template>
-  <div id="app" class="container">
-    <!-- the router outlet, where all matched components would ber viewed -->
-    <div class="row">
-      <div
-        class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
-      ><app-header :username="username" :is-admin="isAdmin"></app-header></div>
-    </div>
+  <div>
+    <div v-if="isAdmin">
+      <div class="container"><app-header :username="username" :is-admin="isAdmin"></app-header></div>
 
-    <div class="row">
-      <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
-        <router-view
-          @token-acquired="authSuccess"
-          :auth="auth"
-          :username="username"
-          @logout="logOut"
-          :user="user"
-        ></router-view>
+      <router-view
+        @token-acquired="authSuccess"
+        :auth="auth"
+        :username="username"
+        @logout="logOut"
+        :user="user"
+        :isAdmin="isAdmin"
+      ></router-view>
+    </div>
+    <div id="app" class="container" v-else>
+      <!-- the router outlet, where all matched components would ber viewed -->
+      <div class="row">
+        <div
+          class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
+        ><app-header :username="username" :is-admin="isAdmin"></app-header></div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+          <router-view
+            @token-acquired="authSuccess"
+            :auth="auth"
+            :username="username"
+            @logout="logOut"
+            :user="user"
+          ></router-view>
+        </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -109,7 +124,12 @@ export default {
       this.auth = '';
       this.username = '';
     },
-  }
+  },
+    computed: {
+      isAdminBoard() {
+          return this.$route.path === "/admin-dashboard/"
+      }
+    }
 };
 </script>
 <!-- styling for the component -->
