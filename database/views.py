@@ -29,3 +29,9 @@ def employee(request):
         return HttpResponse("You are currently not an active employee.")
     e.query_other_employee_info()
     return JsonResponse(model_to_dict(e))
+
+def reports(request):
+    reports = leavereports.objects.filter(leavereports_pidm=PIDM).values_list('leavereports_date', 'leavereports_report')
+
+def all_graphs(request):
+    graph = graph.objects().all()
