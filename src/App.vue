@@ -28,6 +28,7 @@
             :username="username"
             @logout="logOut"
             :user="user"
+            @add-weeks="addWeeks"
           ></router-view>
         </div>
       </div>
@@ -119,11 +120,17 @@ export default {
       this.auth = event[0];
       this.username = event[1];
       this.isAdmin = event[2];
+      //do fetch stuff
+        //get user/graph
     },
     logOut() {
       this.auth = '';
       this.username = '';
+      this.isAdmin = false;
     },
+      addWeeks(n) {
+        //change weeks here
+      }
   },
     computed: {
       isAdminBoard() {
