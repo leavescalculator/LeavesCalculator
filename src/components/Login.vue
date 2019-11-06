@@ -1,12 +1,16 @@
 <template>
   <div id="login">
     <div v-if="username">
-        <p>Signed in as <b></b></p>
+        <p>Signed in as <b>{{ username }}</b></p>
 
-        <a @click="signOut" href="javascript:void(0)">Sign out</a>
+      <router-link v-if="isAdmin" v-bind:to="'/admin-dashboard'">
+        Admin Dashboard
+      </router-link>
+      <br v-if="isAdmin" />
 
+      <button @click="signOut">Sign out</button>
     </div>
-    <form v-else onsubmit="return false">
+    <form v-if="(auth === '')" onsubmit="return false">
         <p>Login:</p>
         <div class="input-field">
             <label for="username">Username</label>
@@ -16,11 +20,11 @@
             <label for="password">Password</label>
             <input type="password" name="password" id="password" />
         </div>
-        <button @click="sendCredentials">Submit</button>
+        <button @click.prevent="sendCredentials">Submit</button>
         <p style="color:red;">{{ loginError }}</p>
     </form>
 
-    <div id="includedContent"></div>    
+    <div id="includedContent"></div>
 </div>
 </template>
 
@@ -28,11 +32,12 @@
 export default {
   name: 'login',
   data: () => ({
-    username: '',
     loginError: '',
+    isAdmin: false
   }),
+  props: ['auth', 'username'],
   methods: {
-    sendCredentials () {
+    sendCredentials() {
       var username = document.getElementById('username').value
       var password = document.getElementById('password').value
       var data = JSON.stringify({ username, password })
@@ -49,15 +54,17 @@ export default {
           }
           return response.json()
       }).then(data => {
-          this.username = username
           console.log(JSON.stringify(data))
+          this.isAdmin = data.is_admin;
+          this.$emit('token-acquired', ['Token ' + data["token"], username, this.isAdmin]);
       }).catch(error => {
           this.loginError = error
       });
     },
-    signOut () {
-        username  = ''
-        loginError = ''
+    signOut() {
+      this.$emit('logout', 0);
+      this.loginError = '';
+      this.isAdmin = false;
     }
   }
 }

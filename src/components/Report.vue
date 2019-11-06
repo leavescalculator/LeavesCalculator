@@ -67,10 +67,9 @@
         <td>DSLB Total: {{0}} </td>
       </tr>
       <tr>
-        <td>ST Disability?:
-             {{ lst}}
+        <td>ST Disability?: {{ lst }}
           </td>
-        <td>PXS?:{{pxs}}</td>
+        <td>PXS?: {{ pxs }}</td>
         <td>SEIU Hardship: {{0}} </td>
       </tr>
     </table>
@@ -105,48 +104,48 @@
     </table>
     <hr>
     <h3>Leave Balance</h3>
-    <div v-for='u in user.paid_leave_balances'>
+    <div v-for='(u, index) in user.paid_leave_balances' :key="index">
       <div v-if=" u[1] !== 0">
         {{u[0]}}: {{u[1]}}
       </div>
   </div>
     <hr>
     <h3>Leave Plan</h3>
-      <table>
-        <tr>
-          <th>Week</th>
-          <th>Protected?</th>
-          <th>LeaveType</th>
-          <th>% Paid</th>
-          <th>LeaveUsed</th>
-          <th>Cont/Inter</th>
-          <th>%</th>
-          <th>Pay</th>
-        </tr>
-        <tr v-for="(week, index) in leavePlan">
-          <td>{{index + 1}}</td>
-          <td><input /></td>
-          <td><input type = "text" v-model= "week.leaveType" v-on:keyup="updateSummary"/></td>
-          <td><input /></td>
-          <td><input type = "text" v-model= "week.leaveUsed" v-on:keyup="updateSummary"/></td>
-          <td>
-            <select id="CI-select">
+    <table>
+      <tr>
+        <th>Week</th>
+        <th>Protected?</th>
+        <th>LeaveType</th>
+        <th>% Paid</th>
+        <th>LeaveUsed</th>
+        <th>Cont/Inter</th>
+        <th>%</th>
+        <th>Pay</th>
+      </tr>
+      <tr v-for="(week, index) in leavePlan" :key="index">
+        <td>{{index + 1}}</td>
+        <td><input/></td>
+        <td><input type="text" v-model="week.leaveType" v-on:keyup="updateSummary"/></td>
+        <td><input/></td>
+        <td><input type="text" v-model="week.leaveUsed" v-on:keyup="updateSummary"/></td>
+        <td>
+          <select id="CI-select">
             <option value="">--Option--</option>
             <option value="Cont">Cont</option>
             <option value="Inter">Inter</option>
-            </select>
-          </td>
-          <td><input /></td>
-          <td><input /></td>
-        </tr>
-  </table>
-  <div id='addWeek'>
+          </select>
+        </td>
+        <td><input/></td>
+        <td><input/></td>
+      </tr>
+    </table>
+    <div id='addWeek'>
   <button v-on:click="addWeek">Add week</button>
 </div>
-  <p><b>Notes:</b><textarea v-model="notes"></textarea></p>
+    <p><b>Notes:</b><textarea v-model="notes"></textarea></p>
     <h3>Leave Summary</h3>
     <table>
-      <tr v-for = "type in leaveSummary" >
+      <tr v-for="(type, index) in leaveSummary" :key="index">
         <td>{{type.real}}</td>
         <td>{{type.name}}</td>
         <td>{{type.hours}}</td>
@@ -162,9 +161,8 @@
 
 <script>
 export default {
-  name: 'report',
-  props: ['user'],
-
+    name: 'report',
+    props: ['user'],
   data: () => ({
     notes: '',
     Lts: 'Yes',
@@ -185,12 +183,12 @@ export default {
     ],
     leaveSummary: [
       {real: 'Sick',name: 'LTS', hours: 0.0},
-      {real: 'Vacation',name: 'LTV', hours: 0.0},
-      {real: 'AAUP/SEIU',name: 'LW1', hours: 0.0},
-      {real: 'STD',name: 'STD', hours: 0.0},
-      {real: 'Unpaid Leave',name: 'LW3', hours: 0.0},
-      {real: 'FLSA/NLFA',name: 'LSA', hours: 0.0},
-      {real: 'Personal Day',name: 'Per', hours: 0.0},
+            {real: 'Vacation', name: 'LTV', hours: 0.0},
+            {real: 'AAUP/SEIU', name: 'LW1', hours: 0.0},
+            {real: 'STD', name: 'STD', hours: 0.0},
+            {real: 'Unpaid Leave', name: 'LW3', hours: 0.0},
+            {real: 'FLSA/NLFA', name: 'LSA', hours: 0.0},
+            {real: 'Personal Day', name: 'Per', hours: 0.0},
     ],
   }),
   computed:{
@@ -208,8 +206,8 @@ export default {
         { real: 'Sick',         name: 'LTS', hours: 0.0 },
         { real: 'Vacation',     name: 'LTV', hours: 0.0 },
         { real: 'AAUP/SEIU',    name: 'LW1', hours: 0.0 },
-        { real: 'STD',          name: 'STD', hours: 0.0 },
-        { real: 'Unpaid Leave', name: 'LW3', hours: 0.0 },
+        { real: 'STD',          name: 'STD', hours: 0.0},
+                {real: 'Unpaid Leave', name: 'LW3', hours: 0.0 },
         { real: 'FLSA/NLFA',    name: 'LSA', hours: 0.0 },
         { real: 'Personal Day', name: 'Per', hours: 0.0 },
       ]
@@ -217,21 +215,22 @@ export default {
         for(var type in this.leaveSummary){
           if(this.leavePlan[week].leaveType==this.leaveSummary[type].name)
             this.leaveSummary[type].hours += parseFloat(this.leavePlan[week].leaveUsed)
-        }
-      }
-      this.total = 0.0
-      for(var week in this.leavePlan){
+                }
+            }
+            this.total = 0.0
+            for (var week in this.leavePlan){
         for(var type in this.leaveSummary){
           if(this.leavePlan[week].leaveType==this.leaveSummary[type].name)
-            if(this.leavePlan[week].leaveUsed != 0){this.total += parseFloat(this.leavePlan[week].leaveUsed)}
-          }
-      }
-    },
-    addWeek() {
-      this.leavePlan.push({ leaveType: '', leaveUsed: 0.0 })
+            if(this.leavePlan[week].leaveUsed != 0){this.total += parseFloat(this.leavePlan[week].leaveUsed)
+                        }
+                }
+            }
+        },
+        addWeek() {
+            this.leavePlan.push({leaveType: '', leaveUsed: 0.0 })
     },
 
-  }
+    }
 }
 </script>
 <!-- styling for the component -->
