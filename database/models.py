@@ -137,11 +137,21 @@ class leavereports(models.Model):
     leavereports_pidm = models.IntegerField(primary_key=True)
     leavereports_date = models.DateField(auto_now=True)
     leavereports_report = jsonfield.JSONField()
+
 # Helper models below
+
+#This function is provided by django tutorials at: https://docs.djangoproject.com/en/2.2/topics/db/sql/
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+        ]
 
 #The employee class queries for all the information stored in the tables regarding one
 #particular employee. The employee's request is made with an employee's username. An example
-#of this can be observed in views.py. 
+#of this can be observed in views.py.
 class Employee(models.Model):
     employee_id  = models.IntegerField(primary_key=True)
     odin_username = models.CharField(max_length=200)
@@ -151,6 +161,7 @@ class Employee(models.Model):
     email = models.CharField(max_length=200)
     hire_date = models.DateField()
     fte = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    employee_classification = models.CharField(max_length=2)
     month_lookback_12 = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     month_lookback_6 = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     fmla_eligibility = models.CharField(max_length=1)
@@ -299,7 +310,7 @@ class Employee(models.Model):
             for p in perleav_balances:
                 cursor.execute("INSERT into paid_leave_table (leave_code, balance) values (%s, %s);", [p[0], p[1]])
             cursor.execute("SELECT * FROM paid_leave_table;")
-            self.paid_leave_balances = cursor.fetchall()
+            self.paid_leave_balances = dictfetchall(cursor)
 
     def query_other_employee_info(self):
         self.query_lookback_hrs()
