@@ -1,5 +1,5 @@
 <template>
-  <div id="admin-dashboard">
+  <div id="admin-dashboard" v-if="isAdmin">
     <tr>
       <td>
         <button type="button" @click="addNode">Add a Node</button>
@@ -26,7 +26,7 @@
       {{ selectedElement }}
       <button type="button" @click="remNode" style="pointer-events: auto;">Remove element</button>
     </div>
-    
+
   </div>
 </template>
 <script>
@@ -45,6 +45,7 @@
             bezierView: true,
             selectedElement: '',
         }),
+        props: ['isAdmin'],
         mounted: function () {
             this.cy = cytoscape({
                 container: document.getElementById('cy'),
@@ -264,8 +265,9 @@
                     })
                 }
                 this.bezierView = !this.bezierView
-            }
-        }
+            },
+
+        },
     }
 </script>
 <!-- styling for the component -->
