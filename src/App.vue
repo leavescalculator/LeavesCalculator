@@ -30,71 +30,54 @@ export default {
     username: "",
     isAdmin: false,
       user: {
-          "employee_id": 800009,
-          "odin_username": "HPRYNNE",
-          "psu_id": "953125510",
-          "first_name": "Hester",
-          "last_name": "Prynne",
-          "email": [
-              "leaves@pdx.edu",
-              "hrc-tech-team-group@pdx.edu"
-          ],
-          "hire_date": "2006-03-20",
-          "fte": 1.0,
-          "month_lookback_12": "1711.48000000000",
-          "month_lookback_6": "833.75",
-          "fmla_eligibility": "T",
-          "ofla_eligibility": "T",
-          "deductions_eligibility": [
-              "LST",
-              "LTD",
-              "PXS"
-          ],
-          "paid_leave_balances": [
-              [
-                  "XBRV",
-                  0
-              ],
-              [
-                  "ASIC",
-                  45.91
-              ],
-              [
-                  "AVAC",
-                  116.88
-              ],
-              [
-                  "PERS",
-                  15.5
-              ],
-              [
-                  "FLSA",
-                  0
-              ],
-              [
-                  "NFLS",
-                  0
-              ],
-              [
-                  "XCHG",
-                  0
-              ],
-              [
-                  "XOTH",
-                  0
-              ],
-              [
-                  "XFUR",
-                  0
-              ],
-              [
-                  "XDON",
-                  0
-              ]
-          ],
-          "protected_leave_hrs_taken": 0,
-          "max_protected_leave_hrs": null
-      },
+    "employee_id": 800001,
+    "odin_username": "DBROOKS",
+    "psu_id": "900717619",
+    "first_name": "Dorothea",
+    "last_name": "Brooks",
+    "email": [
+        "hrc-tech-team-group@pdx.edu",
+        "leaves@pdx.edu"
+    ],
+    "hire_date": "2010-10-04",
+    "fte": 1.0,
+    "employee_classification": "",
+    "month_lookback_12": "1356.38000000000",
+    "month_lookback_6": "524.900000000000",
+    "fmla_eligibility": "T",
+    "ofla_eligibility": "B",
+    "deductions_eligibility": [
+        "AAUP",
+        "LST",
+        "LTD",
+        "SEIU",
+        "PXS"
+    ],
+    "paid_leave_balances": [
+        {
+            "leave_code": "ASIC",
+            "balance": 68
+        },
+        {
+            "leave_code": "AVAC",
+            "balance": 26.11
+        },
+        {
+            "leave_code": "FLSA",
+            "balance": 0
+        },
+        {
+            "leave_code": "XOTH",
+            "balance": 0
+        },
+        {
+            "leave_code": "PRES",
+            "balance": 0
+        }
+    ],
+    "protected_leave_hrs_taken": 578,
+    "max_protected_leave_hrs": null
+},
   }),
   components: {
       appHeader: Header,

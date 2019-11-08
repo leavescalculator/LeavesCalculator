@@ -51,53 +51,59 @@
       <tr>
         <td>
           <div v-for='(u, index) in user.paid_leave_balances' :key="index">
-            <div v-if=" u[0] == 'ASIC' ">
-              Sick Leave: {{u[1]}}
+            <div v-if=" u.leave_code == 'ASIC' ">
+              Sick Leave: {{u.balance}}
             </div>
-          </div>
+        </div>
         </td>
         <td>FSLA</td>
         <td><div v-for='(u, index) in user.paid_leave_balances' :key="index">
-          <div v-if=" u[0] == 'PERS' ">
-            Personal Leave: {{u[1]}}
+          <div v-if=" u.leave_code == 'PERS' ">
+            Personal Leave: {{u.balance}}
           </div>
         </div>
           </td>
-        <td>AAUP DSLB: {{0}} </td>
+        <td>AAUP DSLB: {{aaup}} </td>
       </tr>
       <tr>
         <td>
           <div v-for='(u, index) in user.paid_leave_balances' :key="index">
-            <div v-if=" u[0] == 'AVAC' ">
-              Vacation Leave: {{u[1]}}
+            <div v-if=" u.leave_code == 'AVAC' ">
+              Vacation Leave: {{u.balance}}
             </div>
           </div> </td>
         <td>NSLA</td>
         <td><div v-for='(u, index) in user.paid_leave_balances' :key="index">
-          <div v-if=" u[0] == 'XCHG' ">
-            Exchange: {{u[1]}}
+          <div v-if=" u.leave_code == 'XCHG' ">
+            Exchange: {{u.balance}}
           </div>
         </div> </td>
-        <td>DSLB Total: {{0}} </td>
+        <td><div v-if="aaup==='Yes'">
+          DSLB Total: {{user.fte*320}}
+        </div>
+          <div v-else>
+            DSLB Total: {{0}}
+        </div>
+        </td>
       </tr>
       <tr>
         <td>ST Disability?: {{ lst }}
           </td>
         <td>PXS?: {{ pxs }}</td>
-        <td>SEIU Hardship: {{0}} </td>
+        <td>SEIU Hardship: {{seiu}} </td>
       </tr>
     </table>
     <hr>
     <h3>Leave Request</h3>
     <table width="800">
       <tr>
-        <td>Leave Start:<input />  </td>
-        <td>Intermittent Start: <input /></td>
+        <td>Leave Start:<input type="date"/>  </td>
+        <td>Intermittent Start: <input type="date"/></td>
         <td>HR/Week: <input /></td>
       </tr>
       <tr>
-        <td>Leave End: <input /> </td>
-        <td>Intermittent End: <input /></td>
+        <td>Leave End: <input type="date"/> </td>
+        <td>Intermittent End: <input type="date"/></td>
       </tr>
       <tr>
         <td>Reason:<select id="R-select">
@@ -146,19 +152,31 @@
         </select> </td>
       </tr>
       <tr>
-        <td>Full Time Leave <input type="text" v-on:keyup="total_r"/>  </td>
-        <td>Intermittent Leave <input type="text" v-on:keyup="total_r"/> </td>
+        <td>Full Time Leave <input type="text" v-model="full_time" v-on:keyup="total_r"/> </td>
+        <td>Intermittent Leave <input type="text" v-model="inter_time"v-on:keyup="total_r"/> </td>
       </tr>
     </table>
     <hr>
     <h3>Your Balance</h3>
     <div v-for='(u, index) in user.paid_leave_balances' :key="index">
-      <div v-if=" u[1] !== 0">
-        {{u[0]}}: {{u[1]}}
+      <div v-if=" u.balance !== 0">
+        {{u.leave_code}}: {{u.balance}}
       </div>
   </div>
     <hr>
     <h3>Leave Plan</h3>
+    <div v-for='(u, index) in user.paid_leave_balances' :key="index">
+      <div v-if=" u.leave_code == 'ASIC' && u.balance > 40">
+        <h6>Want to hold 40 hours sick leave?</h6>
+        <input type="radio" id="yes" value="Yes" v-model="picked">
+        <label for="yes">Yes (sick leave will change to {{u.balance-40}})</label>
+        &nbsp;&nbsp;
+        <input type="radio" id="no" value="No" v-model="picked">
+        <label for="no">No</label>
+        <br>
+        <span>Picked: {{ picked }}</span>
+      </div>
+    </div>
     <table>
       <tr>
         <th>Week</th>
@@ -170,12 +188,12 @@
         <th>%</th>
         <th>Pay</th>
       </tr>
-      <tr v-for="(week, index) in leavePlan" :key="index">
-        <td>{{index + 1}}</td>
+      <tr v-for="weekPlan in leavePlan" :key="index">
+        <td><input type="text" v-model="weekPlan.week"/></td>
         <td><input/></td>
-        <td><input type="text" v-model="week.leaveType" v-on:keyup="updateSummary"/></td>
+        <td><input type="text" v-model="weekPlan.leaveType" v-on:keyup="updateSummary"/></td>
         <td><input/></td>
-        <td><input type="text" v-model="week.leaveUsed" v-on:keyup="updateSummary"/></td>
+        <td><input type="text" v-model="weekPlan.leaveUsed" v-on:keyup="updateSummary"/></td>
         <td>
           <select id="CI-select">
             <option value="">--Option--</option>
@@ -216,19 +234,14 @@ export default {
     Lts: 'Yes',
     total: 0.0,
     total_request: 0.0,
+    full_time:0.0,
+    inter_time:0.0,
+    sick_leave:0.0,
+    picked:'',
     leavePlan: [
-      { leaveType: '', leaveUsed: 0.0 },
-      { leaveType: '', leaveUsed: 0.0 },
-      { leaveType: '', leaveUsed: 0.0 },
-      { leaveType: '', leaveUsed: 0.0 },
-      { leaveType: '', leaveUsed: 0.0 },
-      { leaveType: '', leaveUsed: 0.0 },
-      { leaveType: '', leaveUsed: 0.0 },
-      { leaveType: '', leaveUsed: 0.0 },
-      { leaveType: '', leaveUsed: 0.0 },
-      { leaveType: '', leaveUsed: 0.0 },
-      { leaveType: '', leaveUsed: 0.0 },
-      { leaveType: '', leaveUsed: 0.0 },
+      {week:1, leaveType: '', leaveUsed: 0.0 },
+
+
     ],
     leaveSummary: [
       {real: 'Sick',name: 'LTS', hours: 0.0},
@@ -246,6 +259,12 @@ export default {
     },
     pxs: function () {
       return this.user.deductions_eligibility.includes("PXS") ? "Yes" : "No";
+    },
+    aaup: function () {
+      return this.user.deductions_eligibility.includes("AAUP") ? "Yes" : "No";
+    },
+    seiu: function () {
+      return this.user.deductions_eligibility.includes("SEIU") ? "Yes" : "No";
     },
   },
 
@@ -279,7 +298,8 @@ export default {
             this.leavePlan.push({leaveType: '', leaveUsed: 0.0 })
     },
         total_r(){
-          this.total_request += 1
+          this.total_request = 0.0
+          this.total_request = parseFloat(this.full_time) + parseFloat(this.inter_time)
         },
 
     }
