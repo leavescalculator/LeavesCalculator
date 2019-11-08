@@ -67,8 +67,8 @@ export default {
           "fte": 1.0,
           "month_lookback_12": "1711.48000000000",
           "month_lookback_6": "833.75",
-          "fmla_eligibility": "T",
-          "ofla_eligibility": "T",
+          "fmla_eligibility": "M",
+          "ofla_eligibility": "B",
           "deductions_eligibility": [
               "LST",
               "LTD",

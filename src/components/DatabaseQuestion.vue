@@ -45,14 +45,18 @@ export default {
         }
     },
     mounted() {
-      for (let i in options.length) {
+      console.log("Options: " + this.options.length);
+        let i = 0;
+      while (i < this.options.length) {
+          console.log(i);
           if (this.options[i].hasOwnProperty('title')) {
-              if (parse(options[i].title)) {
+              if (this.parse(this.options[i].title)) {
                   this.$emit('option-selected', i);
+                  console.log("Selected " + i);
                   return;
               }
           }
-
+          i++;
       }
     }
 

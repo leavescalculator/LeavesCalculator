@@ -18,39 +18,40 @@
       </div>
     </div>
     <btn-question
-      :title="currentNode"
+      :title="Nodes[currentNode].title"
       :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
       v-if="Nodes[currentNode].input === 'button'"
     ></btn-question>
 
     <display-question
-      :title="currentNode"
+      :title="Nodes[currentNode].title"
       :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
       v-else-if="Nodes[currentNode].input === 'display'"
     ></display-question>
 
     <drop-down-question
-      :title="currentNode"
+      :title="Nodes[currentNode].title"
       :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
       v-else-if="Nodes[currentNode].input === 'drop down'"
     ></drop-down-question>
 
-    <btn-question
+    <!--<btn-question
       :title="currentNode"
       :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
       v-if="Nodes[currentNode].input === 'database'"
     ></btn-question>
-
-    <!-- <database-question
-      :title="currentNode"
-      :options="Questions.Nodes[currentNode].options"
+    -->
+    <database-question
+      :title="Nodes[currentNode].title"
+      :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
-      v-else-if="Questions.Nodes[currentNode].input == 'database'"
-      ></database-question> -->
+      v-else-if="Nodes[currentNode].input === 'database'"
+      :user="user"
+      ></database-question>
 
     <br />
     <button class="btn btn-success" @click="goBack()" v-if="stack[0]">
@@ -66,11 +67,12 @@ import DropDownQuestion from './DropDownQuestion.vue';
 import DatabaseQuestion from './DatabaseQuestion.vue';
 
 
+
 export default {
   name: "questions",
   props: ["isAdmin", "user", "Nodes"],
   data: () => ({
-    currentNode: "Do you have a work related injury?", // initialized to first node of JSON graph structure
+    currentNode: "work related injury", // initialized to first node of JSON graph structure
     hours: 0, // accumulated leave hours
     stack: [], // structure containing nodes visited
     usrname: "",
@@ -82,14 +84,14 @@ export default {
     DropDownQuestion,
     DatabaseQuestion
   },
+  mounted() {
+    console.log(this.Nodes);
+  },
   methods: {
     optionSelected(selected) {
       console.log(selected);
       //do any relevant stuff here ie addWeeks
       let curr = this.Nodes[this.currentNode].options[selected];
-      if (curr.weeks !== 0) {
-        this.$emit("add-weeks", curr.weeks);
-      }
 
       this.stack.push(this.currentNode);
       this.currentNode = curr.next_node;
@@ -110,9 +112,9 @@ export default {
         }
         //If this edge modifies the number of protected weeks, undo that change because
         //we are backing up
-        if(option.hasOwnProperty('weeks')){
-            this.$emit('add-weeks', -option.weeks);
-        }
+        //if(option.hasOwnProperty('weeks')){
+          //  this.$emit('add-weeks', -option.weeks);
+        //}
     },
     changeUser() {
       //add code to replace the user object with a new one based on a provided username
