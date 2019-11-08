@@ -338,8 +338,17 @@ class Employee(models.Model):
     def set_username(self, username: str):
         self.odin_username = username
 
+    def set_ofla_eligibility(self, eligibility: str):
+        self.ofla_eligibility = eligibility
+
+    def set_fmla_eligibility(self, eligibility: str):
+        self.fmla_eligibility = eligibility
+
     def get_employee_id(self):
         return self.employee_id
 
     def get_hire_date(self):
         return self.hire_date
+
+    def get_fte(self):
+        return self.fte

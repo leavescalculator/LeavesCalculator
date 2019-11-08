@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.forms.models import model_to_dict
 from database.models import *
 
-USERNAME = 'YMAKIOKA'
+USERNAME = 'JEYRE'
 
 
 def index(request):
@@ -20,14 +20,22 @@ def employee(request):
     e.query_employee_id()
     #If the ID does not exist
     if (not e.get_employee_id()):
-        return HttpResponse("Invalid username.")
+        e.set_fmla_eligibility('F')
+        e.set_ofla_eligibility('F')
+        return JsonResponse(model_to_dict(e))
+        #return HttpResponse("Invalid username.")
     e.query_spriden()
     #Checks the hire date to detemine the eligibility of the employee
     e.query_hire_date()
     #Checks to make sure the employee is active
     if not e.get_hire_date():
-        return HttpResponse("You are currently not an active employee.")
+        e.set_fmla_eligibility('F')
+        e.set_ofla_eligibility('F')
+        return JsonResponse(model_to_dict(e))
     e.query_other_employee_info()
+    if not e.get_fte():
+        e.set_fmla_eligibility('F')
+        e.set_ofla_eligibility('F')
     return JsonResponse(model_to_dict(e))
     #graph = Graph()
     #graph.query_graphs()
