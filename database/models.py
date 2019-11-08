@@ -2,7 +2,7 @@ from django.db import models
 from datetime import date
 from django.db.models import Q, F, Sum
 from django.db import connection
-
+import jsonfield
 TODAY = date.today()
 
 
@@ -128,13 +128,15 @@ class pdrdedn(models.Model):
     def _str_(self):
         return self.name
 
-'''
+class graph(models.Model):
+    date = models.DateField(auto_now=True)
+    graph_data = jsonfield.JSONField()
+
+
 class leavereports(models.Model):
     leavereports_pidm = models.IntegerField(primary_key=True)
-    leavereports_date = models.DateField()
-    leavereports_report = models.FileField()
-'''
-
+    leavereports_date = models.DateField(auto_now=True)
+    leavereports_report = jsonfield.JSONField()
 # Helper models below
 
 #The employee class queries for all the information stored in the tables regarding one
