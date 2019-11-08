@@ -132,11 +132,17 @@ class graph(models.Model):
     date = models.DateField(auto_now=True)
     graph_data = jsonfield.JSONField()
 
+    def query_graphs():
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM database_graph;")
+            return dictfetchall(cursor)
 
 class leavereports(models.Model):
     leavereports_pidm = models.IntegerField(primary_key=True)
     leavereports_date = models.DateField(auto_now=True)
     leavereports_report = jsonfield.JSONField()
+
+
 
 # Helper models below
 
@@ -170,6 +176,8 @@ class Employee(models.Model):
     paid_leave_balances = models.TextField(default=0)
     protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     max_protected_leave_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    reports = jsonfield.JSONField()
+    graph = jsonfield.JSONField()
 
     def query_employee_id(self):
         gobeacc_user = gobeacc.objects.filter(gobeacc_username=self.odin_username)
@@ -307,10 +315,13 @@ class Employee(models.Model):
                 paid_leave_balances.append([current[0], current[1]])
         with connection.cursor() as cursor:
             cursor.execute("CREATE TEMPORARY TABLE paid_leave_table (leave_code varchar(4) NOT NULL, balance decimal NULL);")
-            for p in perleav_balances:
+            for p in paid_leave_balances:
                 cursor.execute("INSERT into paid_leave_table (leave_code, balance) values (%s, %s);", [p[0], p[1]])
             cursor.execute("SELECT * FROM paid_leave_table;")
             self.paid_leave_balances = dictfetchall(cursor)
+
+    def query_reports(self):
+        self.reports = leavereports.objects.filter(leavereports_pidm=self.employee_id).filter(leavereports_report)
 
     def query_other_employee_info(self):
         self.query_lookback_hrs()
@@ -320,6 +331,7 @@ class Employee(models.Model):
         self.query_deductions_info()
         self.query_protected_leave_hrs_taken()
         self.query_current_paid_leaves_balances()
+        self.query_reports()
 
     def set_username(self, username: str):
         self.odin_username = username

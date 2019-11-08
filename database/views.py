@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.forms.models import model_to_dict
 from database.models import *
 
-USERNAME = 'DBROOKS'
+USERNAME = 'JBROWN'
 
 
 def index(request):
@@ -28,10 +28,12 @@ def employee(request):
     if not e.get_hire_date():
         return HttpResponse("You are currently not an active employee.")
     e.query_other_employee_info()
+    graph = Graph()
+    graph.query_graphs()
+    e.graph = model_to_dict(graph)
     return JsonResponse(model_to_dict(e))
 
-def reports(request):
-    reports = leavereports.objects.filter(leavereports_pidm=PIDM).values_list('leavereports_date', 'leavereports_report')
-
 def all_graphs(request):
-    graph = graph.objects().all()
+    graph = Graph()
+    graph.query_graphs()
+    return JsonResponse(model_to_dict(graph))
