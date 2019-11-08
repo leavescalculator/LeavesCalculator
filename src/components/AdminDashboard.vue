@@ -1,5 +1,13 @@
 <template>
   <div id="admin-dashboard">
+    <textarea id="jsonOrPositions" cols=50 rows=4></textarea>
+    <br />
+    <button type="button" @click="outputJson">Output JSON</button>
+    <button type="button" @click="loadJson">Load JSON</button>
+    <button type="button" @click="outputPositions">Output Positions</button>
+    <button type="button" @click="loadPositions">Load Positions</button>
+    <hr />
+
     <label for="newNodeId">ID: </label>
     <input type="text" id="newNodeId" name="newNodeId" placeholder="example id" />
     <br />
@@ -12,37 +20,27 @@
     <button type="button" @click="addNode">Add a Node</button>
     <hr />
 
-    <button @click="() => this.ur.undo()">Undo</button>
-    <button @click="() => this.ur.redo()">Redo</button>
-    <hr />
-
-    <textarea id="json" cols=50 rows=4></textarea>
-    <button type="button" @click="outputJson">outputJson</button>
-    <button type="button" @click="outputPositions">outputPositions</button>
-    <button type="button" @click="setPositions">setPositions</button>
-    <button type="button" @click="loadFromJSON">Load JSON</button>
+    <button @click="() => this.ur.undo()">Undo Element Removal</button>
     <hr />
 
     <div id="cy" @click="showInfo"></div>
     <div id="elementInfo">
+        <label for="edgeTitle">Title: </label>
+        <div v-if="selectedElement" @input="updateTitle" name="edgeTitle" id="elementTitle" contentEditable="true">
+          {{ selectedElement.title }}
+        </div>
+
         <div v-if="selectedElement && selectedElement.isEdge">
-          <b>Edge</b>
-          <br />
-
-          <label for="edgeTitle">Title: </label>
-          <div @input="updateTitle" name="edgeTitle" id="elementTitle" contentEditable="true">
-            {{ selectedElement.title }}
-          </div>
-          <br />
-
           <label for="edgeHours">Added hours: </label>
-          <input type="number" name="edgeHours" v-model="selectedElement.add_hours.hours" />
+          <input type="number" name="edgeHours" v-model="selectedElement.add_time.hours" />
+          <label for="edgeWeeks">Added weeks: </label>
+          <input type="number" name="edgeWeeks" v-model="selectedElement.add_time.weeks" />
           <br />
 
           <label for="edgeHoursType">Added hours type: </label>
-          <select v-model="selectedElement.add_hours.type" name="edgeHoursType">
-              <option v-for="addedHourType in addedHourTypes" :value="addedHourType.value" :selected="addedHourType.value==selectedElement.add_hours.type">
-                  {{ addedHourType.type }}
+          <select v-model="selectedElement.add_time.type" name="edgeHoursType">
+              <option v-for="addedTimeType in addedTimeTypes" :value="addedTimeType.value" :selected="addedTimeType.value==selectedElement.add_time.type">
+                  {{ addedTimeType.type }}
               </option>
           </select>
           <br />
@@ -59,12 +57,7 @@
           </button>
         </div>
         <div v-else-if="selectedElement">
-          <b>Node</b>
-          <br />
-
-          <label for="nodeId">Id: </label>
-          <textarea v-model="selectedElement.id" name="nodeId">
-          </textarea>
+          <label for="nodeId">Id: </label><em name="nodeId">{{ selectedElement.id }}</em>
           <br />
 
           <label for="nodeInput">Input: </label>
@@ -98,7 +91,7 @@
           nodes: json.Nodes,
           selectedElement: null,
           inputTypes: [ 'button', 'drop down', 'display', 'database' ],
-          addedHourTypes: [
+          addedTimeTypes: [
             { type: 'Not Applicable', value: 'n/a' },
             { type: 'Sick',           value: 'LTS' },
             { type: 'Vacation',       value: 'LTV' },
@@ -202,34 +195,35 @@
         this.cy.on('ehcomplete', (event, sourceNode, targetNode, addedEles) => {
             addedEles.data('title', '')
             addedEles.data('label', '')
-            addedEles.data('add_hours', { hours: 0, type: 'n/a' })
+            addedEles.data('add_time', { hours: 0, type: 'n/a' })
         });
 
-        this.parseJson();
+        this.parseJson(this.nodes);
         this.cy.layout({
           name: 'breadthfirst'
         }).run()
       },
       methods: {
-          parseJson() {
-            for (const node of Object.keys(this.nodes)) {
+          parseJson(nodes) {
+            for (const node of Object.keys(nodes)) {
                 let element = this.cy.add({
                     data: {
                         id: node,
-                        label: node.substring(0, 30),
-                        input: this.nodes[node].input,
+                        label: node,
+                        title: nodes[node].title,
+                        input: nodes[node].input,
                     }
                 });
             }
-            for (const node of Object.keys(this.nodes)) {
-                for (const option of this.nodes[node].options) {
+            for (const node of Object.keys(nodes)) {
+                for (const option of nodes[node].options) {
                     try {
                         let node_color = this.cy.$id(option.next_node).style()['background-color'];
                         let edge = this.cy.add({
                             data: {
                                 title: option.title,
                                 label: option.title.substring(0, 30),
-                                add_hours: option.add_hours,
+                                add_time: option.add_time,
                                 source: node,
                                 target: option.next_node,
                             }
@@ -245,22 +239,23 @@
             let nodes = this.cy.nodes()
             for(let node = 0; node < nodes.length; node++) {
               let element = this.cy.nodes()[node]
-	            output[node] = {
-	              title: element.data('id'),
+              let nodeId = element.data('id')
+	            output[nodeId] = {
+	              title: element.data('title'),
                 input: element.data('input'),
                 options: [],
 	            }
-              let edges = this.cy.edges('[source = "' + output[node].title + '"]')
+              let edges = this.cy.edges('[source = "' + nodeId + '"]')
               for(let edge = 0; edge < edges.length; edge++) {
                 element = edges[edge]
-                output[node].options.push({
+                output[nodeId].options.push({
                   title:     element.data('title'),
-                  add_hours: element.data('add_hours'),
+                  add_time: element.data('add_time'),
                   next_node: element.data('target'),
                 })
               }
 	          }
-            console.log(JSON.stringify(output, null, 2))
+            document.getElementById('jsonOrPositions').value = JSON.stringify(output)
           },
           outputPositions() {
             let output = []
@@ -268,10 +263,10 @@
             for(let node = 0; node < nodes.length; node++) {
               output.push(nodes[node].relativePosition())
             }
-            console.log(JSON.stringify(output, null, 2))
+            document.getElementById('jsonOrPositions').value = JSON.stringify(output)
           },
-          setPositions() {
-              var json = document.getElementById("json").value;
+          loadPositions() {
+              var json = document.getElementById("jsonOrPositions").value;
               let positions = JSON.parse(json);
               for(let node = 0; node < positions.length; node++) {
                 this.cy.nodes()[node].relativePosition(positions[node])
@@ -295,12 +290,15 @@
                   document.getElementById("elementInfo").style.visibility = 'hidden';
               }
           },
-          update_json_display() {
-              document.getElementById("json").value = JSON.stringify(this.cy.json());
-          },
-          loadFromJSON() {
-              var j = document.getElementById("json").value;
-              this.cy.json(JSON.parse(j));
+          loadJson() {
+              var json = document.getElementById("jsonOrPositions").value;
+              var nodes ={Nodes: JSON.parse(json)}
+            console.log()
+              this.cy.nodes().remove()
+              this.parseJson(nodes.Nodes);
+              this.cy.layout({
+                name: 'breadthfirst'
+              }).run()
           },
           showInfo() {
               let div = document.getElementById('elementInfo');
@@ -319,11 +317,11 @@
                                     element.data('title', title)
                                     element.data('label', title.substring(0, 30))
                                 },
-                                get add_hours() {
-                                    return element.data('add_hours')
+                                get add_time() {
+                                    return element.data('add_time')
                                 },
-                                set add_hours(add_hours) {
-                                    element.data('add_hours', add_hours)
+                                set add_time(add_time) {
+                                    element.data('add_time', add_time)
                                 },
                                 source: element.data('source'),
                                 target: element.data('target'),
@@ -334,9 +332,11 @@
                                 get id() {
                                     return element.data('id')
                                 },
-                                set id(id) {
-                                    element.data('id', id)
-                                    element.data('label', id.substring(0, 30))
+                                get title() {
+                                    return element.data('title')
+                                },
+                                set title(title) {
+                                    element.data('title', title)
                                 },
                                 get input() {
                                     return element.data('input')

@@ -44,10 +44,10 @@
       v-if="Questions.Nodes[currentNode].input == 'database'"
     ></btn-question>
 
-    <!-- <database-question 
-      :title="currentNode" 
+    <!-- <database-question
+      :title="currentNode"
       :options="Questions.Nodes[currentNode].options"
-      @option-selected="optionSelected" 
+      @option-selected="optionSelected"
       v-else-if="Questions.Nodes[currentNode].input == 'database'"
       ></database-question> -->
 
