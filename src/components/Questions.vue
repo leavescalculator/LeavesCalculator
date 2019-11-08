@@ -30,12 +30,10 @@ import Questions from '../assets/questions.json';
 export default {
   name: 'questions',
   data: () => ({
-    currentNode: "Do you have a work related injury?",
-    hours: 0,
-    stack: [],
+    currentNode: "Do you have a work related injury?", // initialized to first node of JSON graph structure
+    hours: 0, // accumulated leave hours
+    stack: [], // structure containing nodes visited
     Questions,
-    //Nodes: { }
-
   }),
   computed: {
     
@@ -47,12 +45,12 @@ export default {
     optionSelected(selected) {
       console.log(selected)
       //do any relevant stuff here
-      this.stack.push(this.currentNode);
-      this.currentNode = this.Questions.Nodes[this.currentNode].options[selected].next_node;
+      this.stack.push(this.currentNode); // pushes current node to stack
+      this.currentNode = this.Questions.Nodes[this.currentNode].options[selected].next_node; // updates currentNode to next
     },
     goBack() {
       console.log("in go back")
-      this.currentNode = this.stack.pop();
+      this.currentNode = this.stack.pop(); // updates currentNode to last node pushed to stack
     }
   }
 }
