@@ -86,7 +86,7 @@
               "hours": 0,
               "weeks" : 0,
               "type": "n/a"
-            },
+            }
           },
           {
             "title": "Parental Leave",
@@ -595,4 +595,4 @@
         ]
       }
     }
-  }
+}

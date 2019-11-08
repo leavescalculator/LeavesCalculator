@@ -121,7 +121,7 @@ export default {
             "hours": 0,
             "weeks" : 0,
             "type": "n/a"
-          },
+          }
         },
         {
           "title": "Parental Leave",
@@ -625,7 +625,7 @@ export default {
             "weeks" : 0,
             "type": "n/a"
           },
-          "next_node": "Talk to Jack"
+          "next_node": "talk to HR"
         }
       ]
     }
