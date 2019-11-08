@@ -25,7 +25,7 @@ import BtnQuestion from './BtnQuestion.vue';
 import DisplayQuestion from './DisplayQuestion.vue';
 import DropDownQuestion from './DropDownQuestion.vue';
 import DatabaseQuestion from './DatabaseQuestion.vue';
-import Questions from '../assets/questions.json';
+import Questions from '../assets/nodes.json';
 
 export default {
   name: 'questions',
