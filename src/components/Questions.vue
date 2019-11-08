@@ -10,6 +10,7 @@
           placeholder="other username"
           class="form-control"
           v-model="usrname"
+          @keydown.enter="changeUser"
         />
       </div>
       <div class="col-md-2">

@@ -10,6 +10,7 @@
         @logout="logOut"
         :user="user"
         :isAdmin="isAdmin"
+        :Nodes="nodes"
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
@@ -142,6 +143,7 @@ export default {
     computed: {
     },
     mounted() {
+      console.log(Questions.Nodes);
       this.nodes = Questions.Nodes;
     }
 };
