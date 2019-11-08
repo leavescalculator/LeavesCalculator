@@ -161,7 +161,7 @@ class Employee(models.Model):
     email = models.CharField(max_length=200)
     hire_date = models.DateField()
     fte = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    employee_classification = models.CharField(max_length=2)
+    employee_classification = models.CharField(max_length=2, default=0.0)
     month_lookback_12 = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     month_lookback_6 = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     fmla_eligibility = models.CharField(max_length=1)
