@@ -29,6 +29,7 @@
             @logout="logOut"
             :user="user"
             @add-weeks="addWeeks"
+            @getEmployee="getEmployee"
           ></router-view>
         </div>
       </div>
@@ -45,72 +46,8 @@ export default {
     auth: "",
     username: "",
     isAdmin: false,
-      user: {
-          "employee_id": 800009,
-          "odin_username": "HPRYNNE",
-          "psu_id": "953125510",
-          "first_name": "Hester",
-          "last_name": "Prynne",
-          "email": [
-              "leaves@pdx.edu",
-              "hrc-tech-team-group@pdx.edu"
-          ],
-          "hire_date": "2006-03-20",
-          "fte": 1.0,
-          "month_lookback_12": "1711.48000000000",
-          "month_lookback_6": "833.75",
-          "fmla_eligibility": "T",
-          "ofla_eligibility": "T",
-          "deductions_eligibility": [
-              "LST",
-              "LTD",
-              "PXS"
-          ],
-          "paid_leave_balances": [
-              [
-                  "XBRV",
-                  0
-              ],
-              [
-                  "ASIC",
-                  45.91
-              ],
-              [
-                  "AVAC",
-                  116.88
-              ],
-              [
-                  "PERS",
-                  15.5
-              ],
-              [
-                  "FLSA",
-                  0
-              ],
-              [
-                  "NFLS",
-                  0
-              ],
-              [
-                  "XCHG",
-                  0
-              ],
-              [
-                  "XOTH",
-                  0
-              ],
-              [
-                  "XFUR",
-                  0
-              ],
-              [
-                  "XDON",
-                  0
-              ]
-          ],
-          "protected_leave_hrs_taken": 0,
-          "max_protected_leave_hrs": null
-      },
+    infoError: "",
+    user: { },
   }),
   components: {
       appHeader: Header,
@@ -121,16 +58,41 @@ export default {
       this.username = event[1];
       this.isAdmin = event[2];
       //do fetch stuff
+      this.user = this.getEmployee(this.username);
         //get user/graph
+    },
+    getEmployee(name) {
+      var data = JSON.stringify({ name })
+
+      fetch('http://localhost:8000/database/employee/', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': this.auth
+        },
+        body: name,
+      }).then(response => {
+        if(!response.ok) {
+          throw Error("Failed to retrieve employee.")
+        }
+        console.log(JSON.stringify(response))
+        return response.json()
+      }).then(data => {
+        this.user = data.employee;
+      }).catch(error => {
+        this.infoError = error
+      });
+
     },
     logOut() {
       this.auth = '';
       this.username = '';
       this.isAdmin = false;
+      this.user = { };
     },
-      addWeeks(n) {
-        //change weeks here
-      }
+    addWeeks(n) {
+      //change weeks here
+    }
   },
     computed: {
       isAdminBoard() {
