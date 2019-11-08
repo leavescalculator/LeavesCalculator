@@ -142,8 +142,6 @@ class leavereports(models.Model):
     leavereports_date = models.DateField(auto_now=True)
     leavereports_report = jsonfield.JSONField()
 
-
-
 # Helper models below
 
 #This function is provided by django tutorials at: https://docs.djangoproject.com/en/2.2/topics/db/sql/
@@ -176,8 +174,8 @@ class Employee(models.Model):
     paid_leave_balances = models.TextField(default=0)
     protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     max_protected_leave_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    reports = jsonfield.JSONField()
-    graph = jsonfield.JSONField()
+    #reports = jsonfield.JSONField()
+    #graph = jsonfield.JSONField()
 
     def query_employee_id(self):
         gobeacc_user = gobeacc.objects.filter(gobeacc_username=self.odin_username)
@@ -214,7 +212,7 @@ class Employee(models.Model):
         emails = list(goremal.objects.filter(goremal_id=self.employee_id).distinct().values_list('goremal_email_address', flat=True))
         self.email = emails
 
-    def query_fte(self):
+    def query_fte_and_classification(self):
         nbrjobs_user = nbrjobs.objects.filter(nbrjobs_pidm=self.employee_id)
         nbrbjob_user = nbrbjob.objects.filter(nbrbjob_pidm=self.employee_id).filter(Q(nbrbjob_begin_date__lte=TODAY) & (Q(nbrbjob_end_date__isnull=True) | Q(nbrbjob_end_date__gt=TODAY)))
         if (nbrbjob_user):
@@ -222,6 +220,9 @@ class Employee(models.Model):
                 positions = nbrjobs_user.filter(nbrjobs_posn=n.nbrbjob_posn).filter(nbrjobs_suff=n.nbrbjob_suff).exclude(Q(nbrjobs_ecls_code='XA') | Q(nbrjobs_ecls_code='XB') | Q(nbrjobs_ecls_code='XC')).values_list('nbrjobs_appt_pct').distinct()
                 if (positions):
                     self.fte = max(max(positions))/100
+                    employee_classification = nbrjobs_user.filter(nbrjobs_posn=n.nbrbjob_posn).filter(nbrjobs_suff=n.nbrbjob_suff).values_list('nbrjobs_ecls_code').distinct()
+                    if employee_classification:
+                        self.employee_classification = employee_classification[0][0]
 
     def query_leave_eligibility(self):
         if not self.fte:
@@ -320,18 +321,19 @@ class Employee(models.Model):
             cursor.execute("SELECT * FROM paid_leave_table;")
             self.paid_leave_balances = dictfetchall(cursor)
 
-    def query_reports(self):
-        self.reports = leavereports.objects.filter(leavereports_pidm=self.employee_id).filter(leavereports_report)
+    #def query_reports(self):
+    #    self.reports = leavereports.objects.filter(leavereports_pidm=self.employee_id).filter(leavereports_report)
 
     def query_other_employee_info(self):
         self.query_lookback_hrs()
         self.query_emails()
-        self.query_fte()
+        self.query_fte_and_classification()
         self.query_leave_eligibility()
         self.query_deductions_info()
         self.query_protected_leave_hrs_taken()
         self.query_current_paid_leaves_balances()
-        self.query_reports()
+        return
+        #self.query_reports()
 
     def set_username(self, username: str):
         self.odin_username = username
