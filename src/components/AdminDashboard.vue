@@ -1,5 +1,5 @@
 <template>
-  <div id="admin-dashboard" v-if="isAdmin">
+  <div id="admin-dashboard">
     <label for="newNodeId">ID: </label>
     <input type="text" id="newNodeId" name="newNodeId" placeholder="example id" />
     <br />

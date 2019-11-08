@@ -39,6 +39,9 @@
 
 <script>
 import Header from "./components/Header";
+import $ from 'jquery'
+import 'bootstrap'
+import 'bootstrap/dist/css/bootstrap.css'
 export default {
   name: 'app',
   data: () => ({
