@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import date
+from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q, F, Sum
 from django.db import connection
 import jsonfield

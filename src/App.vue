@@ -64,7 +64,7 @@ export default {
     getEmployee(name) {
       var data = JSON.stringify({ name })
 
-      fetch('http://localhost:8000/database/employee/', {
+      fetch('http://localhost:8000/database/data/', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

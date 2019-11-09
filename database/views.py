@@ -1,5 +1,7 @@
 from django.shortcuts import render
+
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 from database.models import *
 
@@ -14,6 +16,8 @@ def index(request):
 #particular employee. The purpose of this is to pass that JSON string along to the
 #rest of the functionality of the app so that it can use that information to make
 #important decisions using the dynamin logic in the application.
+
+@csrf_exempt
 def employee(request, usrname):
     e = Employee()
     e.set_username(usrname);
