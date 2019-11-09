@@ -18,14 +18,7 @@ def employee(request):
     e = Employee()
     e.set_username(USERNAME)
     e.query_employee_id()
-    #If the ID does not exist
-    if (not e.get_employee_id()):
-        e.set_fmla_eligibility('F')
-        e.set_ofla_eligibility('F')
-        return JsonResponse(model_to_dict(e))
-        #return HttpResponse("Invalid username.")
     e.query_spriden()
-    #Checks the hire date to detemine the eligibility of the employee
     e.query_hire_date()
     #Checks to make sure the employee is active
     if not e.get_hire_date():
@@ -36,13 +29,39 @@ def employee(request):
     if not e.get_fte():
         e.set_fmla_eligibility('F')
         e.set_ofla_eligibility('F')
+        return JsonResponse(model_to_dict(e))
     return JsonResponse(model_to_dict(e))
-    #graph = Graph()
-    #graph.query_graphs()
-    #e.graph = model_to_dict(graph)
 
+'''
+def getGraphs(request):
+    graphs = Graph()
+    graphs.query_all_graphs()
+    return JsonResponse(model_to_dict(graphs))
 
-#def all_graphs(request):
-#    graph = Graph()
-#    graph.query_graphs()
-#    return JsonResponse(model_to_dict(graph))
+def save_new_graph(request):
+    #get graph Json blob and name
+    new_graph = Graph.objects.create(graph_data=GRAPH_DATA, graph_name=GRAPH_NAME)
+
+def update_existing_graph(request):
+    #get graph Json blob and id
+    graph, created = Graph.objects.update_or_create(
+        id='GRAPH_ID', defaults={'graph_data': GRAPH_DATA},
+    )
+
+def make_graph_active(request):
+    #get graph id
+    graph_to_activate, created = Graph.objects.get_or_create(
+        id='GRAPH_ID', defaults=None,
+    )
+    graph_to_activate.make_active()
+
+def save_new_report(request):
+    #get report Json blob and employee id
+    new_report = LeaveReports.objects.create(leavereports_pidm=EMPLOYEE_id, leavereports_report=REPORT)
+
+def update_existing_report(request):
+    #get report Json blob and report id and employee id
+    report, created = Leavereports.update_or_create(
+        id='REPORT_ID', defaults={'leavereports_report': REPORT_DATA, 'leavereports_pidm': EMPLOYEE_ID}
+    )
+'''
