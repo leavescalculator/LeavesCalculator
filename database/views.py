@@ -14,9 +14,9 @@ def index(request):
 #particular employee. The purpose of this is to pass that JSON string along to the
 #rest of the functionality of the app so that it can use that information to make
 #important decisions using the dynamin logic in the application.
-def employee(request):
+def employee(request, usrname):
     e = Employee()
-    e.set_username(USERNAME)
+    e.set_username(usrname);
     e.query_employee_id()
     #If the ID does not exist
     if (not e.get_employee_id()):

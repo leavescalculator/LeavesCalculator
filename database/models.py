@@ -3,6 +3,8 @@ from datetime import date
 from django.db.models import Q, F, Sum
 from django.db import connection
 import jsonfield
+from backports.datetime_fromisoformat import MonkeyPatch
+MonkeyPatch.patch_fromisoformat()
 TODAY = date.today()
 
 

@@ -33,3 +33,5 @@ class HelloAdminView(APIView):
     def get(self, request):
         content = {'message': 'Hello, Admin!'}
         return Response(content)
+
+
