@@ -40,7 +40,7 @@
 <script>
 import Header from "./components/Header";
 import 'bootstrap'
-import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
 export default {
   name: 'app',
   data: () => ({
@@ -71,28 +71,13 @@ export default {
         "SEIU",
         "PXS"
     ],
-    "paid_leave_balances": [
-        {
-            "leave_code": "ASIC",
-            "balance": 68
-        },
-        {
-            "leave_code": "AVAC",
-            "balance": 26.11
-        },
-        {
-            "leave_code": "FLSA",
-            "balance": 0
-        },
-        {
-            "leave_code": "XOTH",
-            "balance": 0
-        },
-        {
-            "leave_code": "PRES",
-            "balance": 0
-        }
-    ],
+    "paid_leave_balances": {
+        "ASIC": 68,
+        "AVAC": 26.11,
+        "FLSA": 0.0,
+        "XOTH": 0.0,
+        "PRES": 0.0,
+    },
     "protected_leave_hrs_taken": 578,
     "max_protected_leave_hrs": null
 },

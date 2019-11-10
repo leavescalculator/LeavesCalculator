@@ -1,181 +1,249 @@
 <template>
   <div id="report">
-      <h1>Portland State University Leave Worksheet</h1>
-      <hr><hr>
-      <h3>Employee Information</h3>
-      <table width="800">
-        <tr>
-          <td>Employee Name: {{user.first_name}} {{user.last_name}} </td>
-          <td>Date: {{new Date().toDateString()}}</td>
-        </tr>
-        <tr>
-          <td>Hire Date: {{user.hire_date}}</td>
-          <td>PSU ID#:{{user.employee_id}}</td>
-        </tr>
-        <tr>
-          <td>Payrate {{0}}  </td>
-        </tr>
-      </table>
-      <hr>
-    <h3>Eligibility</h3>
-      <table width="800">
-        <tr>
-          <td>Look Back Hours: {{user.month_lookback_12}}  </td>
-          <td>FTE: {{user.fte}}</td>
-        </tr>
-        <tr>
-          <td>Months : {{0}}  </td>
-          <td>E-Class: {{0}}</td>
-        </tr>
-        <tr>
-          <td>FMLA: {{user.fmla_eligibility}}  </td>
-          <td>OFLA: {{user.ofla_eligibility}}</td>
-        </tr>
-        <tr>
-          <td>Hours Eligible: {{0}}  </td>
-          <td>* {{0}}</td>
-        </tr>
-        <tr>
-          <td>Worksite Location: {{0}}  </td>
-          <td>Due to a Work Related Injury?		 {{0}}</td>
-        </tr>
-      </table>
+    <h1>Portland State University Leave Worksheet</h1>
+    <hr />
 
-      <hr>
+    <h3>Employee Information</h3>
+    <table width="800">
+      <tr>
+        <td>Employee Name: {{ user.first_name }} {{ user.last_name }}</td>
+        <td>Date: {{ new Date().toDateString() }}</td>
+      </tr>
+      <tr>
+        <td>Hire Date: {{ user.hire_date }}</td>
+        <td>PSU ID #: {{ user.employee_id }}</td>
+      </tr>
+      <tr>
+        <td>Payrate: {{ 0 }}  </td>
+      </tr>
+    </table>
+    <hr />
+
+    <h3>Eligibility</h3>
+    <table width="800">
+      <tr>
+        <td>Look Back Hours: {{ user.month_lookback_12 }}</td>
+        <td>FTE: {{ user.fte }}</td>
+      </tr>
+      <tr>
+        <td>Months: {{ 0 }}</td>
+        <td>E-Class: {{ 0 }}</td>
+      </tr>
+      <tr>
+        <td>FMLA: {{ user.fmla_eligibility }}</td>
+        <td>OFLA: {{ user.ofla_eligibility }}</td>
+      </tr>
+      <tr>
+        <td>Hours Eligible: {{0}}</td>
+        <td>* {{0}}</td>
+      </tr>
+      <tr>
+        <td>Worksite Location: {{0}}  </td>
+        <td>Due to a Work Related Injury? {{0}}</td>
+      </tr>
+    </table>
+    <hr />
+
     <h3>Leave Balance</h3>
     <table width="800">
       <tr>
-        <td><b>Total Paid Leave Available: {{0}}</b></td>
-        <td><b>Total Leave Request: {{total_request}} </b></td>
+        <td><b>Total Paid Leave Available: {{ 0 }}</b></td>
+        <td><b>Total Leave Request: {{ total_request }} </b></td>
       </tr>
       <tr>
         <td>
-          <div v-for='(u, index) in user.paid_leave_balances' :key="index">
-            <div v-if=" u.leave_code == 'ASIC' ">
-              Sick Leave: {{u.balance}}
-            </div>
-        </div>
+          Sick Leave: {{ user.paid_leave_balances['ASIC'] }}
         </td>
         <td>FSLA</td>
-        <td><div v-for='(u, index) in user.paid_leave_balances' :key="index">
-          <div v-if=" u.leave_code == 'PERS' ">
-            Personal Leave: {{u.balance}}
-          </div>
-        </div>
-          </td>
-        <td>AAUP DSLB: {{aaup}} </td>
+        <td>
+          Personal Leave: {{ user.paid_leave_balances['PERS'] }}
+        </td>
+        <td>AAUP DSLB: {{ aaup ? "Yes" : "No" }} </td>
       </tr>
       <tr>
         <td>
-          <div v-for='(u, index) in user.paid_leave_balances' :key="index">
-            <div v-if=" u.leave_code == 'AVAC' ">
-              Vacation Leave: {{u.balance}}
-            </div>
-          </div> </td>
+          Vacation Leave: {{ user.paid_leave_balances['AVAC'] }}
+        </td>
         <td>NSLA</td>
-        <td><div v-for='(u, index) in user.paid_leave_balances' :key="index">
-          <div v-if=" u.leave_code == 'XCHG' ">
-            Exchange: {{u.balance}}
-          </div>
-        </div> </td>
-        <td><div v-if="aaup==='Yes'">
-          DSLB Total: {{user.fte*320}}
+        <td>
+          Exchange: {{ user.paid_leave_balances['XCHG'] }}
+        </td>
+        <td><div v-if="aaup">
+          DSLB Total: {{ user.fte*320 }}
         </div>
           <div v-else>
-            DSLB Total: {{0}}
+            DSLB Total: {{ 0 }}
         </div>
         </td>
       </tr>
       <tr>
-        <td>ST Disability?: {{ lst }}
+        <td>ST Disability?: {{ lst ? "Yes" : "No" }}
           </td>
-        <td>PXS?: {{ pxs }}</td>
-        <td>SEIU Hardship: {{seiu}} </td>
+        <td>PXS?: {{ pxs ? "Yes" : "No" }}</td>
+        <td>SEIU Hardship: {{ seiu ? "Yes" : "No" }} </td>
       </tr>
     </table>
-    <hr>
+    <hr />
+
     <h3>Leave Request</h3>
-    <table width="800">
-      <tr>
-        <td>Leave Start:<input type="date"/>  </td>
-        <td>Intermittent Start: <input type="date"/></td>
-        <td>HR/Week: <input /></td>
+    <table width="800" class="form-inline">
+      <tr class="form-group">
+        <td class="col input-group">
+          <div class="input-group-prepend">
+            <label for="leaveStart" class="input-group-text">
+              Leave Start:
+            </label>
+          </div>
+          <input type="date" id="leaveStart" class="form-control" />
+        </td>
+        <td class="col input-group">
+          <div class="input-group-prepend">
+            <label for="intermittentStart" class="input-group-text">
+              Intermittent Start:
+            </label>
+          </div>
+          <input type="date" id="intermittentStart" class="form-control" />
+        </td>
+        <td class="col input-group">
+          <div class="input-group-prepend">
+            <label for="hrWeek" class="input-group-text">
+              HR/Week:
+            </label>
+          </div>
+          <input type="text" id="hrWeek" class="form-control" />
+        </td>
       </tr>
-      <tr>
-        <td>Leave End: <input type="date"/> </td>
-        <td>Intermittent End: <input type="date"/></td>
+      <tr class="form-group">
+        <td class="col input-group">
+          <div class="input-group-prepend">
+            <label for="leaveEnd" class="input-group-text">
+              Leave End:
+            </label>
+          </div>
+          <input type="date" id="leaveEnd" class="form-control" />
+        </td>
+        <td class="col input-group">
+          <div class="input-group-prepend">
+            <label for="intermittentEnd" class="input-group-text">
+              Intermittent End:
+            </label>
+          </div>
+          <input type="date" id="intermittentEnd" class="form-control" />
+        </td>
       </tr>
-      <tr>
-        <td>Reason:<select id="R-select">
-          <option value="">--Option--</option>
-          <option value="FMLA/OFLA Continuous Concurrent Leave">FMLA/OFLA Continuous Concurrent Leave</option>
-          <option value="FMLA/OFLA Intermittent Concurrent Leave">FMLA/OFLA Intermittent Concurrent Leave</option>
-          <option value="ER Administrative Leave (Employee Relations)">ER Administrative Leave (Employee Relations)</option>
-          <option value="FMLA Continuous Leave">FMLA Continuous Leave</option>
-          <option value="FMLA Intermittent Leave">FMLA Intermittent Leave</option>
-          <option value="OFLA Intermittent Leave">FLA Intermittent Leave</option>
-          <option value="OFLA Continuous Leave">OFLA Continuous Leave</option>
-          <option value="Other Non-FMLA/OFLA Leave">Other Non-FMLA/OFLA Leave</option>
-          <option value="PC Pending Certification">Inter</option>
-          <option value="Amer. With Disabilities Act (ADA)">Amer. With Disabilities Act (ADA)</option>
-          <option value="Injured Worker (workers comp)">Injured Worker (workers comp)</option>
-          <option value="AP Paid Administrative Leave (LW1)">P Paid Administrative Leave (LW1)</option>
-          <option value="AU Unpaid Administrative Leave (LWOP)">AU Unpaid Administrative Leave (LWOP)</option>
-          <option value="Discretionary Leave (intermittent)">Discretionary Leave (intermittent)</option>
-          <option value="Discretionary Leave (continuous)">Discretionary Leave (continuous)</option>
-        </select></td>
-        <td>Leave Status: <select id="L-select">
-          <option value="">--Option--</option>
-          <option value="FMLA-Female EE's pregnancy and care of newborn">FMLA-Female EE's pregnancy and care of newborn</option>
-          <option value="FMLA-Male EE's care of newborn">FMLA-Male EE's care of newborn</option>
-          <option value="FMLA-Spouse, child, parent with serious health condition">FMLA-Spouse, child, parent with serious health condition</option>
-          <option value="FMLA-EE's own serious health condition">FMLA-EE's own serious health condition</option>
-          <option value="FMLA-Newly adopted or newly place foster child">FMLA-Newly adopted or newly place foster child</option>
-          <option value="FMLA-Qualifying exigency for family member in military">FMLA-Qualifying exigency for family member in military</option>
-          <option value="FMLA-Wounded or ill family member in military-up to 26 wks">FMLA-Wounded or ill family member in military-up to 26 wks</option>
-          <option value="Military Leave">Military Leave</option>
-          <option value="OFLA-Female EE disabled by pregnancy">OFLA-Female EE disabled by pregnancy</option>
-          <option value="OFLA-Female EE's pregnancy and care of newborn">OFLA-Female EE's pregnancy and care of newborn</option>
-          <option value="OFLA-Spouse, child, parent with serious health condition">OFLA-Spouse, child, parent with serious health condition</option>
-          <option value="OFLA-Male EE's care of newborn">OFLA-Male EE's care of newborn</option>
-          <option value="OFLA-EE's own serious health condition">OFLA-EE's own serious health condition</option>
-          <option value="OFLA-Newly adopted or newly place foster child">OFLA-Newly adopted or newly place foster child</option>
-          <option value="OFLA-Care for EE child sick/injured not serious hom care">OFLA-Care for EE child sick/injured not serious hom care</option>
-          <option value="OFLA-Parent-in-law, grndchild, grndparent serious hlth cond">OFLA-Parent-in-law, grndchild, grndparent serious hlth cond</option>
-          <option value="OFLA-Bereavement Leave">OFLA-Bereavement Leave</option>
-          <option value="OFLA-Same-sex domestic partner serious health condition">OFLA-Same-sex domestic partner serious health condition</option>
-          <option value="OFLA-Parent/child of sm-sx domestic ptnr serious hlth cond">OFLA-Parent/child of sm-sx domestic ptnr serious hlth cond</option>
-          <option value="ADA only">ADA only</option>
-          <option value="ADA/FMLA and/or OFLA">ADA/FMLA and/or OFLA</option>
-          <option value="Workers compensation only">Workers compensation only</option>
-          <option value="Work Comp/FMLA">Work Comp/FMLA</option>
-        </select> </td>
+      <tr class="form-group">
+        <td class="col input-group">
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="R-select">Reason:</label>
+          </div>
+          <select id="R-select" class="form-control">
+            <option selected disabled hidden>--Option--</option>
+            <option value="FMLA/OFLA Continuous Concurrent Leave">FMLA/OFLA Continuous Concurrent Leave</option>
+            <option value="FMLA/OFLA Intermittent Concurrent Leave">FMLA/OFLA Intermittent Concurrent Leave</option>
+            <option value="ER Administrative Leave (Employee Relations)">ER Administrative Leave (Employee Relations)</option>
+            <option value="FMLA Continuous Leave">FMLA Continuous Leave</option>
+            <option value="FMLA Intermittent Leave">FMLA Intermittent Leave</option>
+            <option value="OFLA Intermittent Leave">FLA Intermittent Leave</option>
+            <option value="OFLA Continuous Leave">OFLA Continuous Leave</option>
+            <option value="Other Non-FMLA/OFLA Leave">Other Non-FMLA/OFLA Leave</option>
+            <option value="PC Pending Certification">Inter</option>
+            <option value="Amer. With Disabilities Act (ADA)">Amer. With Disabilities Act (ADA)</option>
+            <option value="Injured Worker (workers comp)">Injured Worker (workers comp)</option>
+            <option value="AP Paid Administrative Leave (LW1)">P Paid Administrative Leave (LW1)</option>
+            <option value="AU Unpaid Administrative Leave (LWOP)">AU Unpaid Administrative Leave (LWOP)</option>
+            <option value="Discretionary Leave (intermittent)">Discretionary Leave (intermittent)</option>
+            <option value="Discretionary Leave (continuous)">Discretionary Leave (continuous)</option>
+          </select>
+        </td>
+        <td class="col input-group">
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="L-select">
+              Leave Status:
+            </label>
+          </div>
+          <select id="L-select" class="form-control">
+            <option selected disabled hidden>--Option--</option>
+            <option value="FMLA-Female EE's pregnancy and care of newborn">FMLA-Female EE's pregnancy and care of newborn</option>
+            <option value="FMLA-Male EE's care of newborn">FMLA-Male EE's care of newborn</option>
+            <option value="FMLA-Spouse, child, parent with serious health condition">FMLA-Spouse, child, parent with serious health condition</option>
+            <option value="FMLA-EE's own serious health condition">FMLA-EE's own serious health condition</option>
+            <option value="FMLA-Newly adopted or newly place foster child">FMLA-Newly adopted or newly place foster child</option>
+            <option value="FMLA-Qualifying exigency for family member in military">FMLA-Qualifying exigency for family member in military</option>
+            <option value="FMLA-Wounded or ill family member in military-up to 26 wks">FMLA-Wounded or ill family member in military-up to 26 wks</option>
+            <option value="Military Leave">Military Leave</option>
+            <option value="OFLA-Female EE disabled by pregnancy">OFLA-Female EE disabled by pregnancy</option>
+            <option value="OFLA-Female EE's pregnancy and care of newborn">OFLA-Female EE's pregnancy and care of newborn</option>
+            <option value="OFLA-Spouse, child, parent with serious health condition">OFLA-Spouse, child, parent with serious health condition</option>
+            <option value="OFLA-Male EE's care of newborn">OFLA-Male EE's care of newborn</option>
+            <option value="OFLA-EE's own serious health condition">OFLA-EE's own serious health condition</option>
+            <option value="OFLA-Newly adopted or newly place foster child">OFLA-Newly adopted or newly place foster child</option>
+            <option value="OFLA-Care for EE child sick/injured not serious hom care">OFLA-Care for EE child sick/injured not serious hom care</option>
+            <option value="OFLA-Parent-in-law, grndchild, grndparent serious hlth cond">OFLA-Parent-in-law, grndchild, grndparent serious hlth cond</option>
+            <option value="OFLA-Bereavement Leave">OFLA-Bereavement Leave</option>
+            <option value="OFLA-Same-sex domestic partner serious health condition">OFLA-Same-sex domestic partner serious health condition</option>
+            <option value="OFLA-Parent/child of sm-sx domestic ptnr serious hlth cond">OFLA-Parent/child of sm-sx domestic ptnr serious hlth cond</option>
+            <option value="ADA only">ADA only</option>
+            <option value="ADA/FMLA and/or OFLA">ADA/FMLA and/or OFLA</option>
+            <option value="Workers compensation only">Workers compensation only</option>
+            <option value="Work Comp/FMLA">Work Comp/FMLA</option>
+          </select>
+        </td>
       </tr>
-      <tr>
-        <td>Full Time Leave <input type="text" v-model="full_time" v-on:keyup="total_r"/> </td>
-        <td>Intermittent Leave <input type="text" v-model="inter_time"v-on:keyup="total_r"/> </td>
+      <tr class="form-group">
+        <td class="col input-group">
+          <div class="input-group-prepend">
+            <label for="fullTime" class="input-group-text">
+              Full Time Leave:
+            </label>
+          </div>
+          <input
+            class="form-control"
+            type="text"
+            v-model="full_time"
+            v-on:keyup="total_r"
+            id="fullTime"
+          />
+        </td>
+        <td class="col input-group">
+          <div class="input-group-prepend">
+            <label for="interTime" class="input-group-text">
+              Intermittent Leave:
+            </label>
+          </div>
+          <input
+            class="form-control"
+            type="text"
+            v-model="inter_time"
+            v-on:keyup="total_r"
+            id="interTime"
+          />
+        </td>
       </tr>
     </table>
-    <hr>
+    <hr />
+
     <h3>Your Balance</h3>
-    <div v-for='(u, index) in user.paid_leave_balances' :key="index">
-      <div v-if=" u.balance !== 0">
-        {{u.leave_code}}: {{u.balance}}
-      </div>
-  </div>
-    <hr>
+    <div
+      v-for='leaveCode in Object.keys(user.paid_leave_balances)'
+      :key="leaveCode">
+      {{ leaveCode }}: {{ user.paid_leave_balances[leaveCode] }}
+    </div>
+    <hr />
+
     <h3>Leave Plan</h3>
-    <div v-for='(u, index) in user.paid_leave_balances' :key="index">
-      <div v-if=" u.leave_code == 'ASIC' && u.balance > 40">
-        <h6>Want to hold 40 hours sick leave?</h6>
-        <input type="radio" id="yes" value="Yes" v-model="picked">
-        <label for="yes">Yes (sick leave will change to {{u.balance-40}})</label>
-        &nbsp;&nbsp;
-        <input type="radio" id="no" value="No" v-model="picked">
-        <label for="no">No</label>
-        <br>
-        <span>Picked: {{ picked }}</span>
-      </div>
+    <div v-if="user.paid_leave_balances['ASIC'] > 40">
+      <h6>Want to hold 40 hours sick leave?</h6>
+      <label class="inline-radio">
+        <input type="radio" value="yes" v-model="picked">
+        Yes (sick leave will change to {{ user.paid_leave_balances['ASIC'] - 40 }})
+      </label>
+      &nbsp;&nbsp;
+      <label class="inline-radio">
+        <input type="radio" value="no" v-model="picked">
+        No
+      </label>
+      <br />
+      <span>Picked: {{ picked }}</span>
     </div>
     <table>
       <tr>
@@ -188,51 +256,79 @@
         <th>%</th>
         <th>Pay</th>
       </tr>
-      <tr v-for="weekPlan in leavePlan" :key="index">
-        <td><input type="text" v-model="weekPlan.week"/></td>
-        <td><input/></td>
-        <td><input type="text" v-model="weekPlan.leaveType" v-on:keyup="updateSummary"/></td>
-        <td><input/></td>
-        <td><input type="text" v-model="weekPlan.leaveUsed" v-on:keyup="updateSummary"/></td>
+      <tr v-for="(leavePlanElement, index) in leavePlan" :key="index">
         <td>
-          <select id="CI-select">
-            <option value="">--Option--</option>
+          <input type="text" v-model="leavePlanElement.week" class="form-control" />
+        </td>
+        <td><input class="form-control" /></td>
+        <td>
+          <select
+            v-model="leavePlanElement.leaveType"
+            v-on:keyup="updateSummary"
+            class="form-control"
+          >
+            <option
+              v-for="leaveType in leaveTypes"
+              :value="leaveType.value"
+              :key="leaveType.value"
+              :disabled="!validLeaveType(index, leaveType.value)"
+            >{{ leaveType.type }}</option>
+          </select>
+          <div id="tooltipBox"></div>
+        </td>
+        <td><input class="form-control" /></td>
+        <td>
+          <input
+            type="text"
+            v-model="leavePlanElement.leaveUsed"
+            v-on:keyup="updateSummary"
+            class="form-control"
+          />
+        </td>
+        <td>
+          <select id="CI-select" class="form-control">
+            <option selected disabled hidden>--Option--</option>
             <option value="Cont">Cont</option>
             <option value="Inter">Inter</option>
           </select>
         </td>
-        <td><input/></td>
-        <td><input/></td>
+        <td><input class="form-control" /></td>
+        <td><input class="form-control" /></td>
       </tr>
     </table>
     <div id='addWeek'>
-  <button v-on:click="addWeek">Add week</button>
-</div>
-    <p><b>Notes:</b><textarea v-model="notes"></textarea></p>
+      <button v-on:click="addWeek" class="btn btn-info">Add week</button>
+    </div>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <label for="notes" class="input-group-text">Notes:</label>
+      </div>
+      <textarea v-model="notes" id="notes" class="form-control"></textarea>
+    </div>
     <h3>Leave Summary</h3>
     <table width="400">
       <tr v-for="(type, index) in leaveSummary" :key="index">
-        <td>{{ type.real }}</td>
-        <td>{{ type.name }}</td>
-        <td>{{ type.hours }}</td>
+        <td>{{ leaveTypes[index].type }}</td>
+        <td>{{ leaveTypes[index].value }}</td>
+        <td>{{ type }}</td>
       </tr>
       <tr>
         <td><h4>Total</h4></td>
         <td>{{ total }}</td>
       </tr>
     </table>
-    <hr>
+    <hr />
   </div>
 </template>
 
 <script>
+import $ from 'jquery'
 export default {
   name: 'report',
   props: ['user'],
   data: () => ({
     notes: '',
     Lts: 'Yes',
-    total: 0.0,
     total_request: 0.0,
     full_time: 0.0,
     inter_time: 0.0,
@@ -240,56 +336,64 @@ export default {
     picked:'',
     leavePlan: [
       { week: 1, leaveType: '', leaveUsed: 0.0 },
+      { week: 1, leaveType: '', leaveUsed: 0.0 },
+      { week: 1, leaveType: '', leaveUsed: 0.0 },
+    ],
+    leaveTypes: [
+      { type: 'Sick',         value: 'LTS' },
+      { type: 'Vacation',     value: 'LTV' },
+      { type: 'AAUP/SEIU',    value: 'LW1' },
+      { type: 'STD',          value: 'STD' },
+      { type: 'Unpaid Leave', value: 'LW3' },
+      { type: 'FLSA/NLFA',    value: 'LSA' },
+      { type: 'Personal Day', value: 'Per' },
     ],
     leaveSummary: [
-      { real: 'Sick',         name: 'LTS', hours: 0.0 },
-      { real: 'Vacation',     name: 'LTV', hours: 0.0 },
-      { real: 'AAUP/SEIU',    name: 'LW1', hours: 0.0 },
-      { real: 'STD',          name: 'STD', hours: 0.0 },
-      { real: 'Unpaid Leave', name: 'LW3', hours: 0.0 },
-      { real: 'FLSA/NLFA',    name: 'LSA', hours: 0.0 },
-      { real: 'Personal Day', name: 'Per', hours: 0.0 },
+      0.0, // LTS
+      0.0, // LTV
+      0.0, // LW1
+      0.0, // STD
+      0.0, // LW3
+      0.0, // LSA
+      0.0, // Per
     ],
   }),
-  computed:{
+  computed: {
     lst: function () {
-      return this.user.deductions_eligibility.includes("LST") ? "Yes" : "No"
+      return this.user.deductions_eligibility.includes("LST")
     },
     pxs: function () {
-      return this.user.deductions_eligibility.includes("PXS") ? "Yes" : "No"
+      return this.user.deductions_eligibility.includes("PXS")
     },
     aaup: function () {
-      return this.user.deductions_eligibility.includes("AAUP") ? "Yes" : "No"
+      return this.user.deductions_eligibility.includes("AAUP")
     },
     seiu: function () {
-      return this.user.deductions_eligibility.includes("SEIU") ? "Yes" : "No"
+      return this.user.deductions_eligibility.includes("SEIU")
     },
+    total: function() {
+      let total = 0.0
+      for(var type in this.leaveSummary) {
+        total += parseFloat(this.leaveSummary[type])
+      }
+      return total
+    }
   },
   methods: {
     updateSummary () {
       this.leaveSummary = [
-        { real: 'Sick',         name: 'LTS', hours: 0.0 },
-        { real: 'Vacation',     name: 'LTV', hours: 0.0 },
-        { real: 'AAUP/SEIU',    name: 'LW1', hours: 0.0 },
-        { real: 'STD',          name: 'STD', hours: 0.0 },
-        { real: 'Unpaid Leave', name: 'LW3', hours: 0.0 },
-        { real: 'FLSA/NLFA',    name: 'LSA', hours: 0.0 },
-        { real: 'Personal Day', name: 'Per', hours: 0.0 },
+        0.0, // LTS
+        0.0, // LTV
+        0.0, // LW1
+        0.0, // STD
+        0.0, // LW3
+        0.0, // LSA
+        0.0, // Per
       ]
       for(var week in this.leavePlan) {
         for(var type in this.leaveSummary) {
-          if(this.leavePlan[week].leaveType == this.leaveSummary[type].name) {
-            this.leaveSummary[type].hours += parseFloat(this.leavePlan[week].leaveUsed)
-          }
-        }
-      }
-      this.total = 0.0
-      for (var week in this.leavePlan) {
-        for(var type in this.leaveSummary) {
-          if(this.leavePlan[week].leaveType == this.leaveSummary[type].name) {
-            if(this.leavePlan[week].leaveUsed != 0) {
-              this.total += parseFloat(this.leavePlan[week].leaveUsed)
-            }
+          if(this.leavePlan[week].leaveType === this.leaveTypes[type].value && this.leavePlan[week].leaveUsed !== '') {
+            this.leaveSummary[type] += parseFloat(this.leavePlan[week].leaveUsed)
           }
         }
       }
@@ -301,6 +405,36 @@ export default {
       this.total_request = 0.0
       this.total_request = parseFloat(this.full_time) + parseFloat(this.inter_time)
     },
+    validLeaveType(leavePlanIndex, leaveType) {
+      let currentLeaveBalances = Object.assign({}, this.user.paid_leave_balances)
+      let leavePlanElement = this.leavePlan[leavePlanIndex]
+      for(var index in this.leavePlan) {
+        if(index !== leavePlanIndex) {
+          switch(this.leavePlan[index].leaveType) {
+            case 'LTS':
+              currentLeaveBalances['ASIC'] -= this.leavePlan[index].leaveUsed
+              break;
+          }
+        }
+      }
+
+      if(this.lst) {
+        if(leavePlanElement.week == 1 && currentLeaveBalances['ASIC'] > 0) {
+          return leaveType === 'LTS'
+        } else if(leavePlanElement.week <= 7
+                  || (leavePlanElement.week === 1 && currentLeaveBalances['ASIC'] === 0)) {
+          return leaveType === 'STD' || currentLeaveBalances['ASIC'] > 0
+        } else {
+          return true
+        }
+      } else {
+        if(currentLeaveBalances['ASIC'] > 0) {
+          return leaveType === 'LTS'
+        } else {
+          return true
+        }
+      }
+    }
   }
 }
 </script>
