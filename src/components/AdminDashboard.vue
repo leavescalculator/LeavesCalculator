@@ -32,7 +32,6 @@
           <input
             type="text"
             id="newNodeId"
-            name="newNodeId"
             placeholder="example id"
             class="col form-control"
           />
@@ -41,7 +40,7 @@
           <div class="col input-group-prepend">
             <label for="newNodeInput" class="input-group-text">Input:</label>
           </div>
-          <select class="form-control" id="newNodeInput" name="newNodeInput">
+          <select class="form-control" id="newNodeInput">
               <option selected hidden disabled>Select one</option>
               <option v-for="inputType in inputTypes" :key="inputType">
                 {{ inputType }}
@@ -64,11 +63,11 @@
     <div id="elementInfo">
       <div class="row input-group">
         <div class="col input-group-prepend">
-          <span class="input-group-text">Title:</span>
+          <label class="input-group-text" for="elementTitle">Title:</label>
         </div>
         <textarea
           v-if="selectedElement"
-          name="elementTitle"
+          id="elementTitle"
           class="col form-control"
           v-model="selectedElement.title"
         ></textarea>
@@ -78,22 +77,26 @@
       <template v-if="selectedElement && selectedElement.isEdge">
         <div class="row input-group">
           <div class="col input-group-prepend">
-            <span class="input-group-text">Added hours:</span>
+            <label class="input-group-text" for="edgeHours">
+              Added hours:
+            </label>
           </div>
           <input
             type="number"
-            name="edgeHours"
+            id="edgeHours"
             v-model="selectedElement.add_time.hours"
             class="col form-control"
           />
         </div>
         <div class="row input-group">
           <div class="col input-group-prepend">
-            <span class="input-group-text">Added weeks:</span>
+            <label class="input-group-text" for="edgeWeeks">
+              Added weeks:
+            </label>
           </div>
           <input
             type="number"
-            name="edgeWeeks"
+            id="edgeWeeks"
             v-model="selectedElement.add_time.weeks"
             class="col form-control"
           />
@@ -101,11 +104,14 @@
 
         <div class="row input-group">
           <div class="col input-group-prepend">
-            <span class="input-group-text">Leave type:</span>
+            <label class="input-group-text" for="edgeLeaveType">
+              Leave type:
+            </label>
           </div>
           <select
             v-model="selectedElement.add_time.type"
-            name="edgeLeaveType" class="col form-control"
+            id="edgeLeaveType"
+            class="col form-control"
           >
             <option
               v-for="addedTimeType in leaveTypes"
@@ -118,22 +124,26 @@
 
         <div class="row input-group">
           <div class="col input-group-prepend">
-            <span class="input-group-text">Source node:</span>
+            <label class="input-group-text" for="edgeSource">
+              Source node:
+            </label>
           </div>
           <button
             @click="selectNode(selectedElement.source)"
-            name="edgeSource"
+            id="edgeSource"
             class="col form-control btn btn-info"
           >{{ selectedElement.source }}</button>
         </div>
 
         <div class="row input-group">
           <div class="col input-group-prepend">
-            <span class="input-group-text">Target node:</span>
+            <label class="input-group-text" for="edgeTarget">
+              Target node:
+            </label>
           </div>
           <button
             @click="selectNode(selectedElement.target)"
-            name="edgeTarget"
+            id="edgeTarget"
             class="col form-control btn btn-info"
           >{{ selectedElement.target }}</button>
         </div>
@@ -145,18 +155,18 @@
           <div class="col input-group-prepend">
             <span class="input-group-text">Id:</span>
           </div>
-          <em class="col form-control" name="nodeId">
+          <em class="col form-control">
             {{ selectedElement.id }}
           </em>
         </div>
 
         <div class="row input-group">
           <div class="col input-group-prepend">
-            <span class="input-group-text">Input:</span>
+            <label class="input-group-text" for="nodeInput">Input:</label>
           </div>
           <select
             v-model="selectedElement.input"
-            name="nodeInput"
+            id="nodeInput"
             class="col form-control"
           >
             <option
