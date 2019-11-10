@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.forms.models import model_to_dict
 from database.models import *
 
-USERNAME = 'JEYRE'
+USERNAME = 'ADENT'
 
 
 def index(request):

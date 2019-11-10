@@ -6,7 +6,6 @@ import jsonfield
 from backports.datetime_fromisoformat import MonkeyPatch
 MonkeyPatch.patch_fromisoformat()
 
-
 TODAY = date.today()
 
 
@@ -323,7 +322,10 @@ class Employee(models.Model):
             for p in paid_leave_balances:
                 cursor.execute("INSERT into paid_leave_table (leave_code, balance) values (%s, %s);", [p[0], p[1]])
             cursor.execute("SELECT * FROM paid_leave_table;")
-            self.paid_leave_balances = dictfetchall(cursor)
+            result = dictfetchall(cursor)
+            self.paid_leave_balances = {}
+            for r in result:
+                self.paid_leave_balances[r["leave_code"]] = r["balance"]
 
     #def query_reports(self):
     #    self.reports = leavereports.objects.filter(leavereports_pidm=self.employee_id).filter(leavereports_report)
