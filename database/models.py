@@ -4,8 +4,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q, F, Sum
 from django.db import connection
 import jsonfield
+from django.forms.models import model_to_dict
 from backports.datetime_fromisoformat import MonkeyPatch
 MonkeyPatch.patch_fromisoformat()
+
 TODAY = date.today()
 
 
@@ -120,7 +122,7 @@ class perjtot(models.Model):
         return self.name
 
 class ptrearn(models.Model):
-    id = models.CharField(max_length=3, primary_key=True)
+    id = models.CharField(max_length=3,primary_key=True)
     ptrearn_fmla_eligible_hrs_ind = models.CharField(max_length=1)
 
 class pdrdedn(models.Model):
@@ -132,15 +134,42 @@ class pdrdedn(models.Model):
         return self.name
 
 class graph(models.Model):
+    #id = models.IntegerField(primary_key=True)
+    #graph_name = models.CharField(max_length=200, default=String(id))
+    #graph_date = models.DateField(auto_now=True)
     date = models.DateField(auto_now=True)
     graph_data = jsonfield.JSONField()
+    # 'D' means dormat, 'A' means active
+    #graph_status = models.CharField(max_length=1, primary_key=True, default='D')
+    def _str_(self):
+        return self.name
+    '''
+    def query_all_graphs(self):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM database_graph;")
+            return dictfetchall(cursor)
 
+    def query_active_graph(self):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM database_graph WHERE graph_status = 'A';")
+            return dictfetchall(cursor)
 
+    def make_active(self):
+        current_active_graph = graph.objects.filter(graph_status='A')
+        if current_active_graph:
+            current_active_graph.graph_status = 'D'
+            current_active_graph.save()
+        self.graph_status = 'A'
+        self.save()
+    '''
 class leavereports(models.Model):
+    #id = models.IntegerField(primary_key=True)
+    #leavereports_pidm = models.IntegerField()
     leavereports_pidm = models.IntegerField(primary_key=True)
     leavereports_date = models.DateField(auto_now=True)
     leavereports_report = jsonfield.JSONField()
-
+    def _str_(self):
+        return self.name
 # Helper models below
 
 #This function is provided by django tutorials at: https://docs.djangoproject.com/en/2.2/topics/db/sql/
@@ -173,6 +202,8 @@ class Employee(models.Model):
     paid_leave_balances = models.TextField(default=0)
     protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     max_protected_leave_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    #reports = jsonfield.JSONField()
+    #graph = jsonfield.JSONField()
 
     def query_employee_id(self):
         gobeacc_user = gobeacc.objects.filter(gobeacc_username=self.odin_username)
@@ -209,7 +240,7 @@ class Employee(models.Model):
         emails = list(goremal.objects.filter(goremal_id=self.employee_id).distinct().values_list('goremal_email_address', flat=True))
         self.email = emails
 
-    def query_fte(self):
+    def query_fte_and_classification(self):
         nbrjobs_user = nbrjobs.objects.filter(nbrjobs_pidm=self.employee_id)
         nbrbjob_user = nbrbjob.objects.filter(nbrbjob_pidm=self.employee_id).filter(Q(nbrbjob_begin_date__lte=TODAY) & (Q(nbrbjob_end_date__isnull=True) | Q(nbrbjob_end_date__gt=TODAY)))
         if (nbrbjob_user):
@@ -217,6 +248,9 @@ class Employee(models.Model):
                 positions = nbrjobs_user.filter(nbrjobs_posn=n.nbrbjob_posn).filter(nbrjobs_suff=n.nbrbjob_suff).exclude(Q(nbrjobs_ecls_code='XA') | Q(nbrjobs_ecls_code='XB') | Q(nbrjobs_ecls_code='XC')).values_list('nbrjobs_appt_pct').distinct()
                 if (positions):
                     self.fte = max(max(positions))/100
+                    employee_classification = nbrjobs_user.filter(nbrjobs_posn=n.nbrbjob_posn).filter(nbrjobs_suff=n.nbrbjob_suff).values_list('nbrjobs_ecls_code').distinct()
+                    if employee_classification:
+                        self.employee_classification = employee_classification[0][0]
 
     def query_leave_eligibility(self):
         if not self.fte:
@@ -310,25 +344,49 @@ class Employee(models.Model):
                 paid_leave_balances.append([current[0], current[1]])
         with connection.cursor() as cursor:
             cursor.execute("CREATE TEMPORARY TABLE paid_leave_table (leave_code varchar(4) NOT NULL, balance decimal NULL);")
-            for p in perleav_balances:
+            for p in paid_leave_balances:
                 cursor.execute("INSERT into paid_leave_table (leave_code, balance) values (%s, %s);", [p[0], p[1]])
             cursor.execute("SELECT * FROM paid_leave_table;")
-            self.paid_leave_balances = dictfetchall(cursor)
+            result = dictfetchall(cursor)
+            self.paid_leave_balances = {}
+            for r in result:
+                self.paid_leave_balances[r["leave_code"]] = r["balance"]
+
+    #def query_reports(self):
+    #    reports = leavereports.objects.filter(leavereports_pidm=self.employee_id)
+    #    self.reports = model_to_dict(reports)
+
+    #def query_current_graph(self):
+        #active_graph = Graph()
+        #active_graph = graph.query_active_graph()
+        #self.graph = model_to_dict(active_graph)
 
     def query_other_employee_info(self):
         self.query_lookback_hrs()
         self.query_emails()
-        self.query_fte()
+        self.query_fte_and_classification()
         self.query_leave_eligibility()
         self.query_deductions_info()
         self.query_protected_leave_hrs_taken()
         self.query_current_paid_leaves_balances()
+        #self.query_reports()
+        #self.query_current_graph()
+        return
 
     def set_username(self, username: str):
         self.odin_username = username
+
+    def set_ofla_eligibility(self, eligibility: str):
+        self.ofla_eligibility = eligibility
+
+    def set_fmla_eligibility(self, eligibility: str):
+        self.fmla_eligibility = eligibility
 
     def get_employee_id(self):
         return self.employee_id
 
     def get_hire_date(self):
         return self.hire_date
+
+    def get_fte(self):
+        return self.fte
