@@ -65,7 +65,7 @@ export default {
       var data = JSON.stringify({ name })
       var emp_u = name.toUpperCase();
       console.log(emp_u);
-      fetch('http://localhost:8000/database/emp_u/', {
+      fetch('http://localhost:8000/database/' + emp_u, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
