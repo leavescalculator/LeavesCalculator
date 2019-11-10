@@ -1,533 +1,598 @@
 {
-  "Nodes": {
-    "Do you have a work related injury?": {
-      "input": "button",
-      "options": [
-        {
-          "title": "Yes",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+     "Nodes": {
+      "work related injury": {
+        "title":"Do you have a work related injury?",
+        "input": "button",
+        "options": [
+          {
+            "title": "Yes",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "talk to HR"
           },
-          "next_node": "Talk to Jack"
-        },
-        {
-          "title": "No",
-          "next_node": "Qualified (Employee Status)",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "No",
+            "next_node": "qualified (employee status)",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            }
+          },
+          {
+            "title": "More Info",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "work injury info"
           }
-        },
-        {
-          "title": "More Info",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+        ]
+      },
+      "qualified (employee status)": {
+        "title":"Qualified Employee Status",
+        "input": "database",
+        "options": [
+          {
+            "title": "Yes, OFLA (minimum)",
+            "next_node": "reason for requesting leave",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            }
           },
-          "next_node": "Work Related Injury Info"
-        }
-      ]
-    },
-    "Qualified (Employee Status)": {
-      "input": "database",
-      "options": [
-        {
-          "title": "Yes, OFLA (minimum)",
-          "next_node": "What is your reason for requesting leave?",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Yes, only ADA ",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "only entitled for ADA"
           }
-        },
-        {
-          "title": "Yes, only ADA ",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+        ]
+      },
+      "reason for requesting leave": {
+        "title":"What is your reason for requesting leave?",
+        "input": "button",
+        "options": [
+          {
+            "title": "Serious Health Condition Family",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "which family member?"
           },
-          "next_node": "You are only entitled for ADA: Is it a Disability?"
-        }
-      ]
-    },
-    "What is your reason for requesting leave?": {
-      "input": "button",
-      "options": [
-        {
-          "title": "Serious Health Condition Family",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Serious Health Condition Self",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "serious health condition selection"
           },
-          "next_node": "Serious Health Condition Family"
-        },
-        {
-          "title": "Serious Health Condition Self",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Pregnancy Disability",
+            "next_node": "pregnancy disability",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            }
           },
-          "next_node": "Serious Health Condition Self"
-        },
-        {
-          "title": "Pregnancy Disability",
-          "next_node": "Pregnancy Disability",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Parental Leave",
+            "next_node": "type of parental leave",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            }
+          },
+          {
+            "title": "Military leave",
+            "next_node": "talk to HR",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            }
+          },
+          {
+            "title": "Other",
+            "next_node": "talk to HR",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            }
           }
-        },
-        {
-          "title": "Parental Leave",
-          "next_node": "Which type of Parental leave are you requesting?",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+        ]
+      },
+      "work injury info": {
+        "title" : "Work related injury information",
+        "input": "display",
+        "options": [
+          {
+            "title": "If an employee experiences an accidental injury, or occupational disease that qualifies for workers' compensation protections, medical and/or time loss benefits may be available through SAIF Corporation.\n Injuries must be reported, even if you do not seek medical treatment.\n More info: https://www.pdx.edu/hr/workers-compensation ",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": ""
           }
-        },
-        {
-          "title": "Military leave",
-          "next_node": "Talk to Jack",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+        ]
+      },
+      "only entitled for ADA": {
+        "title" : "You are only entitled for ADA: Is it a Disability?",
+        "input": "button",
+        "options": [
+          {
+            "title": "Information on Qualifying Disabilities",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "disability info"
+          },
+          {
+            "title": "Information ADA",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "ADA info"
+          },
+          {
+            "title": "Yes need to add link to ADA form",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "talk to HR"
+          },
+          {
+            "title": "No",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "exceptions"
           }
-        },
-        {
-          "title": "Other",
-          "next_node": "Talk to Jack",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+        ]
+      },
+      "health condition family": {
+        "title" :  "Serious health condition family",
+        "input": "button",
+        "options": [
+          {
+            "title": "Description of Serious Health Condition",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "serious health condition description"
+          },
+          {
+            "title": "Continue",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "which family member?"
           }
-        }
-      ]
-    },
-    "Work Related Injury Info": {
-      "input": "display",
-      "options": [
-        {
-          "title": "Info on",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+        ]
+      },
+      "health condition self": {
+        "title" : "Serious health condition self",
+        "input": "button",
+        "options": [
+          {
+            "title": "Continue",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "serious health condition selection"
+          }
+        ]
+      },
+      "serious health condition description": {
+        "title" : "Description of Serious Health Condition",
+        "input": "display",
+        "options": [
+          {
+            "title": "A serious health condition is an illness, injury, impairment, or physical or mental condition that incapacitates you or an eligible family member for 3 consecutive days or longer, and involves at least one of the following: \n Hospital care, \n Absence plus treatment, \n Pregnancy, \n Chronic conditions, \n Permanent/Long-term conditions requiring supervision, \n Multiple treatments (Non-chronic conditions), \n Important definitions for understanding what qualifies as a serious health conditions include: \n ,Incapacity: the inability to work, attend school or perform other regular daily activities due to a serious health condition or treatment for or recovery from a serious health condition , \n Treatment: includes examinations to determine if a serious health condition exists and evaluations of the condition. It does not include routine physical examinations, eye examinations or dental examinations",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": ""
+          }
+        ]
+      },
+      "serious health condition selection": {
+        "title":"List of Serious Health Conditions",
+        "input": "button",
+        "options": [
+          {
+            "title": "Description of Serious Health Condition",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "serious health condition description"
           },
-          "next_node": ""
-        }
-      ]
-    },
-    "You are only entitled for ADA: Is it a Disability?": {
-      "input": "button",
-      "options": [
-        {
-          "title": "Information on Qualifying Disabilities",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Hospital care:  Inpatient care (i.e., an overnight stay) in a hospital, hospice, or residential medical care facility, including any period of incapacity or subsequent treatment in connection with or as a consequence of inpatient care.",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 12,
+              "type": "n/a"
+            },
+            "next_node": "report"
           },
-          "next_node": "Disability Info"
-        },
-        {
-          "title": "Information ADA",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Absence plus treatment:  A period of incapacity of more than three consecutive calendar days, including any subsequent treatment or period of incapacity relating to the same condition, that also involves: Two or more treatments by a health care provider, nurse or physician's assistant under the direct supervision of a health care provider, or by a provider of health care services (e.g., physical therapist) under the orders of, or on referral by, a health care provider; or One treatment by a health care provider which results in a regimen of continuing treatment under the supervision of a healthcare provider.",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 12,
+              "type": "n/a"
+            },
+            "next_node": "report"
           },
-          "next_node": "ADA Info"
-        },
-        {
-          "title": "Yes need to add link to ADA form",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Pregnancy: Any period of incapacity for pregnancy-related disabilities or illnesses, or for prenatal care..",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 12,
+              "type": "n/a"
+            },
+            "next_node": "report"
           },
-          "next_node": "Talk to Jack"
-        },
-        {
-          "title": "No",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Chronic conditions: A chronic condition exists when the condition: Requires at least 2 visits a year for treatment by health care provider or by a nurse or physician's assistant under the direct supervision of a health care provider; Continues over an extended period of time (including recurring episodes of a single underlying condition); andMay cause episodic rather than a continuing period of incapacity (e.g., asthma, diabetes, epilepsy).",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 12,
+              "type": "n/a"
+            },
+            "next_node": "report"
           },
-          "next_node": "Exceptions"
-        }
-      ]
-    },
-    "Serious Health Condition Family": {
-      "input": "button",
-      "options": [
-        {
-          "title": "explanation of Serious Health Condition Family (Place holder)",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Permanent/Long-term conditions requiring supervision: A period of incapacity that is permanent or long-term due to a condition for which treatment is potentially ineffective. The employee or family member is under the supervision of a health care provider, not necessarily receiving active treatment. Examples include Alzheimer's disease, a severe stroke, or the terminal stages of a disease",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 12,
+              "type": "n/a"
+            },
+            "next_node": "report"
           },
-          "next_node": "none"
-        },
-        {
-          "title": "Continue",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Multiple treatments (Non-chronic conditions): Any period of absence to receive multiple treatments (including any period of recovery time) by a health care provider or by a provider of health care services under the orders of, or on referral by, a health care provider, either for restorative surgery after an accident or other injury, or for a condition that would likely result in a period of incapacity of more than three consecutive calendar days in the absence of medical intervention or treatment, such as cancer (chemotherapy, radiation, etc.), severe arthritis (physical therapy), and kidney disease (dialysis). ",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 12,
+              "type": "n/a"
+            },
+            "next_node": "report"
+          }
+        ]
+      },
+      "talk to HR": {
+        "title" : "Talk to Jack",
+        "input": "display",
+        "options": [
+          {
+            "title": "Please call Jack ***-***-**** or Email: jack@pdx.edu",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": ""
+          }
+        ]
+      },
+      "disability info": {
+        "title" : "Information on Disabilities",
+        "input": "display",
+        "options": [
+          {
+            "title": "An individual with a disability is a person who: \n Has a physical or mental impairment that substantially limits one or more major life activities; \n Has a record of such impairment; or \n Is regarded as having such an impairment \n Under the ADAAA (ADA Amendments Act) Major life Activities now additionally includes Major Bodily Functions. In total a disability would be any impairment that substantially limits any of the following: Major life activities include, but are not limited to, caring for oneself, performing manual tasks, seeing, hearing, eating, sleeping, walking, standing, lifting, bending, speaking, breathing, learning, reading, concentrating, thinking, communicating, and working. Major Bodily Functions include, but are not limited to, functions of the immune system, normal cell growth, digestive, bowel, bladder, neurological, brain, respiratory, circulatory, endocrine, and reproductive functions. \n The term “substantially limits” should be construed broadly in favor of expansive coverage to the maximum extent permitted by the terms of the ADA. The primary focus of the ADA is on whether discrimination occurred, the determination of disability should not require extensive analysis. \n A qualified employee or applicant with a disability is an individual who, with or without reasonable accommodation, can perform the essential functions of the job in question \n Please note that HR will never disclose and a supervisor should never discuss or request disability-specific medical information. The employee's privacy will be maintained at all times. All medical certification and any determination of an underlying disability will be performed exclusively by HR. \n More info: https://www.pdx.edu/hr/employee-accommodations ",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": ""
+          }
+        ]
+      },
+      "which family member?": {
+        "title" : "Which Family member is suffering a serious health condition?",
+        "input": "button",
+        "options": [
+          {
+            "title": "Spouse: as recognized under any state or foreign jursidiction, or registered same-sex domestic partner",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "serious health condition selection"
           },
-          "next_node": "Which Family member is suffering a serious health condition?"
-        }
-      ]
-    },
-    "Serious Health Condition Self": {
-      "input": "button",
-      "options": [
-        {
-          "title": "Continue",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Son or Daughter: biological, adopted, foster or stepchild, a legal ward, child of whom the employee stands “in loco parentis”, or a child of the employee’s same-sex domestic partner of any age",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "serious health condition selection"
           },
-          "next_node": "List of Serious Health Conditions"
-        }
-      ]
-    },
-    "Description of Serious Health Condition": {
-      "input": "display",
-      "options": [
-        {
-          "title": "A serious health condition is an illness, injury, impairment, or physical or mental condition that incapacitates you or an eligible family member for 3 consecutive days or longer, and involves at least one of the following: \n Hospital care, \n Absence plus treatment, \n Pregnancy, \n Chronic conditions, \n Permanent/Long-term conditions requiring supervision, \n Multiple treatments (Non-chronic conditions), \n Important definitions for understanding what qualifies as a serious health conditions include: \n ,Incapacity: the inability to work, attend school or perform other regular daily activities due to a serious health condition or treatment for or recovery from a serious health condition , \n Treatment: includes examinations to determine if a serious health condition exists and evaluations of the condition. It does not include routine physical examinations, eye examinations or dental examinations",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Parent: biological or adoptive mother or father, or an individual who is “in loco parentis” (in place of a parent), and the parent of the employee’s spouse or same-sex partner",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "serious health condition selection"
           },
-          "next_node": "Description of serious health condition"
-        }
-      ]
-    },
-    "List of Serious Health Conditions": {
-      "input": "drop down",
-      "options": [
-        {
-          "title": "Description of Serious Health Condition",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Grandparent or grandchild",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "serious health condition selection"
           },
-          "next_node": "Description of Serious Health Condition"
-        },
-        {
-          "title": "Hospital care:  Inpatient care (i.e., an overnight stay) in a hospital, hospice, or residential medical care facility, including any period of incapacity or subsequent treatment in connection with or as a consequence of inpatient care.",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "None of the above",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "do not qualify for protected leave"
+          }
+        ]
+      },
+      "type of parental leave": {
+        "title" : "Which type of Parental leave are you requesting?",
+        "input": "button",
+        "options": [
+          {
+            "title": "Sick Child (not serious)",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 12,
+              "type": "n/a"
+            },
+            "next_node": "report"
           },
-          "next_node": "Report"
-        },
-        {
-          "title": "Absence plus treatment:  A period of incapacity of more than three consecutive calendar days, including any subsequent treatment or period of incapacity relating to the same condition, that also involves: Two or more treatments by a health care provider, nurse or physician's assistant under the direct supervision of a health care provider, or by a provider of health care services (e.g., physical therapist) under the orders of, or on referral by, a health care provider; or One treatment by a health care provider which results in a regimen of continuing treatment under the supervision of a healthcare provider.",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Parental (not pregnant)",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 12,
+              "type": "n/a"
+            },
+            "next_node": "report"
+          }
+        ]
+      },
+      "report": {
+        "title" : "Report",
+        "input": "button",
+        "options": [
+          {
+            "title": "route to report",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "n/a"
+          }
+        ]
+      },
+      "pregnancy disability": {
+        "title" : "Type of Birth",
+        "input": "button",
+        "options": [
+          {
+            "title": "C-Section",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 8,
+              "type": "STD"
+            },
+            "next_node": "report"
           },
-          "next_node": "Report"
-        },
-        {
-          "title": "Pregnancy: Any period of incapacity for pregnancy-related disabilities or illnesses, or for prenatal care..",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Vaginal Birth",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 6,
+              "type": "STD"
+            },
+            "next_node": "report"
+          }
+        ]
+      },
+      "ADA info": {
+        "title" : "ADA Information",
+        "input": "display",
+        "options": [
+          {
+            "title": "Title I of the Americans with Disabilities Act of 1990 prohibits private employers, state and local governments, employment agencies and labor unions from discriminating against qualified individuals with disabilities in job application procedures, hiring, firing, advancement, compensation, job training, and other terms, conditions, and privileges of employment. Briefly Title I of the ADA \n Helps people with disabilities access the same employment opportunities and benefits available to people without disabilities. \n Applies to employers with 15 or more employees. \n Requires employers to provide reasonable accommodations to qualified applicants or employees. A “reasonable accommodation” is a change that accommodates employees with disabilities so they can do the job without causing the employer “undue hardship” (too much difficulty or expense). \n Defines disability, establishes guidelines for the reasonable accommodation process, and addresses medical examinations and inquiries. \n Regulated and enforced by the U.S. Equal Employment Opportunity Commission. ",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "n/a"
+          }
+        ]
+      },
+      "exceptions": {
+        "title" : "Exceptions",
+        "input": "database",
+        "options": [
+          {
+            "title": "Under 6 months",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "military leave"
           },
-          "next_node": "Report"
-        },
-        {
-          "title": "Chronic conditions: A chronic condition exists when the condition: Requires at least 2 visits a year for treatment by health care provider or by a nurse or physician's assistant under the direct supervision of a health care provider; Continues over an extended period of time (including recurring episodes of a single underlying condition); andMay cause episodic rather than a continuing period of incapacity (e.g., asthma, diabetes, epilepsy).",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Over 6 months, but less than 650 hours and 520 hrs or more",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "military leave or parental leave?"
           },
-          "next_node": "Report"
-        },
-        {
-          "title": "Permanent/Long-term conditions requiring supervision: A period of incapacity that is permanent or long-term due to a condition for which treatment is potentially ineffective. The employee or family member is under the supervision of a health care provider, not necessarily receiving active treatment. Examples include Alzheimer's disease, a severe stroke, or the terminal stages of a disease",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Over 6 months but less than 520 hrs",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "parental leave?"
+          }
+        ]
+      },
+      "military leave": {
+        "title" : "Are You Requesting Military Leave?",
+        "input": "button",
+        "options": [
+          {
+            "title": "Yes",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "talk to HR"
           },
-          "next_node": "Report"
-        },
-        {
-          "title": "Multiple treatments (Non-chronic conditions): Any period of absence to receive multiple treatments (including any period of recovery time) by a health care provider or by a provider of health care services under the orders of, or on referral by, a health care provider, either for restorative surgery after an accident or other injury, or for a condition that would likely result in a period of incapacity of more than three consecutive calendar days in the absence of medical intervention or treatment, such as cancer (chemotherapy, radiation, etc.), severe arthritis (physical therapy), and kidney disease (dialysis). ",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "No",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "do not qualify for protected leave"
+          }
+        ]
+      },
+      "military leave or parental leave?": {
+        "title" : "Are You Requesting Military Leave or Parental Leave?",
+        "input": "button",
+        "options": [
+          {
+            "title": "Parental Leave",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "type of parental leave"
           },
-          "next_node": "Report"
-        }
-      ]
-    },
-    "Talk to Jack": {
-      "input": "display",
-      "options": [
-        {
-          "title": "Please call Jack ***-***-**** or Email: jack@pdx.edu",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "Military Leave",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "talk to HR"
           },
-          "next_node": ""
-        }
-      ]
-    },
-    "Disability Info": {
-      "input": "Display",
-      "options": [
-        {
-          "title": "An individual with a disability is a person who: \n Has a physical or mental impairment that substantially limits one or more major life activities; \n Has a record of such impairment; or \n Is regarded as having such an impairment \n Under the ADAAA (ADA Amendments Act) Major life Activities now additionally includes Major Bodily Functions. In total a disability would be any impairment that substantially limits any of the following: Major life activities include, but are not limited to, caring for oneself, performing manual tasks, seeing, hearing, eating, sleeping, walking, standing, lifting, bending, speaking, breathing, learning, reading, concentrating, thinking, communicating, and working. Major Bodily Functions include, but are not limited to, functions of the immune system, normal cell growth, digestive, bowel, bladder, neurological, brain, respiratory, circulatory, endocrine, and reproductive functions. \n The term “substantially limits” should be construed broadly in favor of expansive coverage to the maximum extent permitted by the terms of the ADA. The primary focus of the ADA is on whether discrimination occurred, the determination of disability should not require extensive analysis. \n A qualified employee or applicant with a disability is an individual who, with or without reasonable accommodation, can perform the essential functions of the job in question \n Please note that HR will never disclose and a supervisor should never discuss or request disability-specific medical information. The employee's privacy will be maintained at all times. All medical certification and any determination of an underlying disability will be performed exclusively by HR. \n More info: https://www.pdx.edu/hr/employee-accommodations ",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "None of The Above",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "do not qualify for protected leave"
+          }
+        ]
+      },
+      "parental leave?": {
+        "title": "Are You Requesting Parental Leave?",
+        "input": "button",
+        "options": [
+          {
+            "title": "Yes",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "type of parental leave"
           },
-          "next_node": "Description of serious health condition"
-        }
-      ]
-    },
-    "Which Family member is suffering a serious health condition?": {
-      "input": "Dropdown",
-      "options": [
-        {
-          "title": "Spouse: as recognized under any state or foreign jursidiction, or registered same-sex domestic partner",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
+          {
+            "title": "No",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "do not qualify for protected leave"
+          }
+        ]
+      },
+      "do not qualify for protected leave": {
+        "title" : "You Do not Qualify for Protected Leave",
+        "input": "button",
+        "options": [
+          {
+            "title": "Your employee type does not receive protected leave \n You have not accumulated enough working hours to qualify \n You have not worked for the required length of time to qualify",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "n/a"
           },
-          "next_node": "List of Serious Health Conditions"
-        },
-        {
-          "title": "Son or Daughter: biological, adopted, foster or stepchild, a legal ward, child of whom the employee stands “in loco parentis”, or a child of the employee’s same-sex domestic partner of any age",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "List of Serious Health Conditions"
-        },
-        {
-          "title": "Parent: biological or adoptive mother or father, or an individual who is “in loco parentis” (in place of a parent), and the parent of the employee’s spouse or same-sex partner",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "List of Serious Health Conditions"
-        },
-        {
-          "title": "Grandparent or grandchild",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "List of Serious Health Conditions"
-        },
-        {
-          "title": "Grandparent or grandchild",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "List of Serious Health Conditions"
-        },
-        {
-          "title": "None of the above",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "n/a"
-        }
-      ]
-    },
-    "Which type of Parental leave are you requesting?": {
-      "input": "button",
-      "options": [
-        {
-          "title": "Sick Child (not serious)",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Report"
-        },
-        {
-          "title": "Parental (not pregnant)",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Report"
-        }
-      ]
-    },
-    "Report": {
-      "input": "Display",
-      "options": [
-        {
-          "title": "Show the report somehow",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "n/a"
-        }
-      ]
-    },
-    "Pregnancy Disability": {
-      "input": "button",
-      "options": [
-        {
-          "title": "C-Section",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Report"
-        },
-        {
-          "title": "Vaginal Birth",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Report"
-        }
-      ]
-    },
-    "ADA Info": {
-      "input": "Display",
-      "options": [
-        {
-          "title": "Title I of the Americans with Disabilities Act of 1990 prohibits private employers, state and local governments, employment agencies and labor unions from discriminating against qualified individuals with disabilities in job application procedures, hiring, firing, advancement, compensation, job training, and other terms, conditions, and privileges of employment. Briefly Title I of the ADA \n Helps people with disabilities access the same employment opportunities and benefits available to people without disabilities. \n Applies to employers with 15 or more employees. \n Requires employers to provide reasonable accommodations to qualified applicants or employees. A “reasonable accommodation” is a change that accommodates employees with disabilities so they can do the job without causing the employer “undue hardship” (too much difficulty or expense). \n Defines disability, establishes guidelines for the reasonable accommodation process, and addresses medical examinations and inquiries. \n Regulated and enforced by the U.S. Equal Employment Opportunity Commission. ",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "n/a"
-        }
-      ]
-    },
-    "Exceptions": {
-      "input": "Database",
-      "options": [
-        {
-          "title": "Under 6 months",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Are You Requesting Military Leave?"
-        },
-        {
-          "title": "Over 6 months, but less than 650 hours and 520 hrs or more",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Are You Requesting Military Leave or Parental Leave?"
-        },
-        {
-          "title": "Over 6 months but less than 520 hrs",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Are You Requesting Parental Leave?"
-        }
-      ]
-    },
-    "Are You Requesting Military Leave?": {
-      "input": "button",
-      "options": [
-        {
-          "title": "Yes",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Talk to Jack"
-        },
-        {
-          "title": "No",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "You do not qualify for protected leave"
-        }
-      ]
-    },
-    "Are You Requesting Military Leave or Parental Leave?": {
-      "input": "button",
-      "options": [
-        {
-          "title": "Parental Leave",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Which type of Parental leave are you requesting?"
-        },
-        {
-          "title": "Military Leave",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Talk to Jack"
-        },
-        {
-          "title": "None of The Above",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "You do not qualify for protected leave"
-        }
-      ]
-    },
-    "Are You Requesting Parental Leave?": {
-      "input": "Display",
-      "options": [
-        {
-          "title": "Yes",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Which type of Parental leave are you requesting?"
-        },
-        {
-          "title": "No",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "You do not qualify for protected leave"
-        }
-      ]
-    },
-    "You do not qualify for protected leave": {
-      "input": "button",
-      "options": [
-        {
-          "title": "Your employee type does not receive protected leave \n You have not accumulated enough working hours to qualify \n You have not worked for the required length of time to qualify",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "n/a"
-        },
-        {
-          "title": "If you feel this answer is not correct, please contact Jack Dorkey",
-          "add_hours": {
-            "hours": 0,
-            "type": "n/a"
-          },
-          "next_node": "Talk to Jack"
-        }
-      ]
+          {
+            "title": "If you feel this answer is not correct, please contact Jack Dorkey",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "Talk to Jack"
+          }
+        ]
+      }
     }
-  }
 }

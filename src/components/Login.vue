@@ -1,5 +1,5 @@
 <template>
-  <div id="login">
+  <div id="login" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
     <div v-if="username">
         <p>Signed in as <b>{{ username }}</b></p>
 
@@ -11,16 +11,23 @@
       <button @click="signOut">Sign out</button>
     </div>
     <form v-if="(auth === '')" onsubmit="return false">
+      <div class="input-group">
         <p>Login:</p>
-        <div class="input-field">
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username" />
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="username">Username</label>
+          </div>
+          <input type="text" class="form-control" name="username" id="username" />
         </div>
-        <div class="input-field">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" />
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="password">Password</label>
+          </div>
+          <input type="password" class="form-control" name="password" id="password" />
         </div>
-        <button @click.prevent="sendCredentials">Submit</button>
+      </div>
+      <br>
+        <button class="btn btn-success" @click.prevent="sendCredentials">Submit</button>
         <p style="color:red;">{{ loginError }}</p>
     </form>
 
