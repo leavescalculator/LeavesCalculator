@@ -1,7 +1,7 @@
 <template>
   <div id="login">
     <div v-if="username">
-      <p>Signed in as <b>{{ username }}</b></p>
+        <p>Signed in as <b>{{ username }}</b></p>
 
       <router-link v-if="isAdmin" v-bind:to="'/admin-dashboard'">
         Admin Dashboard
@@ -10,21 +10,28 @@
 
       <button @click="signOut">Sign out</button>
     </div>
-    <form v-if="(auth == '')" onsubmit="return false">
+    <form v-if="(auth === '')" onsubmit="return false">
+      <div class="input-group">
         <p>Login:</p>
-        <div class="input-field">
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username" />
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Username</span>
+          </div>
+          <input type="text" class="form-control" name="username" id="username" />
         </div>
-        <div class="input-field">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" />
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Password</span>
+          </div>
+          <input type="password" class="form-control" name="password" id="password" />
         </div>
-        <button @click.prevent="sendCredentials">Submit</button>
+      </div>
+      <br>
+        <button class="btn btn-success" @click.prevent="sendCredentials">Submit</button>
         <p style="color:red;">{{ loginError }}</p>
     </form>
 
-    <div id="includedContent"></div>    
+    <div id="includedContent"></div>
 </div>
 </template>
 
@@ -33,7 +40,7 @@ export default {
   name: 'login',
   data: () => ({
     loginError: '',
-    isAdmin: false,
+    isAdmin: false
   }),
   props: ['auth', 'username'],
   methods: {
@@ -55,15 +62,16 @@ export default {
           return response.json()
       }).then(data => {
           console.log(JSON.stringify(data))
-          this.$emit('token-aquired', ['Token ' + data["token"], username])
-          this.isAdmin = data.is_admin
+          this.isAdmin = data.is_admin;
+          this.$emit('token-acquired', ['Token ' + data["token"], username, this.isAdmin]);
       }).catch(error => {
-          document.getElementById('loginError').innerHTML = error
+          this.loginError = error
       });
     },
     signOut() {
       this.$emit('logout', 0);
-      this.loginError = ''
+      this.loginError = '';
+      this.isAdmin = false;
     }
   }
 }
@@ -77,9 +85,5 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-}
-
-#loginError {
-    color: red;
 }
 </style>
