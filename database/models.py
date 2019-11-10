@@ -3,6 +3,7 @@ from django.db.models import Q, F, Sum
 from datetime import date
 from django.db import connection
 import jsonfield
+from django.forms.models import model_to_dict
 from backports.datetime_fromisoformat import MonkeyPatch
 MonkeyPatch.patch_fromisoformat()
 
@@ -120,7 +121,7 @@ class perjtot(models.Model):
         return self.name
 
 class ptrearn(models.Model):
-    id = models.CharField(max_length=3, primary_key=True)
+    id = models.CharField(max_length=3,primary_key=True)
     ptrearn_fmla_eligible_hrs_ind = models.CharField(max_length=1)
 
 class pdrdedn(models.Model):
@@ -132,19 +133,42 @@ class pdrdedn(models.Model):
         return self.name
 
 class graph(models.Model):
+    #id = models.IntegerField(primary_key=True)
+    #graph_name = models.CharField(max_length=200, default=String(id))
+    #graph_date = models.DateField(auto_now=True)
     date = models.DateField(auto_now=True)
     graph_data = jsonfield.JSONField()
-
-    def query_graphs():
+    # 'D' means dormat, 'A' means active
+    #graph_status = models.CharField(max_length=1, primary_key=True, default='D')
+    def _str_(self):
+        return self.name
+    '''
+    def query_all_graphs(self):
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM database_graph;")
             return dictfetchall(cursor)
 
+    def query_active_graph(self):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM database_graph WHERE graph_status = 'A';")
+            return dictfetchall(cursor)
+
+    def make_active(self):
+        current_active_graph = graph.objects.filter(graph_status='A')
+        if current_active_graph:
+            current_active_graph.graph_status = 'D'
+            current_active_graph.save()
+        self.graph_status = 'A'
+        self.save()
+    '''
 class leavereports(models.Model):
+    #id = models.IntegerField(primary_key=True)
+    #leavereports_pidm = models.IntegerField()
     leavereports_pidm = models.IntegerField(primary_key=True)
     leavereports_date = models.DateField(auto_now=True)
     leavereports_report = jsonfield.JSONField()
-
+    def _str_(self):
+        return self.name
 # Helper models below
 
 #This function is provided by django tutorials at: https://docs.djangoproject.com/en/2.2/topics/db/sql/
@@ -328,7 +352,13 @@ class Employee(models.Model):
                 self.paid_leave_balances[r["leave_code"]] = r["balance"]
 
     #def query_reports(self):
-    #    self.reports = leavereports.objects.filter(leavereports_pidm=self.employee_id).filter(leavereports_report)
+    #    reports = leavereports.objects.filter(leavereports_pidm=self.employee_id)
+    #    self.reports = model_to_dict(reports)
+
+    #def query_current_graph(self):
+        #active_graph = Graph()
+        #active_graph = graph.query_active_graph()
+        #self.graph = model_to_dict(active_graph)
 
     def query_other_employee_info(self):
         self.query_lookback_hrs()
@@ -338,8 +368,9 @@ class Employee(models.Model):
         self.query_deductions_info()
         self.query_protected_leave_hrs_taken()
         self.query_current_paid_leaves_balances()
-        return
         #self.query_reports()
+        #self.query_current_graph()
+        return
 
     def set_username(self, username: str):
         self.odin_username = username
