@@ -1,97 +1,216 @@
 <template>
   <div id="admin-dashboard">
-    <textarea id="jsonOrPositions" cols=50 rows=4></textarea>
-    <br />
-    <button type="button" @click="outputJson">Output JSON</button>
-    <button type="button" @click="loadJson">Load JSON</button>
-    <button type="button" @click="outputPositions">Output Positions</button>
-    <button type="button" @click="loadPositions">Load Positions</button>
-    <hr />
-
-    <label for="newNodeId">ID: </label>
-    <input type="text" id="newNodeId" name="newNodeId" placeholder="example id" />
-    <br />
-    <label for="newNodeInput">Input: </label>
-    <select id="newNodeInput" name="newNodeInput">
-        <option selected hidden disabled>Select one</option>
-        <option v-for="inputType in inputTypes">{{ inputType }}</option>
-    </select>
-    <br />
-    <button type="button" @click="addNode">Add a Node</button>
-    <hr />
-
-    <button @click="() => this.ur.undo()">Undo Element Removal</button>
-    <hr />
-
-    <div id="cy" @click="showInfo"></div>
-    <div id="elementInfo">
-        <label for="edgeTitle">Title: </label>
-        <div v-if="selectedElement" @input="updateTitle" name="edgeTitle" id="elementTitle" contentEditable="true">
-          {{ selectedElement.title }}
+    <div class="header row">
+      <div class="col-auto">
+        <textarea
+          id="jsonOrPositions"
+          class="form-control"
+          cols=50 rows=3
+        ></textarea>
+        <br />
+        <div class="btn-group" role="group">
+        <button class="btn btn-info" @click="outputJson">
+          Output JSON
+        </button>
+        <button class="btn btn-info" @click="loadJson">
+          Load JSON
+        </button>
+        <button class="btn btn-info" @click="outputPositions">
+          Output Positions
+        </button>
+        <button class="btn btn-info" @click="loadPositions">
+          Load Positions
+        </button>
         </div>
+      </div>
 
-        <div v-if="selectedElement && selectedElement.isEdge">
-          <label for="edgeHours">Added hours: </label>
-          <input type="number" name="edgeHours" v-model="selectedElement.add_time.hours" />
-          <label for="edgeWeeks">Added weeks: </label>
-          <input type="number" name="edgeWeeks" v-model="selectedElement.add_time.weeks" />
-          <br />
-
-          <label for="edgeHoursType">Added hours type: </label>
-          <select v-model="selectedElement.add_time.type" name="edgeHoursType">
-              <option v-for="addedTimeType in addedTimeTypes" :value="addedTimeType.value" :selected="addedTimeType.value==selectedElement.add_time.type">
-                  {{ addedTimeType.type }}
+      <div class="col-auto">
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label for="newNodeId" class="input-group-text">ID:</label>
+          </div>
+          <input
+            type="text"
+            id="newNodeId"
+            placeholder="example id"
+            class="col form-control"
+          />
+        </div>
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label for="newNodeInput" class="input-group-text">Input:</label>
+          </div>
+          <select class="form-control" id="newNodeInput">
+              <option selected hidden disabled>Select one</option>
+              <option v-for="inputType in inputTypes" :key="inputType">
+                {{ inputType }}
               </option>
           </select>
-          <br />
-
-          <label for="edgeSource">Source node: </label>
-          <button @click="selectNode(selectedElement.source)" name="edgeSource" class="nodeButton">
-              {{ selectedElement.source }}
-          </button>
-          <br />
-
-          <label for="edgeTarget">Target node: </label>
-          <button @click="selectNode(selectedElement.target)" name="edgeTarget" class="nodeButton">
-              {{ selectedElement.target }}
-          </button>
         </div>
-        <div v-else-if="selectedElement">
-          <label for="nodeId">Id: </label><em name="nodeId">{{ selectedElement.id }}</em>
-          <br />
+        <button class="btn btn-success" @click="addNode">Add a Node</button>
+      </div>
 
-          <label for="nodeInput">Input: </label>
-          <select v-model="selectedElement.input" name="nodeInput">
-              <option v-for="inputType in inputTypes" :value="inputType" :selected="inputType==selectedElement.input">{{ inputType }}</option>
+      <div class="col-auto">
+        <button @click="() => this.ur.undo()" class="btn btn-warning">
+          Undo Element Removal
+        </button>
+      </div>
+    </div>
+
+    <div id="graph"></div>
+
+    <!-- The popper element for changing element properties -->
+    <div id="elementInfo">
+      <div class="row input-group">
+        <div class="col input-group-prepend">
+          <label class="input-group-text" for="elementTitle">Title:</label>
+        </div>
+        <textarea
+          v-if="selectedElement"
+          id="elementTitle"
+          class="col form-control"
+          v-model="selectedElement.title"
+        ></textarea>
+      </div>
+
+      <!-- Edge -->
+      <template v-if="selectedElement && selectedElement.isEdge">
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeHours">
+              Added hours:
+            </label>
+          </div>
+          <input
+            type="number"
+            id="edgeHours"
+            v-model="selectedElement.add_time.hours"
+            class="col form-control"
+          />
+        </div>
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeWeeks">
+              Added weeks:
+            </label>
+          </div>
+          <input
+            type="number"
+            id="edgeWeeks"
+            v-model="selectedElement.add_time.weeks"
+            class="col form-control"
+          />
+        </div>
+
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeLeaveType">
+              Leave type:
+            </label>
+          </div>
+          <select
+            v-model="selectedElement.add_time.type"
+            id="edgeLeaveType"
+            class="col form-control"
+          >
+            <option
+              v-for="addedTimeType in leaveTypes"
+              :value="addedTimeType.value"
+              :key="addedTimeType.value"
+              :selected="addedTimeType.value == selectedElement.add_time.type"
+            >{{ addedTimeType.type }}</option>
           </select>
         </div>
 
-        <button type="button" @click="removeElement">
-            Remove element
-        </button>
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeSource">
+              Source node:
+            </label>
+          </div>
+          <button
+            @click="selectNode(selectedElement.source)"
+            id="edgeSource"
+            class="col form-control btn btn-info"
+          >{{ selectedElement.source }}</button>
+        </div>
+
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeTarget">
+              Target node:
+            </label>
+          </div>
+          <button
+            @click="selectNode(selectedElement.target)"
+            id="edgeTarget"
+            class="col form-control btn btn-info"
+          >{{ selectedElement.target }}</button>
+        </div>
+      </template>
+
+      <!-- Node -->
+      <template v-else-if="selectedElement">
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <span class="input-group-text">Id:</span>
+          </div>
+          <em class="col form-control">
+            {{ selectedElement.id }}
+          </em>
+        </div>
+
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="nodeInput">Input:</label>
+          </div>
+          <select
+            v-model="selectedElement.input"
+            id="nodeInput"
+            class="col form-control"
+          >
+            <option
+              v-for="inputType in inputTypes"
+              :value="inputType"
+              :key="inputType"
+              :selected="inputType == selectedElement.input"
+            >{{ inputType }}</option>
+          </select>
+        </div>
+      </template>
+
+      <div class="row input-group">
+        <button
+          type="button"
+          @click="removeElement"
+          class="form-control btn btn-danger"
+        >Remove element</button>
+      </div>
     </div>
   </div>
 </template>
 <script>
   import cytoscape from 'cytoscape'
-  import popper from 'cytoscape-popper'
   import edgehandles from 'cytoscape-edgehandles'
   import undoRedo from 'cytoscape-undo-redo'
+  import popper from 'cytoscape-popper'
   import json from '../assets/nodes.json'
 
-  cytoscape.use(popper)
   cytoscape.use(edgehandles)
   cytoscape.use(undoRedo)
-
+  cytoscape.use(popper)
 
   export default {
       name: 'admin-dashboard',
       data: () => ({
           // The nodes objects from `src/assets/nodes.json`
           nodes: json.Nodes,
+          // Will become an object with setters and getters for fields of the selected element on selection
           selectedElement: null,
+          // The available input fields for a node
           inputTypes: [ 'button', 'drop down', 'display', 'database' ],
-          addedTimeTypes: [
+          // The types of leave and their corresponding acronyms
+          leaveTypes: [
             { type: 'Not Applicable', value: 'n/a' },
             { type: 'Sick',           value: 'LTS' },
             { type: 'Vacation',       value: 'LTV' },
@@ -102,15 +221,21 @@
             { type: 'Personal Day',   value: 'Per' },
           ],
       }),
-      props: ['isAdmin'],
       mounted: function () {
         this.cy = cytoscape({
-          container: document.getElementById('cy'),
+          container: document.getElementById('graph'),
             style: [
                 {
-                    selector: 'node',
+                    selector: 'edge',
                     style: {
-                        'shape': 'hexagon',
+                        'curve-style': 'bezier',
+                        'target-arrow-shape': 'triangle',
+                        'control-point-step-size': 50,
+                    }
+                },
+                {
+                    selector: '.graph-node',
+                    style: {
                         'label': 'data(label)',
                         'color': '#000',
                         'text-background-color': '#ccc',
@@ -120,12 +245,9 @@
                     }
                 },
                 {
-                    selector: 'edge',
+                    selector: '.graph-edge',
                     style: {
-                        'curve-style': 'bezier',
-                        'control-point-step-size': 50,
                         'label': 'data(label)',
-                        'target-arrow-shape': 'triangle',
                         'target-arrow-color': 'green',
                         'color': '#fff',
                         'text-background-color': '#333',
@@ -186,17 +308,19 @@
             selectionType: 'single',
         })
         this.cy.edgehandles({
-            snap: true
+            snap: true,
+            complete: (sourceNode, targetNode, addedEles) => {
+              addedEles.data('title', '')
+              addedEles.data('label', '')
+              addedEles.data('add_time', { hours: 0, type: 'n/a' })
+              addedEles.addClass('graph-edge')
+              addedEles.on('select', this.showInfo)
+              addedEles.on('unselect', this.hideInfo)
+            }
         });
         this.ur = this.cy.undoRedo({
             undoableDrag: false
         })
-
-        this.cy.on('ehcomplete', (event, sourceNode, targetNode, addedEles) => {
-            addedEles.data('title', '')
-            addedEles.data('label', '')
-            addedEles.data('add_time', { hours: 0, type: 'n/a' })
-        });
 
         this.parseJson(this.nodes);
         this.cy.layout({
@@ -212,13 +336,15 @@
                         label: node,
                         title: nodes[node].title,
                         input: nodes[node].input,
-                    }
+                    },
+                    classes: 'graph-node',
                 });
+                element.on('select', this.showInfo)
+                element.on('unselect', this.hideInfo)
             }
             for (const node of Object.keys(nodes)) {
                 for (const option of nodes[node].options) {
                     try {
-                        let node_color = this.cy.$id(option.next_node).style()['background-color'];
                         let edge = this.cy.add({
                             data: {
                                 title: option.title,
@@ -226,8 +352,11 @@
                                 add_time: option.add_time,
                                 source: node,
                                 target: option.next_node,
-                            }
+                            },
+                            classes: 'graph-edge',
                         });
+                        edge.on('select', this.showInfo)
+                        edge.on('unselect', this.hideInfo)
                     } catch (err) {
                         console.log(err);
                     }
@@ -236,15 +365,15 @@
           },
           outputJson() {
             let output = {};
-            let nodes = this.cy.nodes()
+            let nodes = this.cy.$('.graph-node')
             for(let node = 0; node < nodes.length; node++) {
-              let element = this.cy.nodes()[node]
+              let element = nodes[node]
               let nodeId = element.data('id')
-	            output[nodeId] = {
-	              title: element.data('title'),
+              output[nodeId] = {
+                title: element.data('title'),
                 input: element.data('input'),
                 options: [],
-	            }
+              }
               let edges = this.cy.edges('[source = "' + nodeId + '"]')
               for(let edge = 0; edge < edges.length; edge++) {
                 element = edges[edge]
@@ -254,12 +383,12 @@
                   next_node: element.data('target'),
                 })
               }
-	          }
+            }
             document.getElementById('jsonOrPositions').value = JSON.stringify(output)
           },
           outputPositions() {
             let output = []
-            let nodes = this.cy.nodes()
+            let nodes = this.cy.$('.graph-node')
             for(let node = 0; node < nodes.length; node++) {
               output.push(nodes[node].relativePosition())
             }
@@ -269,7 +398,7 @@
               var json = document.getElementById("jsonOrPositions").value;
               let positions = JSON.parse(json);
               for(let node = 0; node < positions.length; node++) {
-                this.cy.nodes()[node].relativePosition(positions[node])
+                this.cy.$('.graph-node')[node].relativePosition(positions[node])
               }
           },
           addNode() {
@@ -281,8 +410,11 @@
                       id: id,
                       label: id.substring(0, 30),
                       input: input,
-                  }
+                  },
+                  classes: 'graph-node'
               });
+              node.on('select', this.showInfo)
+              node.on('unselect', this.hideInfo)
           },
           removeElement() {
               if(this.cy.$(':selected').length > 0) {
@@ -294,85 +426,85 @@
               var json = document.getElementById("jsonOrPositions").value;
               var nodes ={Nodes: JSON.parse(json)}
             console.log()
-              this.cy.nodes().remove()
+              this.cy.$('.graph-node').remove()
               this.parseJson(nodes.Nodes);
               this.cy.layout({
                 name: 'breadthfirst'
               }).run()
           },
+          hideInfo() {
+            let div = document.getElementById('elementInfo');
+            div.style.visibility = 'hidden'
+          },
           showInfo() {
               let div = document.getElementById('elementInfo');
-              if (this.cy.$(':selected').length > 0) {
-                  let element = this.cy.$(':selected')[0];
-                  let popper = element.popper({
-                      content: () => {
-                          let isEdge = element.isEdge();
-                          if(isEdge) {
-                            this.selectedElement = {
-                                isEdge: true,
-                                get title() {
-                                    return element.data('title')
-                                },
-                                set title(title) {
-                                    element.data('title', title)
-                                    element.data('label', title.substring(0, 30))
-                                },
-                                get add_time() {
-                                    return element.data('add_time')
-                                },
-                                set add_time(add_time) {
-                                    element.data('add_time', add_time)
-                                },
-                                source: element.data('source'),
-                                target: element.data('target'),
-                            };
-                          } else {
-                            this.selectedElement = {
-                                isEdge: false,
-                                get id() {
-                                    return element.data('id')
-                                },
-                                get title() {
-                                    return element.data('title')
-                                },
-                                set title(title) {
-                                    element.data('title', title)
-                                },
-                                get input() {
-                                    return element.data('input')
-                                },
-                                set input(input) {
-                                    element.data('input', input)
-                                },
-                            };
-                          }
-                          div.style.visibility = 'visible';
-                          return div;
+              let element = this.cy.$(':selected')[0];
+              let popper = element.popper({
+                  content: () => {
+                      let isEdge = element.isEdge();
+                      if(isEdge) {
+                        this.selectedElement = {
+                            isEdge: true,
+                            get title() {
+                                return element.data('title')
+                            },
+                            set title(title) {
+                                element.data('title', title)
+                                element.data('label', title.substring(0, 30))
+                            },
+                            get add_time() {
+                                return element.data('add_time')
+                            },
+                            set add_time(add_time) {
+                                element.data('add_time', add_time)
+                            },
+                            source: element.data('source'),
+                            target: element.data('target'),
+                        };
+                      } else {
+                        this.selectedElement = {
+                            isEdge: false,
+                            get id() {
+                                return element.data('id')
+                            },
+                            get title() {
+                                return element.data('title')
+                            },
+                            set title(title) {
+                                element.data('title', title)
+                            },
+                            get input() {
+                                return element.data('input')
+                            },
+                            set input(input) {
+                                element.data('input', input)
+                            },
+                        };
                       }
-                  });
-                  let update = () => {
-                      popper.scheduleUpdate();
-                  };
-                  element.on('position', update);
-                  this.cy.on('pan zoom resize', update);
-              } else {
-                  div.style.visibility = 'hidden';
-              }
+                      div.style.visibility = 'visible';
+                      return div;
+                  }
+              });
+              let update = () => {
+                  popper.scheduleUpdate();
+              };
+              element.on('position', update);
+              this.cy.on('pan zoom resize', update);
           },
           selectNode(to_select) {
               this.cy.$(':selected').unselect()
               this.cy.$id(to_select).select()
               this.showInfo()
-          },
-          updateTitle(event) {
-              this.selectedElement.title = event.target.innerText
-          },
+          }
       }
   }
 </script>
-<!-- styling for the component -->
 <style>
-  #cy {
+  .header {
+    background-color: #fff;
+  }
+
+  #graph {
     width: 100%;
     height: 80%;
     position: absolute;
@@ -387,32 +519,20 @@
     padding: 10px;
   }
 
-  #elementTitle {
-      display: inline-block;
-      border: 1px solid #ccc;
-      min-height: 10px;
-      max-height: 100px;
-      width: 250px;
-      padding: 2px;
-      overflow-y: auto;
+  .row {
+    margin: 2px;
   }
 
-  label {
-      display: inline-block;
-      width: 120px;
-      text-align: right;
+  .input-group-prepend {
+    padding: 0;
   }
 
-  #elementInfo input {
-      display: inline-block;
-      text-align: center;
-      width: 100px;
-      margin-left: auto;
-      margin-right: auto;
-      align: center;
+  .input-group-text {
+    width: inherit;
   }
 
-  .nodeButton {
-    width: 250px;
+  .form-control {
+    height: auto;
+    min-width: 200px;
   }
 </style>

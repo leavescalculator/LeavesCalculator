@@ -1,5 +1,5 @@
 <template>
-  <div id="login">
+  <div id="login" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
     <div v-if="username">
         <p>Signed in as <b>{{ username }}</b></p>
 
@@ -15,13 +15,13 @@
         <p>Login:</p>
         <div class="input-group">
           <div class="input-group-prepend">
-            <span class="input-group-text">Username</span>
+            <label class="input-group-text" for="username">Username</label>
           </div>
           <input type="text" class="form-control" name="username" id="username" />
         </div>
         <div class="input-group">
           <div class="input-group-prepend">
-            <span class="input-group-text">Password</span>
+            <label class="input-group-text" for="password">Password</label>
           </div>
           <input type="password" class="form-control" name="password" id="password" />
         </div>
