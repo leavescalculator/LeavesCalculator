@@ -7,6 +7,7 @@
         </div>
         <input
           type="text"
+          id="usrname"
           placeholder="other username"
           class="form-control"
           v-model="usrname"
@@ -111,7 +112,8 @@ export default {
         }
     },
     changeUser() {
-      console.log(this.usrname);
+      console.log("Attempting to change to :" + this.usrname);
+      this.$emit('change-user', this.usrname);
     }
   }
 };
