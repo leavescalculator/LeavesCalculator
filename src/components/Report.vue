@@ -94,23 +94,15 @@
               Leave Start:
             </label>
           </div>
-          <input type="date" id="leaveStart" class="form-control" />
+          <input type="date" v-model="startLeaveDate" id="leaveStart" class="form-control" />
         </td>
         <td class="col input-group">
           <div class="input-group-prepend">
-            <label for="intermittentStart" class="input-group-text">
-              Intermittent Start:
-            </label>
-          </div>
-          <input type="date" id="intermittentStart" class="form-control" />
-        </td>
-        <td class="col input-group">
-          <div class="input-group-prepend">
-            <label for="hrWeek" class="input-group-text">
+            <label for="hrWeek" class="input-group-text" >
               HR/Week:
             </label>
           </div>
-          <input type="text" id="hrWeek" class="form-control" />
+          <input type="text" id="hrWeek" v-model="hrs" class="form-control" v-on:keyup="change_hours()"/>
         </td>
       </tr>
       <tr class="form-group">
@@ -120,15 +112,7 @@
               Leave End:
             </label>
           </div>
-          <input type="date" id="leaveEnd" class="form-control" />
-        </td>
-        <td class="col input-group">
-          <div class="input-group-prepend">
-            <label for="intermittentEnd" class="input-group-text">
-              Intermittent End:
-            </label>
-          </div>
-          <input type="date" id="intermittentEnd" class="form-control" />
+          <input type="date" v-model="endLeaveDate" id="leaveEnd" class="form-control" />
         </td>
       </tr>
       <tr class="form-group">
@@ -232,10 +216,10 @@
 
     <h3>Leave Plan</h3>
     <div v-if="user.paid_leave_balances['ASIC'] > 40">
-      <h6>Want to hold 40 hours sick leave?</h6>
+      <h6>Want to hold 40 hours vacation leave?</h6>
       <label class="inline-radio">
         <input type="radio" value="yes" v-model="picked">
-        Yes (sick leave will change to {{ user.paid_leave_balances['ASIC'] - 40 }})
+        Yes (sick leave will change to {{ user.paid_leave_balances['AVAC'] - 40 }})
       </label>
       &nbsp;&nbsp;
       <label class="inline-radio">
@@ -256,9 +240,9 @@
         <th>%</th>
         <th>Pay</th>
       </tr>
-      <tr v-for="(leavePlanElement, index) in leavePlan" :key="index">
+      <tr v-for="(leavePlanElement, index) in leavePlan">
         <td>
-          <input type="text" v-model="leavePlanElement.week" class="form-control" />
+          &nbsp; {{leavePlanElement.week}}
         </td>
         <td><input class="form-control" /></td>
         <td>
@@ -294,11 +278,11 @@
         </td>
         <td><input class="form-control" /></td>
         <td><input class="form-control" /></td>
+        <div id='addWeek'>
+          <button v-on:click="addWeek(index)" v-model="index" class="btn btn-info">Add week</button>
+        </div>
       </tr>
     </table>
-    <div id='addWeek'>
-      <button v-on:click="addWeek" class="btn btn-info">Add week</button>
-    </div>
     <div class="input-group">
       <div class="input-group-prepend">
         <label for="notes" class="input-group-text">Notes:</label>
@@ -322,7 +306,6 @@
 </template>
 
 <script>
-import $ from 'jquery'
 export default {
   name: 'report',
   props: ['user'],
@@ -333,11 +316,23 @@ export default {
     full_time: 0.0,
     inter_time: 0.0,
     sick_leave: 0.0,
+    hrs: 0.0,
+    index:0,
+    startInterDate:"",
+    startLeaveDate:"",
+    endInterDate:"",
+    endLeaveDate:"",
     picked:'',
     leavePlan: [
-      { week: 1, leaveType: '', leaveUsed: 0.0 },
-      { week: 1, leaveType: '', leaveUsed: 0.0 },
-      { week: 1, leaveType: '', leaveUsed: 0.0 },
+      { week:1, leaveType: '', leaveUsed: 0.0 },
+      { week:2, leaveType: '', leaveUsed: 0.0 },
+      { week:3, leaveType: '', leaveUsed: 0.0 },
+      { week:4, leaveType: '', leaveUsed: 0.0 },
+      { week:5, leaveType: '', leaveUsed: 0.0 },
+      { week:6, leaveType: '', leaveUsed: 0.0 },
+      { week:7, leaveType: '', leaveUsed: 0.0 },
+      { week:8, leaveType: '', leaveUsed: 0.0 },
+      { week:9, leaveType: '', leaveUsed: 0.0 },
     ],
     leaveTypes: [
       { type: 'Sick',         value: 'LTS' },
@@ -398,9 +393,21 @@ export default {
         }
       }
     },
-    addWeek() {
-      this.leavePlan.push({leaveType: '', leaveUsed: 0.0 })
+    addWeek(index) {
+      this.leavePlan.splice(index,0,{week: this.leavePlan[index].week, leaveType: '', leaveUsed: 0.0 })
     },
+    change_hours() {
+      var shado = require("shado");
+      var firstDate = this.startLeaveDate;
+      var secondDate = this.endLeaveDate;
+      var result = shado.date.setDates(firstDate, secondDate).getWeeks(false)+1;
+      console.log(result)
+
+      for(var week in this.leavePlan){
+          this.leavePlan[week].leaveUsed = parseFloat(this.hrs)
+        }
+    },
+
     total_r() {
       this.total_request = 0.0
       this.total_request = parseFloat(this.full_time) + parseFloat(this.inter_time)
