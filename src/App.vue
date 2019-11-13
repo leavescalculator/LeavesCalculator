@@ -122,17 +122,21 @@ export default {
   }
 };
 </script>
-<!-- styling for the component -->
 <style>
-/*
- *** Had to temporarily comment out parent styling so admin-dashboard would look better.
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
- */
+  .row {
+    margin: 2px;
+  }
+
+  .input-group-prepend {
+    padding: 0;
+  }
+
+  .input-group-text {
+    width: inherit;
+  }
+
+  .form-control {
+    height: auto;
+    min-width: 200px;
+  }
 </style>

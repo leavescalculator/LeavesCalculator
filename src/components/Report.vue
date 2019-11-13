@@ -167,7 +167,7 @@
 <script>
 export default {
     name: 'report',
-    props: ['user'],
+    props: ['user', 'isAdmin'],
   data: () => ({
     notes: '',
     Lts: 'Yes',
