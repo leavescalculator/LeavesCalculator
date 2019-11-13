@@ -2,4 +2,7 @@ Django
 DjangoRestFramework
 Django-import-export
 django-cors-headers
+jsonfield
+django-jsonfield
+backports-datetime-fromisoformat
 npm

@@ -11,6 +11,7 @@
         :user="user"
         :isAdmin="isAdmin"
         :Nodes="nodes"
+        @change-user="changeEmployee"
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
@@ -30,6 +31,7 @@
             @logout="logOut"
             :user="user"
             @add-weeks="addWeeks"
+            @getEmployee="getEmployee"
             :Nodes="nodes"
           ></router-view>
         </div>
@@ -51,73 +53,9 @@ export default {
     auth: "",
     username: "",
     isAdmin: false,
-      nodes: {},
-      user: {
-          "employee_id": 800009,
-          "odin_username": "HPRYNNE",
-          "psu_id": "953125510",
-          "first_name": "Hester",
-          "last_name": "Prynne",
-          "email": [
-              "leaves@pdx.edu",
-              "hrc-tech-team-group@pdx.edu"
-          ],
-          "hire_date": "2006-03-20",
-          "fte": 1.0,
-          "month_lookback_12": "1711.48000000000",
-          "month_lookback_6": "833.75",
-          "fmla_eligibility": "T",
-          "ofla_eligibility": "T",
-          "deductions_eligibility": [
-              "LST",
-              "LTD",
-              "PXS"
-          ],
-          "paid_leave_balances": [
-              [
-                  "XBRV",
-                  0
-              ],
-              [
-                  "ASIC",
-                  45.91
-              ],
-              [
-                  "AVAC",
-                  116.88
-              ],
-              [
-                  "PERS",
-                  15.5
-              ],
-              [
-                  "FLSA",
-                  0
-              ],
-              [
-                  "NFLS",
-                  0
-              ],
-              [
-                  "XCHG",
-                  0
-              ],
-              [
-                  "XOTH",
-                  0
-              ],
-              [
-                  "XFUR",
-                  0
-              ],
-              [
-                  "XDON",
-                  0
-              ]
-          ],
-          "protected_leave_hrs_taken": 0,
-          "max_protected_leave_hrs": null
-      },
+    infoError: "",
+    user: { },
+    nodes: {},
   }),
   components: {
       appHeader: Header,
@@ -128,16 +66,53 @@ export default {
       this.username = event[1];
       this.isAdmin = event[2];
       //do fetch stuff
+      console.log("Getting info...");
+      this.getEmployee(this.username);
         //get user/graph
+    },
+    changeEmployee(event) {
+      if(this.isAdmin) {
+        if(this.getEmployee(event)) {
+          console.log("Now using " + event + "'s information.");
+        }
+      }
+      else {
+        console.log("Nice try bozo.");
+      }
+    },
+    getEmployee(name) {
+      var data = JSON.stringify({ name })
+      var emp_u = name.toUpperCase();
+      console.log(emp_u);
+      fetch('http://localhost:8000/database/' + emp_u + '/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': this.auth
+        }
+      }).then(response => {
+        if(!response.ok) {
+          throw Error("Failed to retrieve employee.")
+
+        }
+        return response.json()
+      }).then(data => {
+        console.log(data);
+        this.user = data;
+      }).catch(error => {
+        this.infoError = error
+      });
+
     },
     logOut() {
       this.auth = '';
       this.username = '';
       this.isAdmin = false;
+      this.user = { };
     },
-      addWeeks(n) {
-        //change weeks here
-      }
+    addWeeks(n) {
+      //change weeks here
+    }
   },
   computed: {
   },
