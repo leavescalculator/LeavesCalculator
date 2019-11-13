@@ -22,7 +22,7 @@
       </div>
 
       <div class="row">
-        <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+        <div>
           <router-view
             @token-acquired="authSuccess"
             :auth="auth"
@@ -41,7 +41,6 @@
 
 <script>
 import Header from "./components/Header";
-import $ from 'jquery'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 import Questions from './assets/nodes.json';
@@ -67,8 +66,8 @@ export default {
           "fte": 1.0,
           "month_lookback_12": "1711.48000000000",
           "month_lookback_6": "833.75",
-          "fmla_eligibility": "M",
-          "ofla_eligibility": "B",
+          "fmla_eligibility": "T",
+          "ofla_eligibility": "T",
           "deductions_eligibility": [
               "LST",
               "LTD",
@@ -140,12 +139,12 @@ export default {
         //change weeks here
       }
   },
-    computed: {
-    },
-    mounted() {
-      console.log(Questions.Nodes);
-      this.nodes = Questions.Nodes;
-    }
+  computed: {
+  },
+  mounted() {
+    console.log(Questions.Nodes);
+    this.nodes = Questions.Nodes;
+  }
 };
 </script>
 <!-- styling for the component -->

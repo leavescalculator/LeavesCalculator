@@ -1,276 +1,510 @@
 <template>
   <div id="admin-dashboard">
-    <tr>
-      <td>
-        <button type="button" @click="addNode">Add a Node</button>
-        <input type="text" id="name" placeholder="name"></input>
-        <input type="text" id="parent" placeholder="parent"></input></td>
-      <td>|</td>
-      <td>
-        <button type="button" @click="addData">Add data to node</button>
-        <input type="text" id="dataNode" placeholder="node"></input>
-        <input type="text" id="key" placeholder="key"></input>
-        <input type="text" id="value" placeholder="value"></input>
-      </td>
-    </tr>
-    <button class="btn btn-success" @click="changeView">Change view</button>
+    <div class="header row">
+      <div class="col-auto">
+        <textarea
+          id="jsonOrPositions"
+          class="form-control"
+          cols=50 rows=3
+        ></textarea>
+        <br />
+        <div class="btn-group" role="group">
+        <button class="btn btn-info" @click="outputJson">
+          Output JSON
+        </button>
+        <button class="btn btn-info" @click="loadJson">
+          Load JSON
+        </button>
+        <button class="btn btn-info" @click="outputPositions">
+          Output Positions
+        </button>
+        <button class="btn btn-info" @click="loadPositions">
+          Load Positions
+        </button>
+        </div>
+      </div>
 
-    <hr>
-    <textarea id="json" cols=50 rows=4></textarea>
-    <button type="button" @click="remAllNode">Delete graph</button>
-    <button type="button" @click="loadFromJSON">Load JSON</button>
+      <div class="col-auto">
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label for="newNodeId" class="input-group-text">ID:</label>
+          </div>
+          <input
+            type="text"
+            id="newNodeId"
+            placeholder="example id"
+            class="col form-control"
+          />
+        </div>
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label for="newNodeInput" class="input-group-text">Input:</label>
+          </div>
+          <select class="form-control" id="newNodeInput">
+              <option selected hidden disabled>Select one</option>
+              <option v-for="inputType in inputTypes" :key="inputType">
+                {{ inputType }}
+              </option>
+          </select>
+        </div>
+        <button class="btn btn-success" @click="addNode">Add a Node</button>
+      </div>
 
-    <hr>
-    <div id="cy" @click="showInfo"></div>
-    <div id="elementInfo">
-      {{ selectedElement }}
-      <button type="button" @click="remNode" style="pointer-events: auto;">Remove element</button>
+      <div class="col-auto">
+        <button @click="() => this.ur.undo()" class="btn btn-warning">
+          Undo Element Removal
+        </button>
+      </div>
     </div>
-    
+
+    <div id="graph"></div>
+
+    <!-- The popper element for changing element properties -->
+    <div id="elementInfo">
+      <div class="row input-group">
+        <div class="col input-group-prepend">
+          <label class="input-group-text" for="elementTitle">Title:</label>
+        </div>
+        <textarea
+          v-if="selectedElement"
+          id="elementTitle"
+          class="col form-control"
+          v-model="selectedElement.title"
+        ></textarea>
+      </div>
+
+      <!-- Edge -->
+      <template v-if="selectedElement && selectedElement.isEdge">
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeHours">
+              Added hours:
+            </label>
+          </div>
+          <input
+            type="number"
+            id="edgeHours"
+            v-model="selectedElement.add_time.hours"
+            class="col form-control"
+          />
+        </div>
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeWeeks">
+              Added weeks:
+            </label>
+          </div>
+          <input
+            type="number"
+            id="edgeWeeks"
+            v-model="selectedElement.add_time.weeks"
+            class="col form-control"
+          />
+        </div>
+
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeLeaveType">
+              Leave type:
+            </label>
+          </div>
+          <select
+            v-model="selectedElement.add_time.type"
+            id="edgeLeaveType"
+            class="col form-control"
+          >
+            <option
+              v-for="addedTimeType in leaveTypes"
+              :value="addedTimeType.value"
+              :key="addedTimeType.value"
+              :selected="addedTimeType.value == selectedElement.add_time.type"
+            >{{ addedTimeType.type }}</option>
+          </select>
+        </div>
+
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeSource">
+              Source node:
+            </label>
+          </div>
+          <button
+            @click="selectNode(selectedElement.source)"
+            id="edgeSource"
+            class="col form-control btn btn-info"
+          >{{ selectedElement.source }}</button>
+        </div>
+
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeTarget">
+              Target node:
+            </label>
+          </div>
+          <button
+            @click="selectNode(selectedElement.target)"
+            id="edgeTarget"
+            class="col form-control btn btn-info"
+          >{{ selectedElement.target }}</button>
+        </div>
+      </template>
+
+      <!-- Node -->
+      <template v-else-if="selectedElement">
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <span class="input-group-text">Id:</span>
+          </div>
+          <em class="col form-control">
+            {{ selectedElement.id }}
+          </em>
+        </div>
+
+        <div class="row input-group">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="nodeInput">Input:</label>
+          </div>
+          <select
+            v-model="selectedElement.input"
+            id="nodeInput"
+            class="col form-control"
+          >
+            <option
+              v-for="inputType in inputTypes"
+              :value="inputType"
+              :key="inputType"
+              :selected="inputType == selectedElement.input"
+            >{{ inputType }}</option>
+          </select>
+        </div>
+      </template>
+
+      <div class="row input-group">
+        <button
+          type="button"
+          @click="removeElement"
+          class="form-control btn btn-danger"
+        >Remove element</button>
+      </div>
+    </div>
   </div>
 </template>
 <script>
-    import cytoscape from 'cytoscape'
-    import popper from 'cytoscape-popper'
-    import edgehandles from 'cytoscape-edgehandles'
-    import json from '../assets/nodes.json'
+  import cytoscape from 'cytoscape'
+  import edgehandles from 'cytoscape-edgehandles'
+  import undoRedo from 'cytoscape-undo-redo'
+  import popper from 'cytoscape-popper'
+  import json from '../assets/nodes.json'
 
-    cytoscape.use(popper)
-    cytoscape.use(edgehandles)
+  cytoscape.use(edgehandles)
+  cytoscape.use(undoRedo)
+  cytoscape.use(popper)
 
-    export default {
-        name: 'admin-dashboard',
-        data: () => ({
-            nodes: json.Nodes,
-            bezierView: true,
-            selectedElement: '',
-        }),
-        mounted: function () {
-            this.cy = cytoscape({
-                container: document.getElementById('cy'),
-                layout: {
-                    name: 'grid'
-                },
-                style: [
-                    {
-                        selector: 'node',
-                        style: {
-                            'shape': 'hexagon',
-                            //'background-color': 'green',
-                            'label': 'data(label)',
-                        }
-                    },
-                    {
-                        selector: 'edge',
-                        style: {
-                            'curve-style': 'bezier',
-                            'text-rotation': 'autorotate',
-                            'target-arrow-shape': 'triangle',
-                            'label': 'data(label)',
-                            'text-margin-y': -12,
-                        }
-                    },
-                    {
-                        selector: '.eh-handle',
-                        style: {
-                            'background-color': 'red',
-                            'width': 12,
-                            'height': 12,
-                            'shape': 'ellipse',
-                            'overlay-opacity': 0,
-                            'border-width': 12,
-                            'border-opacity': 0
-                        }
-                    },
-                    {
-                        selector: '.eh-hover',
-                        style: {
-                            'background-color': 'red'
-                        }
-                    },
-                    {
-                        selector: '.eh-source',
-                        style: {
-                            'border-width': 2,
-                            'border-color': 'red'
-                        }
-                    },
-                    {
-                        selector: '.eh-target',
-                        style: {
-                            'border-width': 2,
-                            'border-color': 'red'
-                        }
-                    },
-                    {
-                        selector: '.eh-preview, .eh-ghost-edge',
-                        style: {
-                            'background-color': 'red',
-                            'line-color': 'red',
-                            'target-arrow-color': 'red',
-                            'source-arrow-color': 'red'
-                        }
-                    },
-                    {
-                        selector: '.eh-ghost-edge.eh-preview-active',
-                        style: {
-                            'opacity': 0
-                        }
-                    }
-                ],
-                selectionType: 'single',
-            })
-            this.cy.edgehandles({
-                snap: true
-            });
-
-            this.parseJson();
-
-            this.treeLayout();
-            this.update_json_display();
-        },
-        methods: {
-            parseJson() {
-                for (const node of Object.keys(this.nodes)) {
-                    this.cy.add({
-                        data: {
-                            id: node,
-                            input: this.nodes[node].input,
-                            label: node.substring(0, 30)
-                        }
-                    });
-                }
-                for (const node of Object.keys(this.nodes)) {
-                    for (const option of this.nodes[node].options) {
-                        try {
-                            let node_color = this.cy.nodes('[id="' + option.next_node + '"]').style()['background-color'];
-                            let edge = this.cy.add({
-                                data: {
-                                    label: option.title.substring(0, 30),
-                                    title: option.title,
-                                    add_hours: option.add_hours,
-                                    source: node,
-                                    target: option.next_node,
-                                }
-                            });
-                            edge.style({
-                                //'line-color': node_color,
-                                'target-arrow-color': node_color,
-                            });
-                        } catch (err) {
-                            console.log(err);
-                        }
-                    }
-                }
-            },
-            treeLayout() {
-                this.cy.layout({
-                    name: 'breadthfirst'
-                }).run();
-            },
-            circleLayout() {
-                this.cy.layout({
-                    name: 'circle'
-                }).run();
-            },
-            randLayout() {
-                this.cy.layout({
-                    name: 'random'
-                }).run();
-            },
-            addNode() {
-                var name = document.getElementById("name").value;
-                var parent = document.getElementById("parent").value;
-
-                console.log("Adding node `" + name + "`, child of `" + parent + "`");
-                if (name !== "") {
-                    this.cy.add({
-                        data: {id: name}
-                    })
-                    if (parent != "") {
-                        this.cy.add({
-                            data: {
-                                id: parent + name,
-                                source: parent,
-                                target: name,
-                            }
-                        })
-                    }
-                }
-                update_json_display();
-            },
-            remNode() {
-                this.cy.$(':selected').remove();
-                this.update_json_display();
-                document.getElementById("elementInfo").style.visibility = 'hidden';
-            },
-            remAllNode() {
-                this.cy.elements().remove();
-                this.update_json_display();
-            },
-            addData() {
-                var node = document.getElementById("dataNode").value;
-                var key = document.getElementById("key").value;
-                var value = document.getElementById("value").value;
-                j = this.cy.$('#' + node);
-                j.data(key, value);
-                update_json_display();
-            },
-            update_json_display() {
-                document.getElementById("json").value = JSON.stringify(this.cy.json());
-            },
-            loadFromJSON() {
-                var j = document.getElementById("json").value;
-                this.cy.json(JSON.parse(j));
-                treeLayout();
-            },
-            showInfo() {
-                let div = document.getElementById('elementInfo');
-                if (this.cy.$(':selected').length > 0) {
-                    let element = this.cy.$(':selected')[0];
-                    let popper = element.popper({
-                        content: () => {
-                            if (element.isEdge()) {
-                                this.selectedElement = 'Edge: ' + element.data('title')
-                                    + '\nSource node: ' + element.data('source')
-                                    + '\nTarget node: ' + element.data('target');
-                            } else {
-                                this.selectedElement = 'Node: ' + element.data('id')
-                                    + '\nInput: ' + element.data('input');
-                            }
-                            div.style.visibility = 'visible';
-                            return div;
-                        }
-                    });
-                    let update = () => {
-                        popper.scheduleUpdate();
-                    };
-                    element.on('position', update);
-                    this.cy.on('pan zoom resize', update);
-                } else {
-                    div.style.visibility = 'hidden';
-                }
-            },
-            changeView() {
-                if (this.bezierView) {
-                    this.cy.elements('edge').style({
-                        'curve-style': 'taxi',
-                        'text-rotation': 'none',
-                    })
-                } else {
-                    this.cy.elements('edge').style({
+  export default {
+      name: 'admin-dashboard',
+      data: () => ({
+          // The nodes objects from `src/assets/nodes.json`
+          nodes: json.Nodes,
+          // Will become an object with setters and getters for fields of the selected element on selection
+          selectedElement: null,
+          // The available input fields for a node
+          inputTypes: [ 'button', 'drop down', 'display', 'database' ],
+          // The types of leave and their corresponding acronyms
+          leaveTypes: [
+            { type: 'Not Applicable', value: 'n/a' },
+            { type: 'Sick',           value: 'LTS' },
+            { type: 'Vacation',       value: 'LTV' },
+            { type: 'AAUP/SEIU',      value: 'LW1' },
+            { type: 'STD',            value: 'STD' },
+            { type: 'Unpaid Leave',   value: 'LW3' },
+            { type: 'FLSA/NLFA',      value: 'LSA' },
+            { type: 'Personal Day',   value: 'Per' },
+          ],
+      }),
+      mounted: function () {
+        this.cy = cytoscape({
+          container: document.getElementById('graph'),
+            style: [
+                {
+                    selector: 'edge',
+                    style: {
                         'curve-style': 'bezier',
+                        'target-arrow-shape': 'triangle',
+                        'control-point-step-size': 50,
+                    }
+                },
+                {
+                    selector: '.graph-node',
+                    style: {
+                        'label': 'data(label)',
+                        'color': '#000',
+                        'text-background-color': '#ccc',
+                        'text-background-opacity': 0.8,
+                        'text-background-padding': 5,
+                        'text-background-shape': 'roundrectangle',
+                    }
+                },
+                {
+                    selector: '.graph-edge',
+                    style: {
+                        'label': 'data(label)',
+                        'target-arrow-color': 'green',
+                        'color': '#fff',
+                        'text-background-color': '#333',
+                        'text-background-opacity': 0.8,
+                        'text-background-padding': 5,
+                        'text-background-shape': 'roundrectangle',
                         'text-rotation': 'autorotate',
-                    })
+                    }
+                },
+                {
+                    selector: '.eh-handle',
+                    style: {
+                        'background-color': 'red',
+                        'width': 12,
+                        'height': 12,
+                        'shape': 'ellipse',
+                        'overlay-opacity': 0,
+                        'border-width': 12,
+                        'border-opacity': 0
+                    }
+                },
+                {
+                    selector: '.eh-hover',
+                    style: {
+                        'background-color': 'red'
+                    }
+                },
+                {
+                    selector: '.eh-source',
+                    style: {
+                        'border-width': 2,
+                        'border-color': 'red'
+                    }
+                },
+                {
+                    selector: '.eh-target',
+                    style: {
+                        'border-width': 2,
+                        'border-color': 'red'
+                    }
+                },
+                {
+                    selector: '.eh-preview, .eh-ghost-edge',
+                    style: {
+                        'background-color': 'red',
+                        'line-color': 'red',
+                        'target-arrow-color': 'red',
+                        'source-arrow-color': 'red'
+                    }
+                },
+                {
+                    selector: '.eh-ghost-edge.eh-preview-active',
+                    style: {
+                        'opacity': 0
+                    }
                 }
-                this.bezierView = !this.bezierView
+            ],
+            selectionType: 'single',
+        })
+        this.cy.edgehandles({
+            snap: true,
+            complete: (sourceNode, targetNode, addedEles) => {
+              addedEles.data('title', '')
+              addedEles.data('label', '')
+              addedEles.data('add_time', { hours: 0, type: 'n/a' })
+              addedEles.addClass('graph-edge')
+              addedEles.on('select', this.showInfo)
+              addedEles.on('unselect', this.hideInfo)
             }
-        }
-    }
+        });
+        this.ur = this.cy.undoRedo({
+            undoableDrag: false
+        })
+
+        this.parseJson(this.nodes);
+        this.cy.layout({
+          name: 'breadthfirst'
+        }).run()
+      },
+      methods: {
+          parseJson(nodes) {
+            for (const node of Object.keys(nodes)) {
+                let element = this.cy.add({
+                    data: {
+                        id: node,
+                        label: node,
+                        title: nodes[node].title,
+                        input: nodes[node].input,
+                    },
+                    classes: 'graph-node',
+                });
+                element.on('select', this.showInfo)
+                element.on('unselect', this.hideInfo)
+            }
+            for (const node of Object.keys(nodes)) {
+                for (const option of nodes[node].options) {
+                    try {
+                        let edge = this.cy.add({
+                            data: {
+                                title: option.title,
+                                label: option.title.substring(0, 30),
+                                add_time: option.add_time,
+                                source: node,
+                                target: option.next_node,
+                            },
+                            classes: 'graph-edge',
+                        });
+                        edge.on('select', this.showInfo)
+                        edge.on('unselect', this.hideInfo)
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
+            }
+          },
+          outputJson() {
+            let output = {};
+            let nodes = this.cy.$('.graph-node')
+            for(let node = 0; node < nodes.length; node++) {
+              let element = nodes[node]
+              let nodeId = element.data('id')
+              output[nodeId] = {
+                title: element.data('title'),
+                input: element.data('input'),
+                options: [],
+              }
+              let edges = this.cy.edges('[source = "' + nodeId + '"]')
+              for(let edge = 0; edge < edges.length; edge++) {
+                element = edges[edge]
+                output[nodeId].options.push({
+                  title:     element.data('title'),
+                  add_time: element.data('add_time'),
+                  next_node: element.data('target'),
+                })
+              }
+            }
+            document.getElementById('jsonOrPositions').value = JSON.stringify(output)
+          },
+          outputPositions() {
+            let output = []
+            let nodes = this.cy.$('.graph-node')
+            for(let node = 0; node < nodes.length; node++) {
+              output.push(nodes[node].relativePosition())
+            }
+            document.getElementById('jsonOrPositions').value = JSON.stringify(output)
+          },
+          loadPositions() {
+              var json = document.getElementById("jsonOrPositions").value;
+              let positions = JSON.parse(json);
+              for(let node = 0; node < positions.length; node++) {
+                this.cy.$('.graph-node')[node].relativePosition(positions[node])
+              }
+          },
+          addNode() {
+              var id = document.getElementById("newNodeId").value;
+              var input = document.getElementById("newNodeInput").value;
+
+              let node = this.cy.add({
+                  data: {
+                      id: id,
+                      label: id.substring(0, 30),
+                      input: input,
+                  },
+                  classes: 'graph-node'
+              });
+              node.on('select', this.showInfo)
+              node.on('unselect', this.hideInfo)
+          },
+          removeElement() {
+              if(this.cy.$(':selected').length > 0) {
+                  this.ur.do("remove", this.cy.$(':selected')[0])
+                  document.getElementById("elementInfo").style.visibility = 'hidden';
+              }
+          },
+          loadJson() {
+              var json = document.getElementById("jsonOrPositions").value;
+              var nodes ={Nodes: JSON.parse(json)}
+            console.log()
+              this.cy.$('.graph-node').remove()
+              this.parseJson(nodes.Nodes);
+              this.cy.layout({
+                name: 'breadthfirst'
+              }).run()
+          },
+          hideInfo() {
+            let div = document.getElementById('elementInfo');
+            div.style.visibility = 'hidden'
+          },
+          showInfo() {
+              let div = document.getElementById('elementInfo');
+              let element = this.cy.$(':selected')[0];
+              let popper = element.popper({
+                  content: () => {
+                      let isEdge = element.isEdge();
+                      if(isEdge) {
+                        this.selectedElement = {
+                            isEdge: true,
+                            get title() {
+                                return element.data('title')
+                            },
+                            set title(title) {
+                                element.data('title', title)
+                                element.data('label', title.substring(0, 30))
+                            },
+                            get add_time() {
+                                return element.data('add_time')
+                            },
+                            set add_time(add_time) {
+                                element.data('add_time', add_time)
+                            },
+                            source: element.data('source'),
+                            target: element.data('target'),
+                        };
+                      } else {
+                        this.selectedElement = {
+                            isEdge: false,
+                            get id() {
+                                return element.data('id')
+                            },
+                            get title() {
+                                return element.data('title')
+                            },
+                            set title(title) {
+                                element.data('title', title)
+                            },
+                            get input() {
+                                return element.data('input')
+                            },
+                            set input(input) {
+                                element.data('input', input)
+                            },
+                        };
+                      }
+                      div.style.visibility = 'visible';
+                      return div;
+                  }
+              });
+              let update = () => {
+                  popper.scheduleUpdate();
+              };
+              element.on('position', update);
+              this.cy.on('pan zoom resize', update);
+          },
+          selectNode(to_select) {
+              this.cy.$(':selected').unselect()
+              this.cy.$id(to_select).select()
+              this.showInfo()
+          }
+      }
+  }
 </script>
-<!-- styling for the component -->
 <style>
-  #cy {
+  .header {
+    background-color: #fff;
+  }
+
+  #graph {
     width: 100%;
     height: 80%;
     position: absolute;
@@ -280,9 +514,25 @@
 
   #elementInfo {
     visibility: hidden;
-    border: 1px solid red;
+    border: 2px solid #ccc;
     background: #fff;
-    pointer-events: none;
-    width: 500px;
+    padding: 10px;
+  }
+
+  .row {
+    margin: 2px;
+  }
+
+  .input-group-prepend {
+    padding: 0;
+  }
+
+  .input-group-text {
+    width: inherit;
+  }
+
+  .form-control {
+    height: auto;
+    min-width: 200px;
   }
 </style>
