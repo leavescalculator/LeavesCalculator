@@ -1,5 +1,5 @@
 <template>
-  <div id="admin-dashboard">
+  <div id="admin-dashboard" v-if="isAdmin">
     <div class="header row">
       <div class="col-auto">
         <textarea
@@ -203,6 +203,7 @@
 
   export default {
       name: 'admin-dashboard',
+      props: ['isAdmin'],
       data: () => ({
           graph_style: graph_style.style,
           // The nodes objects from `src/assets/nodes.json`

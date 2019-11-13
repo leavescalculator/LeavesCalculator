@@ -48,7 +48,7 @@ export default {
       console.log("Options: " + this.options.length);
         let i = 0;
       while (i < this.options.length) {
-          console.log(i);
+          console.log('DB: ' + i);
           if (this.options[i].hasOwnProperty('title')) {
               if (this.parse(this.options[i].title)) {
                   this.$emit('option-selected', i);

@@ -18,47 +18,44 @@
         <button class="btn btn-success" @click="changeUser">Change User</button>
       </div>
     </div>
+    <div v-if="user.employee_id != null">
+      <btn-question
+        :title="Nodes[currentNode].title"
+        :options="Nodes[currentNode].options"
+        @option-selected="optionSelected"
+        v-if="Nodes[currentNode].input === 'button'"
+      ></btn-question>
 
-    <btn-question
-      :title="Nodes[currentNode].title"
-      :options="Nodes[currentNode].options"
-      @option-selected="optionSelected"
-      v-if="Nodes[currentNode].input === 'button'"
-    ></btn-question>
+      <display-question
+        :title="Nodes[currentNode].title"
+        :options="Nodes[currentNode].options"
+        @option-selected="optionSelected"
+        v-if="Nodes[currentNode].input === 'display'"
+      ></display-question>
 
-    <display-question
-      :title="Nodes[currentNode].title"
-      :options="Nodes[currentNode].options"
-      @option-selected="optionSelected"
-      v-if="Nodes[currentNode].input === 'display'"
-    ></display-question>
+      <drop-down-question
+        :title="Nodes[currentNode].title"
+        :options="Nodes[currentNode].options"
+        @option-selected="optionSelected"
+        v-if="Nodes[currentNode].input === 'drop down'"
+      ></drop-down-question>
 
-    <drop-down-question
-      :title="Nodes[currentNode].title"
-      :options="Nodes[currentNode].options"
-      @option-selected="optionSelected"
-      v-if="Nodes[currentNode].input === 'drop down'"
-    ></drop-down-question>
-
-    <!--<btn-question
-      :title="currentNode"
-      :options="Nodes[currentNode].options"
-      @option-selected="optionSelected"
-      v-if="Nodes[currentNode].input === 'database'"
-    ></btn-question>
-    -->
-    <database-question
-      :title="Nodes[currentNode].title"
-      :options="Nodes[currentNode].options"
-      @option-selected="optionSelected"
-      v-if="Nodes[currentNode].input === 'database'"
-      :user="user"
+      <database-question
+        :title="Nodes[currentNode].title"
+        :options="Nodes[currentNode].options"
+        @option-selected="optionSelected"
+        v-if="Nodes[currentNode].input === 'database'"
+        :user="user"
       ></database-question>
 
-    <br />
-    <button class="btn btn-success" @click="goBack()" v-if="stack[0]">
-      Back
-    </button>
+      <br />
+      <button class="btn btn-success" @click="goBack()" v-if="stack[0]">
+        Back
+      </button>
+    </div>
+    <div v-if="user.employee_id == null && !isAdmin">
+      <router-link to="/" class="nav-item nav-link" tag="li" active-class="active"><a>Login</a></router-link>
+    </div>
   </div>
 </template>
 
@@ -91,7 +88,7 @@ export default {
   },
   methods: {
     optionSelected(selected) {
-      console.log(selected);
+      console.log(this.stack);
       //do any relevant stuff here ie addWeeks
       let curr = this.Nodes[this.currentNode].options[selected];
 
@@ -125,6 +122,7 @@ export default {
       //add code to replace the user object with a new one based on a provided username
       console.log(this.usrname);
       console.log("Attempting to change to :" + this.usrname);
+      this.currentNode = "work related injury",
       this.$emit('change-user', this.usrname);
     }
   }
