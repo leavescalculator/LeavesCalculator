@@ -134,16 +134,16 @@ class pdrdedn(models.Model):
         return self.name
 
 class graph(models.Model):
-    #id = models.IntegerField(primary_key=True)
-    #graph_name = models.CharField(max_length=200, default=String(id))
-    #graph_date = models.DateField(auto_now=True)
+  #  id = models.IntegerField(primary_key=True)
+    graph_name = models.CharField(max_length=200, default=str(id))
+    graph_date = models.DateField(auto_now=True)
     date = models.DateField(auto_now=True)
     graph_data = jsonfield.JSONField()
     # 'D' means dormat, 'A' means active
-    #graph_status = models.CharField(max_length=1, primary_key=True, default='D')
+    graph_status = models.CharField(max_length=1, primary_key=True, default='D')
     def _str_(self):
         return self.name
-    '''
+    
     def query_all_graphs(self):
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM database_graph;")
@@ -161,10 +161,10 @@ class graph(models.Model):
             current_active_graph.save()
         self.graph_status = 'A'
         self.save()
-    '''
+    
 class leavereports(models.Model):
-    #id = models.IntegerField(primary_key=True)
-    #leavereports_pidm = models.IntegerField()
+   # id = models.IntegerField(primary_key=True)
+    leavereports_pidm = models.IntegerField()
     leavereports_pidm = models.IntegerField(primary_key=True)
     leavereports_date = models.DateField(auto_now=True)
     leavereports_report = jsonfield.JSONField()
@@ -202,8 +202,8 @@ class Employee(models.Model):
     paid_leave_balances = models.TextField(default=0)
     protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     max_protected_leave_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    #reports = jsonfield.JSONField()
-    #graph = jsonfield.JSONField()
+    reports = jsonfield.JSONField()
+    graph = jsonfield.JSONField()
 
     def query_employee_id(self):
         gobeacc_user = gobeacc.objects.filter(gobeacc_username=self.odin_username)
@@ -352,14 +352,14 @@ class Employee(models.Model):
             for r in result:
                 self.paid_leave_balances[r["leave_code"]] = r["balance"]
 
-    #def query_reports(self):
-    #    reports = leavereports.objects.filter(leavereports_pidm=self.employee_id)
-    #    self.reports = model_to_dict(reports)
+    def query_reports(self):
+        reports = leavereports.objects.filter(leavereports_pidm=self.employee_id)
+        self.reports = model_to_dict(reports)
 
-    #def query_current_graph(self):
-        #active_graph = Graph()
-        #active_graph = graph.query_active_graph()
-        #self.graph = model_to_dict(active_graph)
+    def query_current_graph(self):
+        active_graph = Graph()
+        active_graph = graph.query_active_graph()
+        self.graph = model_to_dict(active_graph)
 
     def query_other_employee_info(self):
         self.query_lookback_hrs()

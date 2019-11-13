@@ -36,7 +36,7 @@ def employee(request, usrname):
         return JsonResponse(model_to_dict(e))
     return JsonResponse(model_to_dict(e))
 
-'''
+
 def getGraphs(request):
     graphs = Graph()
     graphs.query_all_graphs()
@@ -68,4 +68,3 @@ def update_existing_report(request):
     report, created = Leavereports.update_or_create(
         id='REPORT_ID', defaults={'leavereports_report': REPORT_DATA, 'leavereports_pidm': EMPLOYEE_ID}
     )
-'''
