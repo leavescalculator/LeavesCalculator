@@ -10,6 +10,7 @@
         @logout="logOut"
         :user="user"
         :isAdmin="isAdmin"
+        :Nodes="nodes"
         @change-user="changeEmployee"
       ></router-view>
     </div>
@@ -31,6 +32,7 @@
             :user="user"
             @add-weeks="addWeeks"
             @getEmployee="getEmployee"
+            :Nodes="nodes"
           ></router-view>
         </div>
       </div>
@@ -43,6 +45,8 @@
 import Header from "./components/Header";
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
+import Questions from './assets/nodes.json';
+
 export default {
   name: 'app',
   data: () => ({
@@ -51,6 +55,7 @@ export default {
     isAdmin: false,
     infoError: "",
     user: { },
+    nodes: {},
   }),
   components: {
       appHeader: Header,
@@ -81,7 +86,7 @@ export default {
       console.log(emp_u);
       fetch('http://localhost:8000/database/' + emp_u + '/', {
         method: 'GET',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': this.auth
         }
@@ -109,11 +114,12 @@ export default {
       //change weeks here
     }
   },
-    computed: {
-      isAdminBoard() {
-          return this.$route.path === "/admin-dashboard/"
-      }
-    }
+  computed: {
+  },
+  mounted() {
+    console.log(Questions.Nodes);
+    this.nodes = Questions.Nodes;
+  }
 };
 </script>
 <!-- styling for the component -->

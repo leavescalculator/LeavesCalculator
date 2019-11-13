@@ -11,46 +11,49 @@
           placeholder="other username"
           class="form-control"
           v-model="usrname"
+          @keydown.enter="changeUser"
         />
       </div>
       <div class="col-md-2">
         <button class="btn btn-success" @click="changeUser">Change User</button>
       </div>
     </div>
+
     <btn-question
-      :title="currentNode"
-      :options="Questions.Nodes[currentNode].options"
+      :title="Nodes[currentNode].title"
+      :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
-      v-if="Questions.Nodes[currentNode].input == 'button'"
+      v-if="Nodes[currentNode].input === 'button'"
     ></btn-question>
 
     <display-question
-      :title="currentNode"
-      :options="Questions.Nodes[currentNode].options"
+      :title="Nodes[currentNode].title"
+      :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
-      v-else-if="Questions.Nodes[currentNode].input == 'display'"
+      v-if="Nodes[currentNode].input === 'display'"
     ></display-question>
 
     <drop-down-question
-      :title="currentNode"
-      :options="Questions.Nodes[currentNode].options"
+      :title="Nodes[currentNode].title"
+      :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
-      v-else-if="Questions.Nodes[currentNode].input == 'drop down'"
+      v-if="Nodes[currentNode].input === 'drop down'"
     ></drop-down-question>
 
-    <btn-question
+    <!--<btn-question
       :title="currentNode"
-      :options="Questions.Nodes[currentNode].options"
+      :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
-      v-if="Questions.Nodes[currentNode].input == 'database'"
+      v-if="Nodes[currentNode].input === 'database'"
     ></btn-question>
-
-    <!-- <database-question
-      :title="currentNode"
-      :options="Questions.Nodes[currentNode].options"
+    -->
+    <database-question
+      :title="Nodes[currentNode].title"
+      :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
-      v-else-if="Questions.Nodes[currentNode].input == 'database'"
-      ></database-question> -->
+      v-if="Nodes[currentNode].input === 'database'"
+      :user="user"
+      ></database-question>
 
     <br />
     <button class="btn btn-success" @click="goBack()" v-if="stack[0]">
@@ -64,16 +67,17 @@ import BtnQuestion from './BtnQuestion.vue';
 import DisplayQuestion from './DisplayQuestion.vue';
 import DropDownQuestion from './DropDownQuestion.vue';
 import DatabaseQuestion from './DatabaseQuestion.vue';
-import Questions from '../assets/nodes.json';
+
+
 
 export default {
   name: "questions",
-  props: ["isAdmin", "user"],
+  props: ["isAdmin", "user", "Nodes"],
   data: () => ({
-    currentNode: "Do you have a work related injury?", // initialized to first node of JSON graph structure
+    currentNode: "work related injury", // initialized to first node of JSON graph structure
     hours: 0, // accumulated leave hours
     stack: [], // structure containing nodes visited
-    Questions,
+    usrname: "",
   }),
   computed: {},
   components: {
@@ -82,14 +86,14 @@ export default {
     DropDownQuestion,
     DatabaseQuestion
   },
+  mounted() {
+    console.log(this.Nodes);
+  },
   methods: {
     optionSelected(selected) {
       console.log(selected);
       //do any relevant stuff here ie addWeeks
-      let curr = this.Questions.Nodes[this.currentNode].options[selected];
-      if (curr.weeks !== 0) {
-        this.$emit("add-weeks", curr.weeks);
-      }
+      let curr = this.Nodes[this.currentNode].options[selected];
 
       this.stack.push(this.currentNode);
       this.currentNode = curr.next_node;
@@ -98,20 +102,25 @@ export default {
       console.log("in go back");
       let oldNode = this.currentNode;
       this.currentNode = this.stack.pop();
-      //logic to finde Nodes[currentNod] option leading to oldNode
+      //logic to find Nodes[currentNod] option leading to oldNode
       // then update weeks if needed
-        var option;
-        for (var o in this.Nodes[this.currentNode].options) {
+        let option;
+        //Find the path from the node we backed up to, to the one we left
+        for (let o in this.Nodes[this.currentNode].options) {
             if (o.next_node === oldNode) {
                 option = o;
                 break;
             }
         }
-        if(option.hasOwnProperty('weeks')){
-            this.$emit('add-weeks', -option.weeks);
-        }
+        //If this edge modifies the number of protected weeks, undo that change because
+        //we are backing up
+        //if(option.hasOwnProperty('weeks')){
+          //  this.$emit('add-weeks', -option.weeks);
+        //}
     },
     changeUser() {
+      //add code to replace the user object with a new one based on a provided username
+      console.log(this.usrname);
       console.log("Attempting to change to :" + this.usrname);
       this.$emit('change-user', this.usrname);
     }
