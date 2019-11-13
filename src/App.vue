@@ -10,6 +10,7 @@
         @logout="logOut"
         :user="user"
         :isAdmin="isAdmin"
+        @change-user="changeEmployee"
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
@@ -61,11 +62,21 @@ export default {
       this.user = this.getEmployee(this.username);
         //get user/graph
     },
+    changeEmployee(event) {
+      if(this.isAdmin) {
+        if(this.getEmployee(event)) {
+          console.log("Now using " + event + "'s information.");
+        }
+      }
+      else {
+        console.log("Nice try bozo.");
+      }
+    },
     getEmployee(name) {
       var data = JSON.stringify({ name })
       var emp_u = name.toUpperCase();
       console.log(emp_u);
-      fetch('http://localhost:8000/database/' + emp_u, {
+      fetch('http://localhost:8000/database/' + emp_u, + '/', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
