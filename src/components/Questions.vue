@@ -95,7 +95,10 @@ export default {
       //do any relevant stuff here ie addWeeks
       let curr = this.Nodes[this.currentNode].options[selected];
 
-      this.stack.push(this.currentNode);
+      console.log(this.Nodes[this.currentNode].input);
+      if(this.Nodes[this.currentNode].input !== 'database') {
+        this.stack.push(this.currentNode);
+      }
       this.currentNode = curr.next_node;
     },
     goBack() {
