@@ -59,7 +59,8 @@ export default {
       this.username = event[1];
       this.isAdmin = event[2];
       //do fetch stuff
-      this.user = this.getEmployee(this.username);
+      console.log("Getting info...");
+      this.getEmployee(this.username);
         //get user/graph
     },
     changeEmployee(event) {
@@ -76,21 +77,21 @@ export default {
       var data = JSON.stringify({ name })
       var emp_u = name.toUpperCase();
       console.log(emp_u);
-      fetch('http://localhost:8000/database/' + emp_u, + '/', {
-        method: 'POST',
+      fetch('http://localhost:8000/database/' + emp_u + '/', {
+        method: 'GET',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': this.auth
-        },
-        body: name,
+        }
       }).then(response => {
         if(!response.ok) {
           throw Error("Failed to retrieve employee.")
+
         }
-        console.log(JSON.stringify(response))
         return response.json()
       }).then(data => {
-        this.user = data.employee;
+        console.log(data);
+        this.user = data;
       }).catch(error => {
         this.infoError = error
       });
