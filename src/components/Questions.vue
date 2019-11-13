@@ -17,6 +17,7 @@
         <button class="btn btn-success" @click="changeUser">Change User</button>
       </div>
     </div>
+
     <btn-question
       :title="Nodes[currentNode].title"
       :options="Nodes[currentNode].options"
@@ -28,14 +29,14 @@
       :title="Nodes[currentNode].title"
       :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
-      v-else-if="Nodes[currentNode].input === 'display'"
+      v-if="Nodes[currentNode].input === 'display'"
     ></display-question>
 
     <drop-down-question
       :title="Nodes[currentNode].title"
       :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
-      v-else-if="Nodes[currentNode].input === 'drop down'"
+      v-if="Nodes[currentNode].input === 'drop down'"
     ></drop-down-question>
 
     <!--<btn-question
@@ -49,7 +50,7 @@
       :title="Nodes[currentNode].title"
       :options="Nodes[currentNode].options"
       @option-selected="optionSelected"
-      v-else-if="Nodes[currentNode].input === 'database'"
+      v-if="Nodes[currentNode].input === 'database'"
       :user="user"
       ></database-question>
 
