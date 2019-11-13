@@ -38,7 +38,7 @@
         "input": "database",
         "options": [
           {
-            "title": "Yes, OFLA (minimum)",
+            "title": "== fmla_eligibility T",
             "next_node": "reason for requesting leave",
             "add_time": {
               "hours": 0,
@@ -47,7 +47,16 @@
             }
           },
           {
-            "title": "Yes, only ADA ",
+            "title": "== fmla_eligibility F",
+            "next_node": "exceptions",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            }
+          },
+          {
+            "title": "else",
             "add_time": {
               "hours": 0,
               "weeks" : 0,
@@ -461,7 +470,7 @@
         "input": "database",
         "options": [
           {
-            "title": "Under 6 months",
+            "title": "== ofla_eligibility M",
             "add_time": {
               "hours": 0,
               "weeks" : 0,
@@ -470,7 +479,7 @@
             "next_node": "military leave"
           },
           {
-            "title": "Over 6 months, but less than 650 hours and 520 hrs or more",
+            "title": "== ofla_eligibility B",
             "add_time": {
               "hours": 0,
               "weeks" : 0,
@@ -479,13 +488,22 @@
             "next_node": "military leave or parental leave?"
           },
           {
-            "title": "Over 6 months but less than 520 hrs",
+            "title": "== ofla_eligibility P",
             "add_time": {
               "hours": 0,
               "weeks" : 0,
               "type": "n/a"
             },
             "next_node": "parental leave?"
+          },
+          {
+            "title": "else",
+            "add_time": {
+              "hours": 0,
+              "weeks" : 0,
+              "type": "n/a"
+            },
+            "next_node": "do not qualify for protected leave"
           }
         ]
       },
