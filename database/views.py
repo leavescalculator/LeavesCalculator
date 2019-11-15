@@ -34,6 +34,7 @@ def employee(request, usrname):
         return JsonResponse(model_to_dict(e))
     return JsonResponse(model_to_dict(e))
 
+@csrf_exempt
 def getGraphs(request):
     graphs = query_all_graphs()
     return JsonResponse(graphs, safe=False)
@@ -47,6 +48,7 @@ def getGraphs(request):
     # 'D' means dormat, 'A' means active
     graph_status = models.CharField(max_length=1, primary_key=True, default='D')
 '''
+@csrf_exempt
 def save_new_graph(request, GRAPH_DATA, GRAPH_NAME, CORDS):
     # TODO: get graph Json blob and name
     new_graph = graph.objects.create(graph_data=GRAPH_DATA, graph_name=GRAPH_NAME, graph_cords = CORDS)

@@ -21,6 +21,9 @@
         <button class="btn btn-info" @click="loadPositions">
           Load Positions
         </button>
+        <button class="btn btn-info" @click="Save">
+          Save Graph
+        </button>
         </div>
       </div>
 
@@ -357,6 +360,35 @@
           hideInfo() {
             let div = document.getElementById('elementInfo');
             div.style.visibility = 'hidden'
+          },
+          Save(){
+          var data = JSON.stringify({ name })
+          var emp_u = name.toUpperCase();
+          console.log(emp_u);
+          fetch('http://localhost:8000/database/savegraph/',{
+            method: 'POST',
+            body:{
+              "GRAPH_DATA": "ASDFASD",
+              "GRAPH_NAME": "Asd",
+              "CORDS": "aDSF",
+            },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': this.auth
+            }
+          }).then(response => {
+            if(!response.ok) {
+              throw Error("Failed to retrieve employee.")
+
+            }
+            return response.json()
+          }).then(data => {
+            console.log(data);
+            this.user = data;
+          }).catch(error => {
+            this.infoError = error
+          });
+
           },
           showInfo() {
               let div = document.getElementById('elementInfo');
