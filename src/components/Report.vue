@@ -216,8 +216,20 @@
     <h3>Leave Plan</h3>
     <table>
       <tbody>
+        <tr>
+          <th>Week</th>
+          <th>Protected?</th>
+          <th>LeaveType</th>
+          <th>% Paid</th>
+          <th>LeaveUsed</th>
+          <th>%</th>
+          <th>Pay</th>
+        </tr>
         <tr v-for="(row, rowindex) in leave" :key="rowindex">
           <td v-for="(col, colindex) in row" :key="rowindex-colindex">{{ col }}</td>
+          <div id='addWeek'>
+            <button v-on:click="addWeek(index)" v-model="index" class="btn btn-info">Add LeaveType</button>
+          </div>
         </tr>
       </tbody>
    </table>
@@ -354,7 +366,7 @@ export default {
       0.0, // Per
     ],
     leave:[
-      ['Week', 'Protected', 'LeaveType', 'Paid', 'LeaveUsed', 'Percent', 'Pay'],
+      //['Week', 'Protected', 'LeaveType', 'Paid', 'LeaveUsed', 'Percent', 'Pay'],
       [1,'','',0.0,0.0,0.0,0.0],
       [2,'','',0.0,0.0,0.0,0.0],
       [3,'','',0.0,0.0,0.0,0.0],
