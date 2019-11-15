@@ -138,6 +138,7 @@ class graph(models.Model):
     graph_date = models.DateField(auto_now=True)
     date = models.DateField(auto_now=True)
     graph_data = jsonfield.JSONField(null=True)
+    graph_cords =  models.TextField(default=0)
     #graph_nodes = models.TextField(null=True)
     # 'D' means dormat, 'A' means active
     graph_status = models.CharField(max_length=1, primary_key=True, default='D')
