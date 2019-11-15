@@ -1,5 +1,5 @@
 <template>
-  <div id="report">
+  <div id="report" v-if="user.employee_id != null">
     <h1>Portland State University Leave Worksheet</h1>
     <hr />
 
@@ -88,7 +88,7 @@
     <h3>Leave Request</h3>
     <table width="800" class="form-inline">
       <tr class="form-group">
-        <td class="col input-group">
+        <td class="input-group">
           <div class="input-group-prepend">
             <label for="leaveStart" class="input-group-text">
               Leave Start:
@@ -96,17 +96,7 @@
           </div>
           <input type="date" v-model="startLeaveDate" id="leaveStart" class="form-control" />
         </td>
-        <td class="col input-group">
-          <div class="input-group-prepend">
-            <label for="hrWeek" class="input-group-text">
-              HR/Week:
-            </label>
-          </div>
-          <input type="text" id="hrWeek" v-model="hrs" class="form-control" @keyup="change_hours" />
-        </td>
-      </tr>
-      <tr class="form-group">
-        <td class="col input-group">
+        <td class="input-group">
           <div class="input-group-prepend">
             <label for="leaveEnd" class="input-group-text">
               Leave End:
@@ -116,7 +106,17 @@
         </td>
       </tr>
       <tr class="form-group">
-        <td class="col input-group">
+        <td class="input-group">
+          <div class="input-group-prepend">
+            <label for="hrWeek" class="input-group-text">
+              HR/Week:
+            </label>
+          </div>
+          <input type="text" id="hrWeek" v-model="hrs" class="form-control" @keyup="change_hours" />
+        </td>
+      </tr>
+      <tr class="form-group">
+        <td class="input-group">
           <div class="input-group-prepend">
             <label class="input-group-text" for="R-select">Reason:</label>
           </div>
@@ -139,7 +139,7 @@
             <option value="Discretionary Leave (continuous)">Discretionary Leave (continuous)</option>
           </select>
         </td>
-        <td class="col input-group">
+        <td class="input-group">
           <div class="input-group-prepend">
             <label class="input-group-text" for="L-select">
               Leave Status:
@@ -174,7 +174,7 @@
         </td>
       </tr>
       <tr class="form-group">
-        <td class="col input-group">
+        <td class="input-group">
           <div class="input-group-prepend">
             <label for="fullTime" class="input-group-text">
               Full Time Leave:
@@ -188,7 +188,7 @@
             id="fullTime"
           />
         </td>
-        <td class="col input-group">
+        <td class="input-group">
           <div class="input-group-prepend">
             <label for="interTime" class="input-group-text">
               Intermittent Leave:
@@ -230,6 +230,7 @@
     </div>
     <table width="800">
       <tr>
+        <th></th>
         <th>Week</th>
         <th>Protected?</th>
         <th>Leave Type</th>
@@ -239,12 +240,19 @@
         <th>Pay</th>
       </tr>
       <template v-for="(week, weekIndex) in leavePlan">
-        <tr v-for="(leavePlanElement, index) in week" :key="'week#' + weekIndex + 'element#' + index">
-          <td v-if="index === 0">
+        <tr
+          v-for="(leavePlanElement, elementIndex) in week"
+          :key="'week#' + weekIndex + 'element#' + elementIndex"
+        >
+          <td v-if="elementIndex === 0">
             <button @click="addLeaveType(weekIndex)" class="btn btn-info">Add Leave Type</button>
-            &nbsp;{{ weekIndex + 1 }}
           </td>
-          <td v-else></td>
+          <td v-else>
+            <button @click="removeLeaveType(weekIndex, elementIndex)" class="btn btn-danger">Remove Leave Type</button>
+          </td>
+          <td>
+            {{ weekIndex + 1 }}&nbsp;
+          </td>
           <td>&nbsp;{{ 'y' }}</td>
           <td>
             <select
@@ -256,7 +264,7 @@
                 v-for="leaveType in leaveTypes"
                 :value="leaveType.value"
                 :key="leaveType.value"
-                :disabled="!validLeaveType(index, leaveType.value)"
+                :disabled="!validLeaveType(elementIndex, leaveType.value)"
               >{{ leaveType.type }}</option>
             </select>
           </td>
@@ -269,8 +277,8 @@
               class="form-control"
             />
           </td>
-          <td>&nbsp;{ 0.0 }}</td>
-          <td>&nbsp;{ 0.0 }}</td>
+          <td>&nbsp;{{ 0.0 }}</td>
+          <td>&nbsp;{{ 0.0 }}</td>
         </tr>
       </template>
     </table>
@@ -293,13 +301,16 @@
     </table>
     <hr />
   </div>
+  <div v-else-if="!isAdmin">
+    <router-link to="/" class="nav-item nav-link" tag="li" active-class="active"><a>Login</a></router-link>
+  </div>
 </template>
 
 <script>
 import moment from 'moment'
 export default {
   name: 'report',
-  props: ['user'],
+  props: ['user', 'isAdmin'],
   data: () => ({
     notes: '',
     total_request: 0.0,
@@ -381,6 +392,9 @@ export default {
     addLeaveType(weekIndex) {
       let previousElement = this.leavePlan[weekIndex][this.leavePlan[weekIndex].length - 1]
       this.leavePlan[weekIndex].push(Object.assign({}, previousElement))
+    },
+    removeLeaveType(weekIndex, elementIndex) {
+      this.leavePlan[weekIndex].splice(elementIndex, 1)
     },
     change_hours() {
       for(var weekIndex in this.leavePlan) {

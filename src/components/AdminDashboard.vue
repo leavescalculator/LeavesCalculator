@@ -1,5 +1,5 @@
 <template>
-  <div id="admin-dashboard">
+  <div id="admin-dashboard" v-if="isAdmin">
     <div class="header row">
       <div class="col-auto">
         <textarea
@@ -194,6 +194,7 @@
   import edgehandles from 'cytoscape-edgehandles'
   import undoRedo from 'cytoscape-undo-redo'
   import popper from 'cytoscape-popper'
+  import graph_style from '../assets/graph-style.json'
   import json from '../assets/nodes.json'
 
   cytoscape.use(edgehandles)
@@ -202,7 +203,9 @@
 
   export default {
       name: 'admin-dashboard',
+      props: ['isAdmin'],
       data: () => ({
+          graph_style: graph_style.style,
           // The nodes objects from `src/assets/nodes.json`
           nodes: json.Nodes,
           // Will become an object with setters and getters for fields of the selected element on selection
@@ -224,88 +227,8 @@
       mounted: function () {
         this.cy = cytoscape({
           container: document.getElementById('graph'),
-            style: [
-                {
-                    selector: 'edge',
-                    style: {
-                        'curve-style': 'bezier',
-                        'target-arrow-shape': 'triangle',
-                        'control-point-step-size': 50,
-                    }
-                },
-                {
-                    selector: '.graph-node',
-                    style: {
-                        'label': 'data(label)',
-                        'color': '#000',
-                        'text-background-color': '#ccc',
-                        'text-background-opacity': 0.8,
-                        'text-background-padding': 5,
-                        'text-background-shape': 'roundrectangle',
-                    }
-                },
-                {
-                    selector: '.graph-edge',
-                    style: {
-                        'label': 'data(label)',
-                        'target-arrow-color': 'green',
-                        'color': '#fff',
-                        'text-background-color': '#333',
-                        'text-background-opacity': 0.8,
-                        'text-background-padding': 5,
-                        'text-background-shape': 'roundrectangle',
-                        'text-rotation': 'autorotate',
-                    }
-                },
-                {
-                    selector: '.eh-handle',
-                    style: {
-                        'background-color': 'red',
-                        'width': 12,
-                        'height': 12,
-                        'shape': 'ellipse',
-                        'overlay-opacity': 0,
-                        'border-width': 12,
-                        'border-opacity': 0
-                    }
-                },
-                {
-                    selector: '.eh-hover',
-                    style: {
-                        'background-color': 'red'
-                    }
-                },
-                {
-                    selector: '.eh-source',
-                    style: {
-                        'border-width': 2,
-                        'border-color': 'red'
-                    }
-                },
-                {
-                    selector: '.eh-target',
-                    style: {
-                        'border-width': 2,
-                        'border-color': 'red'
-                    }
-                },
-                {
-                    selector: '.eh-preview, .eh-ghost-edge',
-                    style: {
-                        'background-color': 'red',
-                        'line-color': 'red',
-                        'target-arrow-color': 'red',
-                        'source-arrow-color': 'red'
-                    }
-                },
-                {
-                    selector: '.eh-ghost-edge.eh-preview-active',
-                    style: {
-                        'opacity': 0
-                    }
-                }
-            ],
-            selectionType: 'single',
+          style: this.graph_style,
+          selectionType: 'single',
         })
         this.cy.edgehandles({
             snap: true,
@@ -358,7 +281,9 @@
                         edge.on('select', this.showInfo)
                         edge.on('unselect', this.hideInfo)
                     } catch (err) {
-                        console.log(err);
+                        console.log(nodes[node].title)
+                        console.log(option.title)
+                        console.log(err)
                     }
                 }
             }
@@ -499,7 +424,7 @@
       }
   }
 </script>
-<style>
+<style scoped>
   .header {
     background-color: #fff;
   }
@@ -517,22 +442,5 @@
     border: 2px solid #ccc;
     background: #fff;
     padding: 10px;
-  }
-
-  .row {
-    margin: 2px;
-  }
-
-  .input-group-prepend {
-    padding: 0;
-  }
-
-  .input-group-text {
-    width: inherit;
-  }
-
-  .form-control {
-    height: auto;
-    min-width: 200px;
   }
 </style>

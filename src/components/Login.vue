@@ -1,29 +1,24 @@
 <template>
-  <div id="login" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+  <div id="login" >
     <div v-if="username">
-        <p>Signed in as <b>{{ username }}</b></p>
-
-      <router-link v-if="isAdmin" v-bind:to="'/admin-dashboard'">
-        Admin Dashboard
-      </router-link>
-      <br v-if="isAdmin" />
-
+      <p>Signed in as <b>{{ username }}</b></p>
       <button @click="signOut">Sign out</button>
     </div>
     <form v-if="(auth === '')" onsubmit="return false">
-      <div class="input-group">
+      <div class="col-auto">
         <p>Login:</p>
-        <div class="input-group">
-          <div class="input-group-prepend">
+        <div class="row input-group">
+          <div class="col input-group-prepend">
             <label class="input-group-text" for="username">Username</label>
           </div>
-          <input type="text" class="form-control" name="username" id="username" />
+          <input type="text" class="col form-control" name="username" id="username" />
         </div>
-        <div class="input-group">
-          <div class="input-group-prepend">
+
+        <div class="row input-group">
+          <div class="col input-group-prepend">
             <label class="input-group-text" for="password">Password</label>
           </div>
-          <input type="password" class="form-control" name="password" id="password" />
+          <input type="password" class="col form-control" name="password" id="password" />
         </div>
       </div>
       <br>

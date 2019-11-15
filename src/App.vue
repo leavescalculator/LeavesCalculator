@@ -10,6 +10,8 @@
         @logout="logOut"
         :user="user"
         :isAdmin="isAdmin"
+        :Nodes="nodes"
+        @change-user="changeEmployee"
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
@@ -29,6 +31,8 @@
             @logout="logOut"
             :user="user"
             @add-weeks="addWeeks"
+            @getEmployee="getEmployee"
+            :Nodes="nodes"
           ></router-view>
         </div>
       </div>
@@ -41,46 +45,17 @@
 import Header from "./components/Header";
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import Questions from './assets/nodes.json';
+
 export default {
   name: 'app',
   data: () => ({
     auth: "",
     username: "",
     isAdmin: false,
-      user: {
-    "employee_id": 800001,
-    "odin_username": "DBROOKS",
-    "psu_id": "900717619",
-    "first_name": "Dorothea",
-    "last_name": "Brooks",
-    "email": [
-        "hrc-tech-team-group@pdx.edu",
-        "leaves@pdx.edu"
-    ],
-    "hire_date": "2010-10-04",
-    "fte": 1.0,
-    "employee_classification": "",
-    "month_lookback_12": "1356.38000000000",
-    "month_lookback_6": "524.900000000000",
-    "fmla_eligibility": "T",
-    "ofla_eligibility": "B",
-    "deductions_eligibility": [
-        "AAUP",
-        "LST",
-        "LTD",
-        "SEIU",
-        "PXS"
-    ],
-    "paid_leave_balances": {
-        "ASIC": 68,
-        "AVAC": 26.11,
-        "FLSA": 0.0,
-        "XOTH": 0.0,
-        "PRES": 0.0,
-    },
-    "protected_leave_hrs_taken": 578,
-    "max_protected_leave_hrs": null
-},
+    infoError: "",
+    user: { },
+    nodes: {},
   }),
   components: {
       appHeader: Header,
@@ -91,35 +66,77 @@ export default {
       this.username = event[1];
       this.isAdmin = event[2];
       //do fetch stuff
+      console.log("Getting info...");
+      this.getEmployee(this.username);
         //get user/graph
+    },
+    changeEmployee(event) {
+      if(this.isAdmin) {
+        if(this.getEmployee(event)) {
+          console.log("Now using " + event + "'s information.");
+        }
+      }
+      else {
+        console.log("Nice try bozo.");
+      }
+    },
+    getEmployee(name) {
+      var data = JSON.stringify({ name })
+      var emp_u = name.toUpperCase();
+      console.log(emp_u);
+      fetch('http://localhost:8000/database/' + emp_u + '/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': this.auth
+        }
+      }).then(response => {
+        if(!response.ok) {
+          throw Error("Failed to retrieve employee.")
+
+        }
+        return response.json()
+      }).then(data => {
+        console.log(data);
+        this.user = data;
+      }).catch(error => {
+        this.infoError = error
+      });
+
     },
     logOut() {
       this.auth = '';
       this.username = '';
       this.isAdmin = false;
+      this.user = { };
     },
-      addWeeks(n) {
-        //change weeks here
-      }
-  },
-    computed: {
-      isAdminBoard() {
-          return this.$route.path === "/admin-dashboard/"
-      }
+    addWeeks(n) {
+      //change weeks here
     }
+  },
+  computed: {
+  },
+  mounted() {
+    console.log(Questions.Nodes);
+    this.nodes = Questions.Nodes;
+  }
 };
 </script>
-<!-- styling for the component -->
 <style>
-/*
- *** Had to temporarily comment out parent styling so admin-dashboard would look better.
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
- */
+  .row {
+    margin: 2px;
+  }
+
+  .input-group-prepend {
+    padding: 0;
+  }
+
+  .input-group-text {
+    width: inherit;
+  }
+
+  .form-control {
+    height: auto;
+    min-width: 200px;
+  }
 </style>

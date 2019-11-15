@@ -4,9 +4,9 @@ import Report from "./components/Report";
 import AdminDashboard from "./components/AdminDashboard";
 
 export const routes = [
-//route for the home route of the web page
+  //route for the home route of the web page
   { path: '/', component: Login },
   { path: '/questions', component: Questions },
-  {path: '/report', component: Report},
-  {path: '/admin-dashboard', component: AdminDashboard},
+  { path: '/report', component: Report },
+  { path: '/admin-dashboard', component: AdminDashboard },
 ];
