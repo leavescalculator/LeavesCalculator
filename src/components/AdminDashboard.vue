@@ -362,7 +362,7 @@
             div.style.visibility = 'hidden'
           },
           Save(){
-          fetch('http://localhost:8000/database/savegraph',{
+          fetch('http://localhost:8000/database/savegraph/',{
             method: 'POST',
             body:{
               "GRAPH_DATA": "ASDFASD",
@@ -373,18 +373,7 @@
               'Content-Type': 'application/json',
               'Authorization': this.auth
             }
-          }).then(response => {
-            if(!response.ok) {
-              throw Error("Failed to retrieve employee.")
-
-            }
-            return response.json()
-          }).then(data => {
-            console.log(data);
-            this.user = data;
-          }).catch(error => {
-            this.infoError = error
-          });
+          })
 
           },
           showInfo() {
