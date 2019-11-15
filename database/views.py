@@ -4,6 +4,8 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 from database.models import *
+import json
+import requests
 
 
 def index(request):
@@ -51,9 +53,11 @@ def getGraphs(request):
 @csrf_exempt
 def save_new_graph(request):
     # TODO: get graph Json blob and name
-    #print(request.POST.get('GRAPH_DATA', False))
-    new_graph = graph.objects.create(graph_data=request.POST.get('GRAPH_DATA', False), graph_name=request.POST.get('GRAPH_NAME', False), graph_cords=request.POST.get('CORDS', False))
-
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    new_graph = graph.objects.create(graph_data=body.get('GRAPH_DATA'), graph_name=body.get('GRAPH_NAME'), graph_cords=body.get('CORDS'))
+    return new_graph
+    
 def update_existing_graph(request):
     # TODO: get graph Json blob and id
     graph, created = graph.objects.update_or_create(
