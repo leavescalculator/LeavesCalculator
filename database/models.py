@@ -134,36 +134,36 @@ class pdrdedn(models.Model):
         return self.name
 
 class graph(models.Model):
-  #  id = models.IntegerField(primary_key=True)
     graph_name = models.CharField(max_length=200, default=str(id))
     graph_date = models.DateField(auto_now=True)
     date = models.DateField(auto_now=True)
-    graph_data = jsonfield.JSONField()
+    graph_data = jsonfield.JSONField(null=True)
+    graph_cords =  models.TextField(default=0)
+    #graph_nodes = models.TextField(null=True)
     # 'D' means dormat, 'A' means active
     graph_status = models.CharField(max_length=1, primary_key=True, default='D')
     def _str_(self):
         return self.name
-    
-    def query_all_graphs(self):
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM database_graph;")
-            return dictfetchall(cursor)
 
-    def query_active_graph(self):
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM database_graph WHERE graph_status = 'A';")
-            return dictfetchall(cursor)
-
-    def make_active(self):
+    def make_active():
         current_active_graph = graph.objects.filter(graph_status='A')
         if current_active_graph:
             current_active_graph.graph_status = 'D'
             current_active_graph.save()
         self.graph_status = 'A'
         self.save()
-    
+
+def query_active_graph():
+    active_graph = graph.objects.filter(graph_status='A')
+    if active_graph:
+        return active_graph[0]
+
+def query_all_graphs():
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM database_graph;")
+        return dictfetchall(cursor)
+
 class leavereports(models.Model):
-   # id = models.IntegerField(primary_key=True)
     leavereports_pidm = models.IntegerField()
     leavereports_pidm = models.IntegerField(primary_key=True)
     leavereports_date = models.DateField(auto_now=True)
@@ -202,8 +202,9 @@ class Employee(models.Model):
     paid_leave_balances = models.TextField(default=0)
     protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     max_protected_leave_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    reports = jsonfield.JSONField()
-    graph = jsonfield.JSONField()
+    #reports = jsonfield.JSONField()
+    reports = models.TextField(null=True)
+    graph = jsonfield.JSONField(null=True)
 
     def query_employee_id(self):
         gobeacc_user = gobeacc.objects.filter(gobeacc_username=self.odin_username)
@@ -353,13 +354,16 @@ class Employee(models.Model):
                 self.paid_leave_balances[r["leave_code"]] = r["balance"]
 
     def query_reports(self):
-        reports = leavereports.objects.filter(leavereports_pidm=self.employee_id)
-        self.reports = model_to_dict(reports)
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM database_leavereports;")
+            reports = dictfetchall(cursor)
+            if reports:
+                self.reports = reports
 
     def query_current_graph(self):
-        active_graph = Graph()
-        active_graph = graph.query_active_graph()
-        self.graph = model_to_dict(active_graph)
+        active_graph = query_active_graph()
+        if active_graph:
+            self.graph = model_to_dict(active_graph)
 
     def query_other_employee_info(self):
         self.query_lookback_hrs()
@@ -369,8 +373,8 @@ class Employee(models.Model):
         self.query_deductions_info()
         self.query_protected_leave_hrs_taken()
         self.query_current_paid_leaves_balances()
-        #self.query_reports()
-        #self.query_current_graph()
+        self.query_reports()
+        self.query_current_graph()
         return
 
     def set_username(self, username: str):
