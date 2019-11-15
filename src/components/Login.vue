@@ -1,13 +1,7 @@
 <template>
   <div id="login" >
     <div v-if="username">
-        <p>Signed in as <b>{{ username }}</b></p>
-
-      <router-link v-if="isAdmin" v-bind:to="'/admin-dashboard'">
-        Admin Dashboard
-      </router-link>
-      <br v-if="isAdmin" />
-
+      <p>Signed in as <b>{{ username }}</b></p>
       <button @click="signOut">Sign out</button>
     </div>
     <form v-if="(auth === '')" onsubmit="return false">

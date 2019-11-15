@@ -3,12 +3,12 @@
     <div v-if="isAdmin" class="row">
       <div class="input-group mb-3 col-md-3">
         <div class="input-group-prepend">
-          <span class="input-group-text">Run as: </span>
+          <label for="usrname" class="input-group-text">Run as: </label>
         </div>
         <input
           type="text"
           id="usrname"
-          placeholder="other username"
+          placeholder="other usrname"
           class="form-control"
           v-model="usrname"
           @keydown.enter="changeUser"

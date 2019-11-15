@@ -22,9 +22,8 @@ else
         virtualenv env
         source env/bin/activate
         pip3 install -r requirements.txt
-        npm install
-        python3 manage.py makemigrations
-        python3 manage.py migrate
+        npm ci
+        python3 manage.py migrate --fake
     fi
     if [ "$1" == "install" ];
         then echo ""
@@ -32,6 +31,7 @@ else
         echo ""
     else
         echo "Server starting"
+        source env/bin/activate
         python3 manage.py runserver &
         npm run dev &
         sleep 15s

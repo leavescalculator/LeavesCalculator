@@ -281,7 +281,9 @@
                         edge.on('select', this.showInfo)
                         edge.on('unselect', this.hideInfo)
                     } catch (err) {
-                        console.log(err);
+                        console.log(nodes[node].title)
+                        console.log(option.title)
+                        console.log(err)
                     }
                 }
             }
@@ -422,7 +424,7 @@
       }
   }
 </script>
-<style>
+<style scoped>
   .header {
     background-color: #fff;
   }
@@ -440,22 +442,5 @@
     border: 2px solid #ccc;
     background: #fff;
     padding: 10px;
-  }
-
-  .row {
-    margin: 2px;
-  }
-
-  .input-group-prepend {
-    padding: 0;
-  }
-
-  .input-group-text {
-    width: inherit;
-  }
-
-  .form-control {
-    height: auto;
-    min-width: 200px;
   }
 </style>
