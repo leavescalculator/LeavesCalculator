@@ -94,7 +94,7 @@
               Leave Start:
             </label>
           </div>
-          <input type="date" v-model="startLeaveDate" id="leaveStart" class="form-control" />
+          <input type="date" v-model="startLeaveDate" id="leaveStart" class="form-control" v-on:keyup="change_hours()"/>
         </td>
         <td class="col input-group">
           <div class="input-group-prepend">
@@ -112,7 +112,7 @@
               Leave End:
             </label>
           </div>
-          <input type="date" v-model="endLeaveDate" id="leaveEnd" class="form-control" />
+          <input type="date" v-model="endLeaveDate" id="leaveEnd" class="form-control" v-on:keyup="change_hours()"/>
         </td>
       </tr>
       <tr class="form-group">
@@ -394,7 +394,7 @@ export default {
       }
     },
     addWeek(index) {
-      this.leavePlan.splice(index,0,{week: this.leavePlan[index].week, leaveType: '', leaveUsed: 0.0 })
+      this.leavePlan.splice(index,0,{week: this.leavePlan[index].week, leaveType: '', leaveUsed: this.leavePlan[index].leaveUsed })
     },
     change_hours() {
       var shado = require("shado");
@@ -404,7 +404,13 @@ export default {
       console.log(result)
 
       for(var week in this.leavePlan){
+        if(week < result)
+        {
           this.leavePlan[week].leaveUsed = parseFloat(this.hrs)
+        }
+        else {
+          this.leavePlan[week].leaveUsed = 0.0
+        }
         }
     },
 
