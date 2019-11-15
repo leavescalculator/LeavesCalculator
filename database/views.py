@@ -49,9 +49,10 @@ def getGraphs(request):
     graph_status = models.CharField(max_length=1, primary_key=True, default='D')
 '''
 @csrf_exempt
-def save_new_graph(request, GRAPH_DATA, GRAPH_NAME, CORDS):
+def save_new_graph(request):
     # TODO: get graph Json blob and name
-    new_graph = graph.objects.create(graph_data=GRAPH_DATA, graph_name=GRAPH_NAME, graph_cords = CORDS)
+    #print(request.POST.get('GRAPH_DATA', False))
+    new_graph = graph.objects.create(graph_data=request.POST.get('GRAPH_DATA', False), graph_name=request.POST.get('GRAPH_NAME', False), graph_cords=request.POST.get('CORDS', False))
 
 def update_existing_graph(request):
     # TODO: get graph Json blob and id
