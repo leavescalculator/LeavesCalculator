@@ -94,15 +94,15 @@
               Leave Start:
             </label>
           </div>
-          <input type="date" v-model="startLeaveDate" id="leaveStart" class="form-control" v-on:keyup="change_hours()"/>
+          <input type="date" v-model="startLeaveDate" id="leaveStart" class="form-control" />
         </td>
         <td class="col input-group">
           <div class="input-group-prepend">
-            <label for="hrWeek" class="input-group-text" >
+            <label for="hrWeek" class="input-group-text">
               HR/Week:
             </label>
           </div>
-          <input type="text" id="hrWeek" v-model="hrs" class="form-control" v-on:keyup="change_hours()"/>
+          <input type="text" id="hrWeek" v-model="hrs" class="form-control" @keyup="change_hours" />
         </td>
       </tr>
       <tr class="form-group">
@@ -112,7 +112,7 @@
               Leave End:
             </label>
           </div>
-          <input type="date" v-model="endLeaveDate" id="leaveEnd" class="form-control" v-on:keyup="change_hours()"/>
+          <input type="date" v-model="endLeaveDate" id="leaveEnd" class="form-control" />
         </td>
       </tr>
       <tr class="form-group">
@@ -184,7 +184,7 @@
             class="form-control"
             type="text"
             v-model="full_time"
-            v-on:keyup="total_r"
+            @keyup="total_r"
             id="fullTime"
           />
         </td>
@@ -198,7 +198,7 @@
             class="form-control"
             type="text"
             v-model="inter_time"
-            v-on:keyup="total_r"
+            @keyup="total_r"
             id="interTime"
           />
         </td>
@@ -212,27 +212,6 @@
       :key="leaveCode">
       {{ leaveCode }}: {{ user.paid_leave_balances[leaveCode] }}
     </div>
-    <hr />
-    <h3>Leave Plan</h3>
-    <table>
-      <tbody>
-        <tr>
-          <th>Week</th>
-          <th>Protected?</th>
-          <th>LeaveType</th>
-          <th>% Paid</th>
-          <th>LeaveUsed</th>
-          <th>%</th>
-          <th>Pay</th>
-        </tr>
-        <tr v-for="(row, rowindex) in leave" :key="rowindex">
-          <td v-for="(col, colindex) in row" :key="rowindex-colindex">{{ col }}</td>
-          <div id='addWeek'>
-            <button v-on:click="addWeek(index)" v-model="index" class="btn btn-info">Add LeaveType</button>
-          </div>
-        </tr>
-      </tbody>
-   </table>
     <hr />
     <h3>Leave Plan</h3>
     <div v-if="user.paid_leave_balances['ASIC'] > 40">
@@ -253,47 +232,47 @@
       <tr>
         <th>Week</th>
         <th>Protected?</th>
-        <th>LeaveType</th>
+        <th>Leave Type</th>
         <th>% Paid</th>
-        <th>LeaveUsed</th>
+        <th>Leave Used</th>
         <th>%</th>
         <th>Pay</th>
       </tr>
-      <tr v-for="(leavePlanElement, index) in leavePlan">
-        <td>
-          &nbsp; {{leavePlanElement.week}}
-        </td>
-        <td>{{leavePlanElement.protected}}</td>
-        <td>
-          <select
-            v-model="leavePlanElement.leaveType"
-            v-on:keyup="updateSummary"
-            class="form-control"
-          >
-            <option
-              v-for="leaveType in leaveTypes"
-              :value="leaveType.value"
-              :key="leaveType.value"
-              :disabled="!validLeaveType(index, leaveType.value)"
-            >{{ leaveType.type }}</option>
-          </select>
-          <div id="tooltipBox"></div>
-        </td>
-        <td>&nbsp;{{leavePlanElement.paid}}</td>
-        <td>
-          <input
-            type="text"
-            v-model="leavePlanElement.leaveUsed"
-            v-on:keyup="updateSummary"
-            class="form-control"
-          />
-        </td>
-        <td>&nbsp;{{leavePlanElement.percent}}</td>
-        <td>&nbsp;{{leavePlanElement.pay}}</td>
-        <div id='addWeek'>
-          <button v-on:click="addWeek(index)" v-model="index" class="btn btn-info">Add LeaveType</button>
-        </div>
-      </tr>
+      <template v-for="(week, weekIndex) in leavePlan">
+        <tr v-for="(leavePlanElement, index) in week" :key="'week#' + weekIndex + 'element#' + index">
+          <td v-if="index === 0">
+            <button @click="addLeaveType(weekIndex)" class="btn btn-info">Add Leave Type</button>
+            &nbsp;{{ weekIndex + 1 }}
+          </td>
+          <td v-else></td>
+          <td>&nbsp;{{ 'y' }}</td>
+          <td>
+            <select
+              v-model="leavePlanElement.leaveType"
+              @keyup="updateSummary"
+              class="form-control"
+            >
+              <option
+                v-for="leaveType in leaveTypes"
+                :value="leaveType.value"
+                :key="leaveType.value"
+                :disabled="!validLeaveType(index, leaveType.value)"
+              >{{ leaveType.type }}</option>
+            </select>
+          </td>
+          <td>&nbsp;{{ 0.0 }}</td>
+          <td>
+            <input
+              type="text"
+              v-model="leavePlanElement.leaveUsed"
+              @keyup="updateSummary"
+              class="form-control"
+            />
+          </td>
+          <td>&nbsp;{ 0.0 }}</td>
+          <td>&nbsp;{ 0.0 }}</td>
+        </tr>
+      </template>
     </table>
     <div class="input-group">
       <div class="input-group-prepend">
@@ -303,10 +282,9 @@
     </div>
     <h3>Leave Summary</h3>
     <table width="400">
-      <tr v-for="(type, index) in leaveSummary" :key="index">
+      <tr v-for="(amount, index) in leaveSummary" :key="index">
         <td>{{ leaveTypes[index].type }}</td>
-        <td>{{ leaveTypes[index].value }}</td>
-        <td>{{ type }}</td>
+        <td>{{ amount }}</td>
       </tr>
       <tr>
         <td><h4>Total</h4></td>
@@ -318,34 +296,20 @@
 </template>
 
 <script>
+import moment from 'moment'
 export default {
   name: 'report',
   props: ['user'],
   data: () => ({
     notes: '',
-    Lts: 'Yes',
     total_request: 0.0,
     full_time: 0.0,
     inter_time: 0.0,
-    sick_leave: 0.0,
     hrs: 0.0,
-    index:0,
-    startInterDate:"",
-    startLeaveDate:"",
-    endInterDate:"",
-    endLeaveDate:"",
-    picked:'',
-    leavePlan: [
-      { week:1, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
-      { week:2, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
-      { week:3, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
-      { week:4, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
-      { week:5, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
-      { week:6, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
-      { week:7, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
-      { week:8, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
-      { week:9, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
-    ],
+    startLeaveDate: '',
+    endLeaveDate: '',
+    picked: '',
+    leavePlan: [],
 
     leaveTypes: [
       { type: 'Sick',         value: 'LTS' },
@@ -365,13 +329,6 @@ export default {
       0.0, // LSA
       0.0, // Per
     ],
-    leave:[
-      //['Week', 'Protected', 'LeaveType', 'Paid', 'LeaveUsed', 'Percent', 'Pay'],
-      [1,'','',0.0,0.0,0.0,0.0],
-      [2,'','',0.0,0.0,0.0,0.0],
-      [3,'','',0.0,0.0,0.0,0.0],
-    ],
-
   }),
   computed: {
     lst: function () {
@@ -394,6 +351,14 @@ export default {
       return total
     }
   },
+  watch: {
+    startLeaveDate: function() {
+      this.setNumWeeks()
+    },
+    endLeaveDate: function() {
+      this.setNumWeeks()
+    },
+  },
   methods: {
     updateSummary () {
       this.leaveSummary = [
@@ -413,33 +378,24 @@ export default {
         }
       }
     },
-    addWeek(index) {
-      this.leavePlan.splice(index,0,{week: this.leavePlan[index].week, protected: '', leaveType: '', paid:0.0, leaveUsed: this.leavePlan[index].leaveUsed, percent:0.0, pay:0.0 })
+    addLeaveType(weekIndex) {
+      let previousElement = this.leavePlan[weekIndex][this.leavePlan[weekIndex].length - 1]
+      this.leavePlan[weekIndex].push(Object.assign({}, previousElement))
     },
     change_hours() {
-      var shado = require("shado");
-      var firstDate = this.startLeaveDate;
-      var secondDate = this.endLeaveDate;
-      var result = shado.date.setDates(firstDate, secondDate).getWeeks(false)+1;
-      console.log(result)
-
-      for(var week in this.leavePlan){
-        if(week < result)
-        {
-          this.leavePlan[week].leaveUsed = parseFloat(this.hrs)
+      for(var weekIndex in this.leavePlan) {
+        for(var elementIndex in this.leavePlan[weekIndex]) {
+          this.leavePlan[weekIndex][elementIndex].leaveUsed = parseFloat(this.hrs)
         }
-        else {
-          this.leavePlan[week].leaveUsed = 0.0
-        }
-        }
+      }
     },
-
     total_r() {
       this.total_request = 0.0
       this.total_request = parseFloat(this.full_time) + parseFloat(this.inter_time)
     },
     validLeaveType(leavePlanIndex, leaveType) {
-      let currentLeaveBalances = Object.assign({}, this.user.paid_leave_balances)
+      return true
+      /*let currentLeaveBalances = Object.assign({}, this.user.paid_leave_balances)
       let leavePlanElement = this.leavePlan[leavePlanIndex]
       for(var index in this.leavePlan) {
         if(index !== leavePlanIndex) {
@@ -466,6 +422,19 @@ export default {
         } else {
           return true
         }
+      }*/
+    },
+    setNumWeeks() {
+      var duration = moment.duration(moment(this.endLeaveDate).diff(moment(this.startLeaveDate)));
+      var numWeeks = duration.asWeeks();
+
+      // Add missing weeks
+      for(let weekIndex = this.leavePlan.length; weekIndex < numWeeks; weekIndex++) {
+        this.leavePlan.push([{ leaveType: '', leaveUsed: 0.0 }])
+      }
+      // Remove extra weeks
+      for(let weekIndex = numWeeks; weekIndex < this.leavePlan.length; weekIndex++) {
+        this.leavePlan.pop()
       }
     }
   }
