@@ -229,14 +229,13 @@
       <br />
       <span>Picked: {{ picked }}</span>
     </div>
-    <table>
+    <table width="800">
       <tr>
         <th>Week</th>
         <th>Protected?</th>
         <th>LeaveType</th>
         <th>% Paid</th>
         <th>LeaveUsed</th>
-        <th>Cont/Inter</th>
         <th>%</th>
         <th>Pay</th>
       </tr>
@@ -244,7 +243,7 @@
         <td>
           &nbsp; {{leavePlanElement.week}}
         </td>
-        <td><input class="form-control" /></td>
+        <td>{{leavePlanElement.protected}}</td>
         <td>
           <select
             v-model="leavePlanElement.leaveType"
@@ -260,7 +259,7 @@
           </select>
           <div id="tooltipBox"></div>
         </td>
-        <td><input class="form-control" /></td>
+        <td>&nbsp;{{leavePlanElement.paid}}</td>
         <td>
           <input
             type="text"
@@ -269,17 +268,10 @@
             class="form-control"
           />
         </td>
-        <td>
-          <select id="CI-select" class="form-control">
-            <option selected disabled hidden>--Option--</option>
-            <option value="Cont">Cont</option>
-            <option value="Inter">Inter</option>
-          </select>
-        </td>
-        <td><input class="form-control" /></td>
-        <td><input class="form-control" /></td>
+        <td>&nbsp;{{leavePlanElement.percent}}</td>
+        <td>&nbsp;{{leavePlanElement.pay}}</td>
         <div id='addWeek'>
-          <button v-on:click="addWeek(index)" v-model="index" class="btn btn-info">Add week</button>
+          <button v-on:click="addWeek(index)" v-model="index" class="btn btn-info">Add LeaveType</button>
         </div>
       </tr>
     </table>
@@ -324,15 +316,15 @@ export default {
     endLeaveDate:"",
     picked:'',
     leavePlan: [
-      { week:1, leaveType: '', leaveUsed: 0.0 },
-      { week:2, leaveType: '', leaveUsed: 0.0 },
-      { week:3, leaveType: '', leaveUsed: 0.0 },
-      { week:4, leaveType: '', leaveUsed: 0.0 },
-      { week:5, leaveType: '', leaveUsed: 0.0 },
-      { week:6, leaveType: '', leaveUsed: 0.0 },
-      { week:7, leaveType: '', leaveUsed: 0.0 },
-      { week:8, leaveType: '', leaveUsed: 0.0 },
-      { week:9, leaveType: '', leaveUsed: 0.0 },
+      { week:1, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
+      { week:2, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
+      { week:3, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
+      { week:4, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
+      { week:5, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
+      { week:6, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
+      { week:7, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
+      { week:8, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
+      { week:9, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
     ],
     leaveTypes: [
       { type: 'Sick',         value: 'LTS' },
@@ -394,7 +386,7 @@ export default {
       }
     },
     addWeek(index) {
-      this.leavePlan.splice(index,0,{week: this.leavePlan[index].week, leaveType: '', leaveUsed: this.leavePlan[index].leaveUsed })
+      this.leavePlan.splice(index,0,{week: this.leavePlan[index].week, protected: '', leaveType: '', paid:0.0, leaveUsed: this.leavePlan[index].leaveUsed, percent:0.0, pay:0.0 })
     },
     change_hours() {
       var shado = require("shado");
