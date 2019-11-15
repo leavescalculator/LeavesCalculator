@@ -219,7 +219,7 @@
       <h6>Want to hold 40 hours vacation leave?</h6>
       <label class="inline-radio">
         <input type="radio" value="yes" v-model="picked">
-        Yes (sick leave will change to {{ user.paid_leave_balances['AVAC'] - 40 }})
+        Yes (Vacation Leave will change to {{ user.paid_leave_balances['AVAC'] - 40 }})
       </label>
       &nbsp;&nbsp;
       <label class="inline-radio">
