@@ -287,9 +287,15 @@ export default {
       this.leavePlan.push({ leaveType: "", leaveUsed: 0.0 });
     },
     saveReport() {
-      var data = JSON.stringify({ wubba: "hubba", lulz: "did it for the" })
+      var data = JSON.stringify({ 
+        EMPLOYEE_ID: 999, 
+        REPORT: { 
+          lulz: "did it for the lulz",
+          testing: 1,
+        }
+      })
 
-      fetch('http://localhost:8000/database/savegraph/', {
+      fetch('http://localhost:8000/database/savereport/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
