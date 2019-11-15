@@ -362,15 +362,12 @@
             div.style.visibility = 'hidden'
           },
           Save(){
-          var data = JSON.stringify({ name })
-          var emp_u = name.toUpperCase();
-          console.log(emp_u);
-          fetch('http://localhost:8000/database/savegraph/',{
+          fetch('http://localhost:8000/database/savegraph',{
             method: 'POST',
             body:{
               "GRAPH_DATA": "ASDFASD",
               "GRAPH_NAME": "Asd",
-              "CORDS": "aDSF",
+              "CORDS": "aDSF"
             },
             headers: {
               'Content-Type': 'application/json',
