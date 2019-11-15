@@ -37,10 +37,19 @@ def employee(request, usrname):
 def getGraphs(request):
     graphs = query_all_graphs()
     return JsonResponse(graphs, safe=False)
-
-def save_new_graph(request):
+'''
+    graph_name = models.CharField(max_length=200, default=str(id))
+    graph_date = models.DateField(auto_now=True)
+    date = models.DateField(auto_now=True)
+    graph_data = jsonfield.JSONField(null=True)
+    graph_cords =  models.TextField(default=0)
+    #graph_nodes = models.TextField(null=True)
+    # 'D' means dormat, 'A' means active
+    graph_status = models.CharField(max_length=1, primary_key=True, default='D')
+'''
+def save_new_graph(request, GRAPH_DATA, GRAPH_NAME, CORDS):
     # TODO: get graph Json blob and name
-    new_graph = graph.objects.create(graph_data=GRAPH_DATA, graph_name=GRAPH_NAME)
+    new_graph = graph.objects.create(graph_data=GRAPH_DATA, graph_name=GRAPH_NAME, graph_cords = CORDS)
 
 def update_existing_graph(request):
     # TODO: get graph Json blob and id
