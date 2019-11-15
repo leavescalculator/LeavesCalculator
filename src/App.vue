@@ -30,7 +30,7 @@
             :username="username"
             @logout="logOut"
             :user="user"
-            @add-weeks="addWeeks"
+            :addWeeks="addWeeks"
             @getEmployee="getEmployee"
             :Nodes="nodes"
           ></router-view>
@@ -81,8 +81,7 @@ export default {
       }
     },
     getEmployee(name) {
-      var data = JSON.stringify({ name })
-      var emp_u = name.toUpperCase();
+      let emp_u = name.toUpperCase();
       console.log(emp_u);
       fetch('http://localhost:8000/database/' + emp_u + '/', {
         method: 'GET',
@@ -110,8 +109,18 @@ export default {
       this.isAdmin = false;
       this.user = { };
     },
-    addWeeks(n) {
+    addWeeks(n, type) {
       //change weeks here
+      console.log("ADDING WEEKS: " + type + ": " + n);
+      if(this.user.hasOwnProperty("paid_leave_balances")) {
+          if(this.user.paid_leave_balances.hasOwnProperty(type)){
+              this.user.paid_leave_balances[type] += n;
+          }
+          else {
+              this.user.paid_leave_balances[type] = n;
+          }
+      }
+
     }
   },
   computed: {
