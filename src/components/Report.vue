@@ -213,7 +213,15 @@
       {{ leaveCode }}: {{ user.paid_leave_balances[leaveCode] }}
     </div>
     <hr />
-
+    <h3>Leave Plan</h3>
+    <table>
+      <tbody>
+        <tr v-for="(row, rowindex) in leave" :key="rowindex">
+          <td v-for="(col, colindex) in row" :key="rowindex-colindex">{{ col }}</td>
+        </tr>
+      </tbody>
+   </table>
+    <hr />
     <h3>Leave Plan</h3>
     <div v-if="user.paid_leave_balances['ASIC'] > 40">
       <h6>Want to hold 40 hours vacation leave?</h6>
@@ -326,6 +334,7 @@ export default {
       { week:8, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
       { week:9, protected:'', leaveType: '',paid:0.0, leaveUsed: 0.0, percent:0.0, pay:0.0 },
     ],
+
     leaveTypes: [
       { type: 'Sick',         value: 'LTS' },
       { type: 'Vacation',     value: 'LTV' },
@@ -344,6 +353,13 @@ export default {
       0.0, // LSA
       0.0, // Per
     ],
+    leave:[
+      ['Week', 'Protected', 'LeaveType', 'Paid', 'LeaveUsed', 'Percent', 'Pay'],
+      [1,'','',0.0,0.0,0.0,0.0],
+      [2,'','',0.0,0.0,0.0,0.0],
+      [3,'','',0.0,0.0,0.0,0.0],
+    ],
+
   }),
   computed: {
     lst: function () {
