@@ -165,7 +165,6 @@ def query_all_graphs():
 
 class leavereports(models.Model):
     leavereports_pidm = models.IntegerField()
-    leavereports_pidm = models.IntegerField(primary_key=True)
     leavereports_date = models.DateField(auto_now=True)
     leavereports_report = jsonfield.JSONField()
     def _str_(self):

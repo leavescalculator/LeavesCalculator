@@ -40,24 +40,14 @@ def employee(request, usrname):
 def getGraphs(request):
     graphs = query_all_graphs()
     return JsonResponse(graphs, safe=False)
-'''
-    graph_name = models.CharField(max_length=200, default=str(id))
-    graph_date = models.DateField(auto_now=True)
-    date = models.DateField(auto_now=True)
-    graph_data = jsonfield.JSONField(null=True)
-    graph_cords =  models.TextField(default=0)
-    #graph_nodes = models.TextField(null=True)
-    # 'D' means dormat, 'A' means active
-    graph_status = models.CharField(max_length=1, primary_key=True, default='D')
-'''
+
 @csrf_exempt
 def save_new_graph(request):
-    # TODO: get graph Json blob and name
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     new_graph = graph.objects.create(graph_data=body.get('GRAPH_DATA'), graph_name=body.get('GRAPH_NAME'), graph_cords=body.get('CORDS'))
     return new_graph
-    
+
 def update_existing_graph(request):
     # TODO: get graph Json blob and id
     graph, created = graph.objects.update_or_create(
@@ -71,9 +61,13 @@ def make_graph_active(request):
     )
     graph_to_activate.make_active()
 
+@csrf_exempt
 def save_new_report(request):
-    # TODO: get report Json blob and employee id
-    new_report = leaveReports.objects.create(leavereports_pidm=EMPLOYEE_ID, leavereports_report=REPORT)
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    new_report = graph.objects.create(leavereports_pidm=body.get('PIDM'), leavereports_report=body.get('REPORT'))
+    return new_report
+    
 
 def update_existing_report(request):
     # TODO: get report Json blob and report id and employee id
