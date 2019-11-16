@@ -1,5 +1,4 @@
 from django.shortcuts import render
-
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
@@ -7,6 +6,7 @@ from database.models import *
 import json
 import requests
 
+import json
 
 def index(request):
     return HttpResponse("At db.")
@@ -63,11 +63,13 @@ def make_graph_active(request):
 
 @csrf_exempt
 def save_new_report(request):
+
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     new_report = graph.objects.create(leavereports_pidm=body.get('PIDM'), leavereports_report=body.get('REPORT'))
     return new_report
     
+
 
 def update_existing_report(request):
     # TODO: get report Json blob and report id and employee id
