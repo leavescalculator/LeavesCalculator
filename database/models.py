@@ -141,7 +141,7 @@ class graph(models.Model):
     graph_cords =  models.TextField(default=0)
     #graph_nodes = models.TextField(null=True)
     # 'D' means dormat, 'A' means active
-    graph_status = models.CharField(max_length=1, primary_key=True, default='D')
+    graph_status = models.CharField(max_length=1, default='D')
     def _str_(self):
         return self.name
 
@@ -165,7 +165,6 @@ def query_all_graphs():
 
 class leavereports(models.Model):
     leavereports_pidm = models.IntegerField()
-    leavereports_pidm = models.IntegerField(primary_key=True)
     leavereports_date = models.DateField(auto_now=True)
     leavereports_report = jsonfield.JSONField()
     def _str_(self):

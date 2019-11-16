@@ -362,13 +362,10 @@
             div.style.visibility = 'hidden'
           },
           Save(){
+          var tosend = JSON.stringify({"GRAPH_DATA": "ASDFASD","GRAPH_NAME": "Asd","CORDS": "aDSF"})
           fetch('http://localhost:8000/database/savegraph/',{
             method: 'POST',
-            body:{
-              "GRAPH_DATA": "ASDFASD",
-              "GRAPH_NAME": "Asd",
-              "CORDS": "aDSF"
-            },
+            body: tosend,
             headers: {
               'Content-Type': 'application/json',
               'Authorization': this.auth
