@@ -5,13 +5,18 @@
         "style": {
             "curve-style": "bezier",
             "target-arrow-shape": "triangle",
-            "control-point-step-size": 50
+            "control-point-step-size": 50,
+            "color": "#fff",
+            "text-background-color": "#333",
+            "text-background-opacity": 0.8,
+            "text-background-padding": 5,
+            "text-background-shape": "roundrectangle",
+            "text-rotation": "autorotate"
         }
     },
     {
-        "selector": ".graph-node",
+        "selector": "node",
         "style": {
-            "label": "data(label)",
             "color": "#000",
             "text-background-color": "#ccc",
             "text-background-opacity": 0.8,
@@ -20,16 +25,46 @@
         }
     },
     {
+        "selector": ".legend-node",
+        "style": {
+            "label": "data(id)"
+        }
+    },
+    {
+        "selector": ".button",
+        "style": {
+            "background-color": "green"
+        }
+    },
+    {
+        "selector": ".drop-down",
+        "style": {
+            "background-color": "yellow"
+        }
+    },
+    {
+        "selector": ".display",
+        "style": {
+            "background-color": "pink"
+        }
+    },
+    {
+        "selector": ".database",
+        "style": {
+            "background-color": "purple"
+        }
+    },
+    {
+        "selector": ".graph-node",
+        "style": {
+            "label": "data(label)"
+        }
+    },
+    {
         "selector": ".graph-edge",
         "style": {
             "label": "data(label)",
-            "target-arrow-color": "green",
-            "color": "#fff",
-            "text-background-color": "#333",
-            "text-background-opacity": 0.8,
-            "text-background-padding": 5,
-            "text-background-shape": "roundrectangle",
-            "text-rotation": "autorotate"
+            "target-arrow-color": "green"
         }
     },
     {
