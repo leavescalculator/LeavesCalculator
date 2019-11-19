@@ -136,10 +136,9 @@ class pdrdedn(models.Model):
 class graph(models.Model):
     graph_name = models.CharField(max_length=200, default=str(id))
     graph_date = models.DateField(auto_now=True)
-    date = models.DateField(auto_now=True)
+    #date = models.DateField(auto_now=True)
     graph_data = jsonfield.JSONField(null=True)
     graph_cords =  models.TextField(default=0)
-    #graph_nodes = models.TextField(null=True)
     # 'D' means dormat, 'A' means active
     graph_status = models.CharField(max_length=1, default='D')
     def _str_(self):
@@ -154,7 +153,7 @@ class graph(models.Model):
         self.save()
 
 def query_active_graph():
-    active_graph = graph.objects.filter(graph_status='A')
+    active_graph = graph.objects.filter(graph_status='A').values('id', 'graph_name', 'graph_date', 'graph_data', 'graph_cords', 'graph_status')
     if active_graph:
         return active_graph[0]
 
@@ -354,7 +353,7 @@ class Employee(models.Model):
 
     def query_reports(self):
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM database_leavereports;")
+            cursor.execute("SELECT * FROM database_leavereports WHERE leavereports_pidm = %s;", [self.employee_id])
             reports = dictfetchall(cursor)
             if reports:
                 self.reports = reports
@@ -362,7 +361,7 @@ class Employee(models.Model):
     def query_current_graph(self):
         active_graph = query_active_graph()
         if active_graph:
-            self.graph = model_to_dict(active_graph)
+            self.graph = active_graph
 
     def query_other_employee_info(self):
         self.query_lookback_hrs()

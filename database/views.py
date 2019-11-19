@@ -30,6 +30,7 @@ def employee(request, usrname):
         e.set_ofla_eligibility('F')
         return JsonResponse(model_to_dict(e))
     e.query_other_employee_info()
+    #Checks to see if they are a qualified employee type
     if not e.get_fte():
         e.set_fmla_eligibility('F')
         e.set_ofla_eligibility('F')
@@ -37,7 +38,7 @@ def employee(request, usrname):
     return JsonResponse(model_to_dict(e))
 
 @csrf_exempt
-def getGraphs(request):
+def get_graphs(request):
     graphs = query_all_graphs()
     return JsonResponse(graphs, safe=False)
 
@@ -45,34 +46,45 @@ def getGraphs(request):
 def save_new_graph(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
+    #if body:
     new_graph = graph.objects.create(graph_data=body.get('GRAPH_DATA'), graph_name=body.get('GRAPH_NAME'), graph_cords=body.get('CORDS'))
     return new_graph
 
+@csrf_exempt
 def update_existing_graph(request):
-    # TODO: get graph Json blob and id
-    graph, created = graph.objects.update_or_create(
-        id=GRAPH_ID, defaults={'graph_data': GRAPH_DATA},
-    )
+    # TODO: maybe check if exist, and prompt for graph name if it doesn't and then save
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    if body:
+        graph, created = graph.objects.update_or_create(
+            id=body.get('GRAPH_ID'), defaults={'graph_data': body.get('GRAPH_DATA'), graph_cords: body.get('CORDS'), graph_status: body.get('GRAPH_STATUS')},
+        )
 
+@csrf_exempt
 def make_graph_active(request):
     # TODO: get graph id
-    graph_to_activate, created = graph.objects.get_or_create(
-        id=GRAPH_ID, defaults=None,
-    )
-    graph_to_activate.make_active()
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    if body:
+        graph_to_activate, created = graph.objects.get_or_create(
+            id=body.get('GRAPH_ID'), defaults=None,
+        )
+        graph_to_activate.make_active()
 
 @csrf_exempt
 def save_new_report(request):
-
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
-    new_report = graph.objects.create(leavereports_pidm=body.get('PIDM'), leavereports_report=body.get('REPORT'))
+    #if body:
+    new_report = graph.objects.create(leavereports_pidm=body.get('EMPLOYEE_ID'), leavereports_report=body.get('REPORT'))
     return new_report
-    
 
-
+@csrf_exempt
 def update_existing_report(request):
     # TODO: get report Json blob and report id and employee id
-    report, created = leavereports.update_or_create(
-        id=REPORT_ID, defaults={'leavereports_report': REPORT_DATA, 'leavereports_pidm': EMPLOYEE_ID}
-    )
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    if body:
+        report, created = leavereports.update_or_create(
+            id=body.get('REPORT_ID'), defaults={'leavereports_report': body.get('REPORT_DATA'), 'leavereports_pidm': body.get('EMPLOYEE_ID')}
+        )
