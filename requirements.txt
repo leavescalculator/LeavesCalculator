@@ -6,3 +6,5 @@ jsonfield
 django-jsonfield
 backports-datetime-fromisoformat
 npm
+bootstrap-vue
+reacts
