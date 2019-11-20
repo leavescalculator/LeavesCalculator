@@ -68,7 +68,7 @@
       },
       "reason for requesting leave": {
         "title":"What is your reason for requesting leave?",
-        "input": "button",
+        "input": "drop down",
         "options": [
           {
             "title": "Serious Health Condition Family",
@@ -239,10 +239,11 @@
       },
       "serious health condition selection": {
         "title":"List of Serious Health Conditions",
-        "input": "button",
+        "input": "button-descriptive",
         "options": [
           {
-            "title": "Description of Serious Health Condition",
+            "title": "Description",
+            "description": "of Serious Health Conditions",
             "add_time": {
               "hours": 0,
               "weeks" : 0,
@@ -251,7 +252,8 @@
             "next_node": "serious health condition description"
           },
           {
-            "title": "Hospital care:  Inpatient care (i.e., an overnight stay) in a hospital, hospice, or residential medical care facility, including any period of incapacity or subsequent treatment in connection with or as a consequence of inpatient care.",
+            "title": "Hospital care",
+            "description":"Inpatient care (i.e., an overnight stay) in a hospital, hospice, or residential medical care facility, including any period of incapacity or subsequent treatment in connection with or as a consequence of inpatient care.",
             "add_time": {
               "hours": 0,
               "weeks" : 12,
@@ -260,7 +262,8 @@
             "next_node": "report"
           },
           {
-            "title": "Absence plus treatment:  A period of incapacity of more than three consecutive calendar days, including any subsequent treatment or period of incapacity relating to the same condition, that also involves: Two or more treatments by a health care provider, nurse or physician's assistant under the direct supervision of a health care provider, or by a provider of health care services (e.g., physical therapist) under the orders of, or on referral by, a health care provider; or One treatment by a health care provider which results in a regimen of continuing treatment under the supervision of a healthcare provider.",
+            "title": "Absence plus treatment",
+            "description": "  A period of incapacity of more than three consecutive calendar days, including any subsequent treatment or period of incapacity relating to the same condition, that also involves: Two or more treatments by a health care provider, nurse or physician's assistant under the direct supervision of a health care provider, or by a provider of health care services (e.g., physical therapist) under the orders of, or on referral by, a health care provider; or One treatment by a health care provider which results in a regimen of continuing treatment under the supervision of a healthcare provider.",
             "add_time": {
               "hours": 0,
               "weeks" : 12,
@@ -269,7 +272,8 @@
             "next_node": "report"
           },
           {
-            "title": "Pregnancy: Any period of incapacity for pregnancy-related disabilities or illnesses, or for prenatal care..",
+            "title": "Pregnancy",
+            "description": "Any period of incapacity for pregnancy-related disabilities or illnesses, or for prenatal care..",
             "add_time": {
               "hours": 0,
               "weeks" : 12,
@@ -278,7 +282,8 @@
             "next_node": "report"
           },
           {
-            "title": "Chronic conditions: A chronic condition exists when the condition: Requires at least 2 visits a year for treatment by health care provider or by a nurse or physician's assistant under the direct supervision of a health care provider; Continues over an extended period of time (including recurring episodes of a single underlying condition); andMay cause episodic rather than a continuing period of incapacity (e.g., asthma, diabetes, epilepsy).",
+            "title": "Chronic conditions",
+            "description": "A chronic condition exists when the condition: Requires at least 2 visits a year for treatment by health care provider or by a nurse or physician's assistant under the direct supervision of a health care provider; Continues over an extended period of time (including recurring episodes of a single underlying condition); andMay cause episodic rather than a continuing period of incapacity (e.g., asthma, diabetes, epilepsy).",
             "add_time": {
               "hours": 0,
               "weeks" : 12,
@@ -287,7 +292,8 @@
             "next_node": "report"
           },
           {
-            "title": "Permanent/Long-term conditions requiring supervision: A period of incapacity that is permanent or long-term due to a condition for which treatment is potentially ineffective. The employee or family member is under the supervision of a health care provider, not necessarily receiving active treatment. Examples include Alzheimer's disease, a severe stroke, or the terminal stages of a disease",
+            "title": "Permanent/Long-term",
+            "description": "conditions requiring supervision: A period of incapacity that is permanent or long-term due to a condition for which treatment is potentially ineffective. The employee or family member is under the supervision of a health care provider, not necessarily receiving active treatment. Examples include Alzheimer's disease, a severe stroke, or the terminal stages of a disease",
             "add_time": {
               "hours": 0,
               "weeks" : 12,
@@ -296,7 +302,8 @@
             "next_node": "report"
           },
           {
-            "title": "Multiple treatments (Non-chronic conditions): Any period of absence to receive multiple treatments (including any period of recovery time) by a health care provider or by a provider of health care services under the orders of, or on referral by, a health care provider, either for restorative surgery after an accident or other injury, or for a condition that would likely result in a period of incapacity of more than three consecutive calendar days in the absence of medical intervention or treatment, such as cancer (chemotherapy, radiation, etc.), severe arthritis (physical therapy), and kidney disease (dialysis). ",
+            "title": "Multiple treatments (Non-chronic conditions)",
+            "description": "Any period of absence to receive multiple treatments (including any period of recovery time) by a health care provider or by a provider of health care services under the orders of, or on referral by, a health care provider, either for restorative surgery after an accident or other injury, or for a condition that would likely result in a period of incapacity of more than three consecutive calendar days in the absence of medical intervention or treatment, such as cancer (chemotherapy, radiation, etc.), severe arthritis (physical therapy), and kidney disease (dialysis). ",
             "add_time": {
               "hours": 0,
               "weeks" : 12,
@@ -338,10 +345,11 @@
       },
       "which family member?": {
         "title" : "Which Family member is suffering a serious health condition?",
-        "input": "button",
+        "input": "button-descriptive",
         "options": [
           {
-            "title": "Spouse: as recognized under any state or foreign jursidiction, or registered same-sex domestic partner",
+            "title": "Spouse",
+            "description": "as recognized under any state or foreign jurisdiction, or registered same-sex domestic partner",
             "add_time": {
               "hours": 0,
               "weeks" : 0,
@@ -350,7 +358,8 @@
             "next_node": "serious health condition selection"
           },
           {
-            "title": "Son or Daughter: biological, adopted, foster or stepchild, a legal ward, child of whom the employee stands “in loco parentis”, or a child of the employee’s same-sex domestic partner of any age",
+            "title": "Son or Daughter",
+            "description": "biological, adopted, foster or stepchild, a legal ward, child of whom the employee stands “in loco parentis”, or a child of the employee’s same-sex domestic partner of any age",
             "add_time": {
               "hours": 0,
               "weeks" : 0,
@@ -359,7 +368,8 @@
             "next_node": "serious health condition selection"
           },
           {
-            "title": "Parent: biological or adoptive mother or father, or an individual who is “in loco parentis” (in place of a parent), and the parent of the employee’s spouse or same-sex partner",
+            "title": "Parent",
+            "description": "biological or adoptive mother or father, or an individual who is “in loco parentis” (in place of a parent), and the parent of the employee’s spouse or same-sex partner",
             "add_time": {
               "hours": 0,
               "weeks" : 0,
@@ -413,18 +423,7 @@
       },
       "report": {
         "title" : "Report",
-        "input": "button",
-        "options": [
-          {
-            "title": "route to report",
-            "add_time": {
-              "hours": 0,
-              "weeks" : 0,
-              "type": "n/a"
-            },
-            "next_node": "n/a"
-          }
-        ]
+        "input": "report"
       },
       "pregnancy disability": {
         "title" : "Type of Birth",
