@@ -34,8 +34,7 @@
       </div>
 
       <!-- The legend -->
-      <div class="col-1">
-        Input types:
+      <div class="col-2">
         <img src="../assets/legend.png" id="legend" />
       </div>
 
@@ -570,6 +569,6 @@
   }
 
   #legend {
-    height: 120px;
+    height: 140px;
   }
 </style>
