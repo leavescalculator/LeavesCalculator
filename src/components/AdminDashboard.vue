@@ -253,13 +253,14 @@
       this.cy.edgehandles({
         snap: true,
         handleNodes: '.graph-node',
-        complete: (sourceNode, targetNode, addedEles) => {
-          addedEles.data('title', '')
-          addedEles.data('label', '')
-          addedEles.data('add_time', { hours: 0, type: 'n/a' })
-          addedEles.addClass('graph-edge')
-          addedEles.on('select', this.showInfo)
-          addedEles.on('unselect', this.hideInfo)
+        complete: (sourceNode, targetNode, edge) => {
+          edge.data('title', '')
+          edge.data('label', '')
+          edge.data('add_time', { hours: 0, type: 'n/a' })
+          edge.addClass('graph-edge')
+          edge.style('target-arrow-color', targetNode.style('background-color'))
+          edge.on('select', this.showInfo)
+          edge.on('unselect', this.hideInfo)
         }
       })
 
@@ -294,7 +295,7 @@
       // Parsing the JSON graph
       this.parseJson(json.Nodes)
 
-      // Displaying the graph
+      // Displaying the graph as a tree
       this.cy.$('.graph-node, .graph-edge').layout({
         name: 'breadthfirst'
       }).run()
@@ -334,6 +335,7 @@
                 },
                 classes: 'graph-edge',
               })
+              edge.style('target-arrow-color', this.cy.$id(option.next_node).style('background-color'))
               edge.on('select', this.showInfo)
               edge.on('unselect', this.hideInfo)
             } catch (err) {
@@ -488,8 +490,8 @@
       // zoom value
       setLegendNodePosition(legendNode) {
         legendNode.renderedPosition({
-          x: 40 * this.cy.zoom(),
-          y: (50 * legendNode.data('inputType') + 50) * this.cy.zoom(),
+          x: 50 * this.cy.zoom(),
+          y: (60 * legendNode.data('inputType') + 50) * this.cy.zoom(),
         })
       },
       // Returns the associated class that is represented in the legend for
@@ -507,7 +509,15 @@
 <style scoped>
   /* The banner on the top of the screen, below the nav bar */
   .header {
+    margin: 0;
     background-color: #fff;
+    border-bottom: 2px solid #999;
+    width: 100%;
+    height: calc(200px - 42px);
+    padding-top: 8px;
+    z-index: 2;
+    position: fixed;
+    overflow-y: hidden;
   }
 
   /* The Cytoscape.js canvas */
@@ -525,13 +535,14 @@
     border: 2px solid #ccc;
     background: #fff;
     padding: 10px;
+    z-index: 1;
   }
 
   /* For the large textbox in the header
    * TODO: Remove this when removing the textbox
    */
   #jsonOrPositions {
-    height: 90px;
+    height: 85px;
     width: 490px;
     overflow-y: auto;
   }

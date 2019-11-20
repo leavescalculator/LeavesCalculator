@@ -1,118 +1,127 @@
 {
   "style": [
     {
-        "selector": "edge",
-        "style": {
-            "curve-style": "bezier",
-            "target-arrow-shape": "triangle",
-            "control-point-step-size": 50,
-            "color": "#fff",
-            "text-background-color": "#333",
-            "text-background-opacity": 0.8,
-            "text-background-padding": 5,
-            "text-background-shape": "roundrectangle",
-            "text-rotation": "autorotate"
-        }
+      "selector": "edge",
+      "style": {
+        "curve-style": "bezier",
+        "target-arrow-shape": "triangle",
+        "control-point-step-size": 50,
+        "color": "#fff",
+        "text-background-color": "#333",
+        "text-background-opacity": 0.8,
+        "text-background-padding": 5,
+        "text-background-shape": "roundrectangle",
+        "text-rotation": "autorotate"
+      }
     },
     {
-        "selector": "node",
-        "style": {
-            "color": "#000",
-            "text-background-color": "#ccc",
-            "text-background-opacity": 0.8,
-            "text-background-padding": 5,
-            "text-background-shape": "roundrectangle"
-        }
+      "selector": "node",
+      "style": {
+        "color": "#000",
+        "text-background-color": "#ccc",
+        "text-background-opacity": 0.8,
+        "text-background-padding": 5,
+        "text-background-shape": "roundrectangle"
+      }
     },
     {
-        "selector": ".legend-node",
-        "style": {
-            "label": "data(id)"
-        }
+      "selector": ".legend-node",
+      "style": {
+        "label": "data(id)"
+      }
     },
     {
-        "selector": ".button",
-        "style": {
-            "background-color": "green"
-        }
+      "selector": ".button",
+      "style": {
+        "background-color": "green",
+        "shape": "round-pentagon"
+      }
     },
     {
-        "selector": ".drop-down",
-        "style": {
-            "background-color": "yellow"
-        }
+      "selector": ".drop-down",
+      "style": {
+        "background-color": "yellow",
+        "shape": "round-rectangle"
+      }
     },
     {
-        "selector": ".display",
-        "style": {
-            "background-color": "pink"
-        }
+      "selector": ".display",
+      "style": {
+        "background-color": "pink",
+        "shape": "round-diamond"
+      }
     },
     {
-        "selector": ".database",
-        "style": {
-            "background-color": "purple"
-        }
+      "selector": ".database",
+      "style": {
+        "background-color": "purple",
+        "shape": "round-triangle"
+      }
     },
     {
-        "selector": ".graph-node",
-        "style": {
-            "label": "data(label)"
-        }
+      "selector": ".graph-node, .graph-edge",
+      "style": {
+        "label": "data(label)"
+      }
     },
     {
-        "selector": ".graph-edge",
-        "style": {
-            "label": "data(label)",
-            "target-arrow-color": "green"
-        }
+      "selector": ".graph-node:selected",
+      "style": {
+        "background-color": "blue"
+      }
     },
     {
-        "selector": ".eh-handle",
-        "style": {
-            "background-color": "red",
-            "width": 12,
-            "height": 12,
-            "shape": "ellipse",
-            "overlay-opacity": 0,
-            "border-width": 12,
-            "border-opacity": 0
-        }
+      "selector": ".graph-edge:selected",
+      "style": {
+        "line-color": "blue"
+      }
     },
     {
-        "selector": ".eh-hover",
-        "style": {
-            "background-color": "red"
-        }
+      "selector": ".eh-handle",
+      "style": {
+        "background-color": "red",
+        "width": 12,
+        "height": 12,
+        "shape": "ellipse",
+        "overlay-opacity": 0,
+        "border-width": 12,
+        "border-opacity": 0
+      }
     },
     {
-        "selector": ".eh-source",
-        "style": {
-            "border-width": 2,
-            "border-color": "red"
-        }
+      "selector": ".eh-hover",
+      "style": {
+        "background-color": "red"
+      }
     },
     {
-        "selector": ".eh-target",
-        "style": {
-            "border-width": 2,
-            "border-color": "red"
-        }
+      "selector": ".eh-source",
+      "style": {
+        "border-width": 2,
+        "border-color": "red"
+      }
     },
     {
-        "selector": ".eh-preview, .eh-ghost-edge",
-        "style": {
-            "background-color": "red",
-            "line-color": "red",
-            "target-arrow-color": "red",
-            "source-arrow-color": "red"
-        }
+      "selector": ".eh-target",
+      "style": {
+        "border-width": 2,
+        "border-color": "red"
+      }
     },
     {
-        "selector": ".eh-ghost-edge.eh-preview-active",
-        "style": {
-            "opacity": 0
-        }
+      "selector": ".eh-preview, .eh-ghost-edge",
+      "style": {
+        "background-color": "red",
+        "line-color": "red",
+        "target-arrow-color": "red",
+        "source-arrow-color": "red"
+      }
+    },
+    {
+      "selector": ".eh-ghost-edge.eh-preview-active",
+      "style": {
+        "opacity": 0
+      }
     }
   ]
 }
