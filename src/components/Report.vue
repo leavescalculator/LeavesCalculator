@@ -86,6 +86,8 @@
     <hr />
 
     <h3>Leave Request</h3>
+    <h6>Enter date into [Leave Start] and [Leave End] to get Table for [Leave Plan]</h6>
+    <a href="#" data-toggle="tooltip" title="Some tooltip text!">Hover over me</a>
     <table width="800" class="form-inline">
       <tr class="form-group">
         <td class="input-group">
@@ -94,7 +96,7 @@
               Leave Start:
             </label>
           </div>
-          <input type="date" v-model="startLeaveDate" id="leaveStart" class="form-control" />
+          <input type="date" v-model="startLeaveDate" id="leaveStart" ref="leaveStart" class="form-control" />
         </td>
         <td class="input-group">
           <div class="input-group-prepend">
@@ -236,15 +238,13 @@
         <th>Leave Type</th>
         <th>% Paid</th>
         <th>Leave Used</th>
-        <th>%</th>
-        <th>Pay</th>
       </tr>
       <tr
         v-for="(leavePlanElement, index) in leavePlan"
         :key="index"
       >
         <!-- TODO: add logic to below -->
-        <td v-if="true">
+        <td v-if="index==0||leavePlanElement.week!=leavePlan[index-1].week">
           <button @click="addLeaveType(index)" class="btn btn-info">Add Leave Type</button>
         </td>
         <td v-else>
@@ -268,7 +268,7 @@
             >{{ leaveType.type }}</option>
           </select>
         </td>
-        <td>&nbsp;{{ 0.0 }}</td>
+        <td>&nbsp;{{ paid_percent(leavePlanElement.leaveType) }}</td>
         <td>
           <input
             type="text"
@@ -277,8 +277,6 @@
             class="form-control"
           />
         </td>
-        <td>&nbsp;{{ 0.0 }}</td>
-        <td>&nbsp;{{ 0.0 }}</td>
       </tr>
     </table>
     <div class="input-group">
@@ -307,6 +305,8 @@
 
 <script>
 import moment from 'moment'
+import Tooltip from 'tooltip.js'
+import PopperJs from 'popper.js'
 export default {
   name: 'report',
   props: ['user', 'isAdmin'],
@@ -361,6 +361,15 @@ export default {
       return total
     }
   },
+
+mounted: function(){
+  console.log(this.$refs.leaveStart)
+  const instance = new Tooltip(this.$refs.leaveStart, {
+    title: "Hey there",
+    trigger: "hover",
+});
+instance.show();
+},
   watch: {
     startLeaveDate: function() {
       this.setNumWeeks()
@@ -445,6 +454,13 @@ export default {
       for(let weekIndex = numWeeks; weekIndex < this.leavePlan.length; weekIndex++) {
         this.leavePlan.pop()
       }
+    },
+    paid_percent(type){
+      if(type!="STD")
+        return 100
+        else {
+          return 60
+        }
     }
   }
 }
