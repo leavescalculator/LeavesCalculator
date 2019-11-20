@@ -2,10 +2,10 @@
     <div class="">
         <h2>{{ title }}</h2>
         <hr>
-      <div class="row">
-        <button class="btn btn-success col" v-for="(option, index) in options" :key='index'
-                @click="selected(index)">{{ option.title }}</button>
-      </div>
+        <div v-for="(option, index) in options" :key='index' class="row">
+            <button class="btn btn-success col col-md-2" @click="selected(index)">{{ option.title }}</button>
+          <p class="col">{{ option.description }}</p>
+        </div>
 
     </div>
 </template>

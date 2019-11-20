@@ -26,6 +26,13 @@
         v-if="Nodes[currentNode].input === 'button'"
       ></btn-question>
 
+      <btn-descriptive-question
+        :title="Nodes[currentNode].title"
+        :options="Nodes[currentNode].options"
+        @option-selected="optionSelected"
+        v-if="Nodes[currentNode].input === 'button-descriptive'"
+      ></btn-descriptive-question>
+
       <display-question
         :title="Nodes[currentNode].title"
         :options="Nodes[currentNode].options"
@@ -64,12 +71,13 @@ import BtnQuestion from './BtnQuestion.vue';
 import DisplayQuestion from './DisplayQuestion.vue';
 import DropDownQuestion from './DropDownQuestion.vue';
 import DatabaseQuestion from './DatabaseQuestion.vue';
+import BtnDescriptiveQuestion from "./BtnDescriptiveQuestion";
 
 
 
 export default {
   name: "questions",
-  props: ["isAdmin", "user", "Nodes"],
+  props: ["isAdmin", "user", "Nodes", "addWeeks"],
   data: () => ({
     currentNode: "work related injury", // initialized to first node of JSON graph structure
     hours: 0, // accumulated leave hours
@@ -81,42 +89,43 @@ export default {
     BtnQuestion,
     DisplayQuestion,
     DropDownQuestion,
-    DatabaseQuestion
+    DatabaseQuestion,
+    BtnDescriptiveQuestion
   },
   mounted() {
-    console.log(this.Nodes);
+    //console.log(this.Nodes);
   },
   methods: {
     optionSelected(selected) {
-      console.log(this.stack);
+      //console.log(this.stack);
       //do any relevant stuff here ie addWeeks
       let curr = this.Nodes[this.currentNode].options[selected];
 
-      console.log(this.Nodes[this.currentNode].input);
+      if (curr.hasOwnProperty("add_time") && curr.add_time.hasOwnProperty("weeks") && curr.add_time.hasOwnProperty("type"))
+      {
+          console.log("weeks: " + curr.add_time.weeks);
+          if(curr.add_time.type !== "n/a") {
+              this.addWeeks(curr.add_time.weeks, curr.add_time.type);
+          }
+      }
+
       if(this.Nodes[this.currentNode].input !== 'database') {
-        this.stack.push(this.currentNode);
+        this.stack.push({
+            "node": this.currentNode,
+            "edge": selected
+        });
       }
       this.currentNode = curr.next_node;
     },
     goBack() {
-      console.log("in go back");
-      let oldNode = this.currentNode;
-      this.currentNode = this.stack.pop();
+      //console.log("in go back");
+      let node = this.stack.pop();
+      this.currentNode = node.node;
       //logic to find Nodes[currentNod] option leading to oldNode
-      // then update weeks if needed
-        let option;
-        //Find the path from the node we backed up to, to the one we left
-        for (let o in this.Nodes[this.currentNode].options) {
-            if (o.next_node === oldNode) {
-                option = o;
-                break;
-            }
-        }
-        //If this edge modifies the number of protected weeks, undo that change because
-        //we are backing up
-        //if(option.hasOwnProperty('weeks')){
-          //  this.$emit('add-weeks', -option.weeks);
-        //}
+      let option = this.Nodes[node.node].options[node.edge];
+      if(option.add_time.weeks !== 0) {
+          this.addWeeks(-option.add_time.weeks, option.add_time.type)
+      }
     },
     changeUser() {
       //add code to replace the user object with a new one based on a provided username
