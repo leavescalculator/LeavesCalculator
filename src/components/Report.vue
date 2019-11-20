@@ -205,7 +205,7 @@
         <td>{{total}}</td>
       </tr>
       <tr>
-        <button class="btn btn-success" @click="saveReport">Save Graph</button>
+        <button class="btn btn-success" @click="saveReport">Save Report</button>
       </tr>
     </table>
     <hr />
@@ -288,11 +288,8 @@ export default {
     },
     saveReport() {
       var data = JSON.stringify({ 
-        EMPLOYEE_ID: 999, 
-        REPORT: { 
-          lulz: "did it for the lulz",
-          testing: 1,
-        }
+        EMPLOYEE_ID: this.user.employee_id, 
+        REPORT: this.leaveSummary,
       })
 
       fetch('http://localhost:8000/database/savereport/', {

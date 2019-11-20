@@ -84,8 +84,8 @@ def save_new_report(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     #if body:
-    new_report = graph.objects.create(leavereports_pidm=body.get('EMPLOYEE_ID'), leavereports_report=body.get('REPORT'))
-    return new_report
+    new_report = leavereports.objects.create(leavereports_pidm=body.get('EMPLOYEE_ID'), leavereports_report=body.get('REPORT'))
+    return HttpResponse("Saved!")
 
 @csrf_exempt
 def update_existing_report(request):

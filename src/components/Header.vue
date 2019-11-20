@@ -44,6 +44,14 @@
     >
       <a>Graphs</a>
     </router-link>
+    <router-link
+      to="/report-dashboard"
+      class="nav-item nav-link"
+      tag="li"
+      active-class="active"
+    >
+      <a>Past Reports</a>
+    </router-link>
   </ul>
 </template>
 
