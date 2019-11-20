@@ -169,11 +169,12 @@ cytoscape.use(popper);
 
 export default {
   name: "admin-dashboard",
-  props: ["nodes"],
+  //props: ["nodes"],
   data: () => ({
     graph_style: graph_style.style,
     // The nodes objects from `src/assets/nodes.json`
-    graph_nodes: {},
+    //TODO: Need to update this to load the one from App.vue
+    nodes: json.Nodes,
     // Will become an object with setters and getters for fields of the selected element on selection
     selectedElement: null,
     // The available input fields for a node
@@ -211,7 +212,7 @@ export default {
       undoableDrag: false
     });
 
-    this.parseJson(this.graph_nodes);
+    this.parseJson(this.nodes);
     this.cy
       .layout({
         name: "breadthfirst"
