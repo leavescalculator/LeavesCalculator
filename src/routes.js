@@ -3,6 +3,7 @@ import Questions from "./components/Questions";
 import Report from "./components/Report";
 import AdminDashboard from "./components/AdminDashboard";
 import GraphsDashboard from "./components/GraphsDashboard";
+import ReportsDashboard from "./components/ReportsDashboard";
 
 export const routes = [
   //route for the home route of the web page
@@ -10,5 +11,6 @@ export const routes = [
   { path: "/questions", component: Questions },
   { path: "/report", component: Report },
   { path: "/admin-dashboard", component: AdminDashboard },
-  { path: "/graph-dashboard", component: GraphsDashboard }
+  { path: "/graph-dashboard", component: GraphsDashboard },
+  { path: "/report-dashboard", component: ReportsDashboard },
 ];
