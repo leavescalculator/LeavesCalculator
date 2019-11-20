@@ -117,6 +117,10 @@ export default {
         });
       }
       this.currentNode = curr.next_node;
+        if (this.currentNode === "report"){
+            this.$emit("stack", this.stack);
+            this.$router.push("/report");
+        }
     },
     goBack() {
       //console.log("in go back");
