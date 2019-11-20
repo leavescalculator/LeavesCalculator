@@ -8,27 +8,26 @@
 </template>
 
 <script>
+import axios from "axios";
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
 Vue.use(BootstrapVue);
 
 export default {
-  data() {
-    return {
-      name: "graph-dashboard",
-      props: ["auth"],
-      fields: [
-        { key: "id", sortable: true, label: "#" },
-        { key: "graph_date", sortable: true, label: "Last Modified" },
-        { key: "graph_name", sortable: false, label: "Name" },
-        { key: "graph_status", sortable: true, label: "Status" }
-      ],
-      graphs: []
-    };
-  },
+  name: "graph-dashboard",
+  props: ["auth"],
+  data: () => ({
+    fields: [
+      { key: "id", sortable: true, label: "#" },
+      { key: "graph_date", sortable: true, label: "Last Modified" },
+      { key: "graph_name", sortable: false, label: "Name" },
+      { key: "graph_status", sortable: true, label: "Status" }
+    ],
+    graphs: []
+  }),
 
-  method: {
-    getGraphs: function() {
+  methods: {
+    getGraphs() {
       fetch("http://localhost:8000/database/getgraphs/", {
         method: "GET",
         headers: {
@@ -36,19 +35,21 @@ export default {
           Authorization: this.auth
         }
       })
-        .then(json)
-        .then(function(data) {
+        .then(response => {
           console.log("request good");
-          for (d in data) {
-            this.graphs.push(d);
-          }
+          response.json().then(data => {
+            let len = data.length;
+            for (let i = 0; i < len; ++i) {
+              this.graphs.push(data[i]);
+            }
+          });
         })
         .catch(function(error) {
           console.log("Request failed", error);
         });
     }
   },
-  mounted: function() {
+  created: function() {
     this.getGraphs();
   }
 };
