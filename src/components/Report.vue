@@ -239,48 +239,47 @@
         <th>%</th>
         <th>Pay</th>
       </tr>
-      <template v-for="(week, weekIndex) in leavePlan">
-        <tr
-          v-for="(leavePlanElement, elementIndex) in week"
-          :key="'week#' + weekIndex + 'element#' + elementIndex"
-        >
-          <td v-if="elementIndex === 0">
-            <button @click="addLeaveType(weekIndex)" class="btn btn-info">Add Leave Type</button>
-          </td>
-          <td v-else>
-            <button @click="removeLeaveType(weekIndex, elementIndex)" class="btn btn-danger">Remove Leave Type</button>
-          </td>
-          <td>
-            {{ weekIndex + 1 }}&nbsp;
-          </td>
-          <td>&nbsp;{{ 'y' }}</td>
-          <td>
-            <select
-              v-model="leavePlanElement.leaveType"
-              @keyup="updateSummary"
-              class="form-control"
-            >
-              <option
-                v-for="leaveType in leaveTypes"
-                :value="leaveType.value"
-                :key="leaveType.value"
-                :disabled="!validLeaveType(elementIndex, leaveType.value)"
-              >{{ leaveType.type }}</option>
-            </select>
-          </td>
-          <td>&nbsp;{{ 0.0 }}</td>
-          <td>
-            <input
-              type="text"
-              v-model="leavePlanElement.leaveUsed"
-              @keyup="updateSummary"
-              class="form-control"
-            />
-          </td>
-          <td>&nbsp;{{ 0.0 }}</td>
-          <td>&nbsp;{{ 0.0 }}</td>
-        </tr>
-      </template>
+      <tr
+        v-for="(leavePlanElement, index) in leavePlan"
+        :key="index"
+      >
+        <!-- TODO: add logic to below -->
+        <td v-if="true">
+          <button @click="addLeaveType(index)" class="btn btn-info">Add Leave Type</button>
+        </td>
+        <td v-else>
+          <button @click="removeLeaveType(index)" class="btn btn-danger">Remove Leave Type</button>
+        </td>
+        <td>
+          &nbsp;{{ leavePlanElement.week }}
+        </td>
+        <td>&nbsp;{{ 'y' }}</td>
+        <td>
+          <select
+            v-model="leavePlanElement.leaveType"
+            @keyup="updateSummary"
+            class="form-control"
+          >
+            <option
+              v-for="leaveType in leaveTypes"
+              :value="leaveType.value"
+              :key="leaveType.value"
+              :disabled="!validLeaveType(index, leaveType.value)"
+            >{{ leaveType.type }}</option>
+          </select>
+        </td>
+        <td>&nbsp;{{ 0.0 }}</td>
+        <td>
+          <input
+            type="text"
+            v-model="leavePlanElement.leaveUsed"
+            @keyup="updateSummary"
+            class="form-control"
+          />
+        </td>
+        <td>&nbsp;{{ 0.0 }}</td>
+        <td>&nbsp;{{ 0.0 }}</td>
+      </tr>
     </table>
     <div class="input-group">
       <div class="input-group-prepend">
@@ -389,18 +388,15 @@ export default {
         }
       }
     },
-    addLeaveType(weekIndex) {
-      let previousElement = this.leavePlan[weekIndex][this.leavePlan[weekIndex].length - 1]
-      this.leavePlan[weekIndex].push(Object.assign({}, previousElement))
+    addLeaveType(index) {
+      this.leavePlan.splice(index, 0, Object.assign({}, this.leavePlan[index]))
     },
-    removeLeaveType(weekIndex, elementIndex) {
-      this.leavePlan[weekIndex].splice(elementIndex, 1)
+    removeLeaveType(index) {
+      this.leavePlan.splice(index, 1)
     },
     change_hours() {
-      for(var weekIndex in this.leavePlan) {
-        for(var elementIndex in this.leavePlan[weekIndex]) {
-          this.leavePlan[weekIndex][elementIndex].leaveUsed = parseFloat(this.hrs)
-        }
+      for(var index in this.leavePlan) {
+        this.leavePlan[index].leaveUsed = parseFloat(this.hrs)
       }
     },
     total_r() {
@@ -408,8 +404,7 @@ export default {
       this.total_request = parseFloat(this.full_time) + parseFloat(this.inter_time)
     },
     validLeaveType(leavePlanIndex, leaveType) {
-      return true
-      /*let currentLeaveBalances = Object.assign({}, this.user.paid_leave_balances)
+      let currentLeaveBalances = Object.assign({}, this.user.paid_leave_balances)
       let leavePlanElement = this.leavePlan[leavePlanIndex]
       for(var index in this.leavePlan) {
         if(index !== leavePlanIndex) {
@@ -436,7 +431,7 @@ export default {
         } else {
           return true
         }
-      }*/
+      }
     },
     setNumWeeks() {
       var duration = moment.duration(moment(this.endLeaveDate).diff(moment(this.startLeaveDate)));
@@ -444,7 +439,7 @@ export default {
 
       // Add missing weeks
       for(let weekIndex = this.leavePlan.length; weekIndex < numWeeks; weekIndex++) {
-        this.leavePlan.push([{ leaveType: '', leaveUsed: 0.0 }])
+        this.leavePlan.push({ week: weekIndex + 1, leaveType: '', leaveUsed: 0.0 })
       }
       // Remove extra weeks
       for(let weekIndex = numWeeks; weekIndex < this.leavePlan.length; weekIndex++) {
