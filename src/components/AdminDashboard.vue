@@ -10,7 +10,7 @@
         TODO: This textbox and associated buttons will be replaced with the
         ability to save and load graphs from the database.
       -->
-      <div class="col-6">
+      <div class="col-5">
         <div
           id="jsonOrPositions"
           class="form-control"
@@ -31,6 +31,12 @@
           Load Positions
         </button>
         </div>
+      </div>
+
+      <!-- The legend -->
+      <div class="col-1">
+        Input types:
+        <img src="../assets/legend.png" id="legend" />
       </div>
 
       <!-- This input group is used for created new nodes -->
@@ -61,7 +67,7 @@
       </div>
 
       <!-- This button allows for element removal to be undone -->
-      <div class="col-3">
+      <div class="col-2">
         <button @click="() => this.ur.undo()" class="btn btn-warning">
           Undo Element Removal
         </button>
@@ -269,29 +275,6 @@
           undoableDrag: false
       })
 
-      // Create legend
-      for(var inputType in this.inputTypes) {
-        let legendNode = this.cy.add({
-          data: {
-            id: this.inputTypes[inputType],
-            inputType: inputType
-          },
-          classes: [
-            'legend-node',
-            this.legendClass(this.inputTypes[inputType])
-          ],
-          selectable: false,
-          pannable: true,
-        })
-        this.setLegendNodePosition(legendNode)
-        this.cy.on('pan', () =>
-          this.setLegendNodePosition(legendNode)
-        )
-        this.cy.on('zoom', () =>
-          this.setLegendNodePosition(legendNode)
-        )
-      }
-
       // Parsing the JSON graph
       this.parseJson(json.Nodes)
 
@@ -486,14 +469,6 @@
         this.cy.$id(toSelect).select()
         this.showInfo()
       },
-      // Sets the rendered position of the legend nodes based on the current
-      // zoom value
-      setLegendNodePosition(legendNode) {
-        legendNode.renderedPosition({
-          x: 50 * this.cy.zoom(),
-          y: (60 * legendNode.data('inputType') + 50) * this.cy.zoom(),
-        })
-      },
       // Returns the associated class that is represented in the legend for
       // the given input type
       legendClass(inputType) {
@@ -545,5 +520,9 @@
     height: 85px;
     width: 490px;
     overflow-y: auto;
+  }
+
+  #legend {
+    height: 120px;
   }
 </style>

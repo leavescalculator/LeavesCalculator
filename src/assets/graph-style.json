@@ -25,12 +25,6 @@
       }
     },
     {
-      "selector": ".legend-node",
-      "style": {
-        "label": "data(id)"
-      }
-    },
-    {
       "selector": ".button",
       "style": {
         "background-color": "green",
