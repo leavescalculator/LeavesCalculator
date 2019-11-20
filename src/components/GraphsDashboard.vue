@@ -20,7 +20,6 @@ export default {
     fields: [
       { key: "id", sortable: true, label: "#" },
       { key: "graph_date", sortable: true, label: "Last Modified" },
-      { key: "graph_name", sortable: false, label: "Name" },
       { key: "graph_status", sortable: true, label: "Status" }
     ],
     graphs: []

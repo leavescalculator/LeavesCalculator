@@ -134,9 +134,8 @@ class pdrdedn(models.Model):
         return self.name
 
 class graph(models.Model):
-    graph_name = models.CharField(max_length=200, default=str(id))
+    #graph_name = models.CharField(max_length=200, default=str(id))
     graph_date = models.DateField(auto_now=True)
-    #date = models.DateField(auto_now=True)
     graph_data = jsonfield.JSONField(null=True)
     graph_cords =  models.TextField(default=0)
     # 'D' means dormat, 'A' means active
@@ -144,16 +143,18 @@ class graph(models.Model):
     def _str_(self):
         return self.name
 
-    def make_active():
-        current_active_graph = graph.objects.filter(graph_status='A')
-        if current_active_graph:
+    def make_active(self):
+        result = graph.objects.filter(graph_status='A')
+        if result:
+            current_active_graph = result[0]
+            print(current_active_graph)
             current_active_graph.graph_status = 'D'
             current_active_graph.save()
         self.graph_status = 'A'
         self.save()
 
 def query_active_graph():
-    active_graph = graph.objects.filter(graph_status='A').values('id', 'graph_name', 'graph_date', 'graph_data', 'graph_cords', 'graph_status')
+    active_graph = graph.objects.filter(graph_status='A').values('id', 'graph_date', 'graph_data', 'graph_cords', 'graph_status')
     if active_graph:
         return active_graph[0]
 

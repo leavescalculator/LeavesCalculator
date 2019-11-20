@@ -10,6 +10,8 @@
           <button class="btn btn-info" @click="outputPositions">Output Positions</button>
           <button class="btn btn-info" @click="loadPositions">Load Positions</button>
           <button class="btn btn-info" @click="saveAsNewGraph">Save As New Graph</button>
+          <button class="btn btn-info" @click="saveGraph">Update Graph</button>
+          <button class="btn btn-info" @click="activateGraph">Activate Graph</button>
         </div>
       </div>
 
@@ -167,10 +169,11 @@ cytoscape.use(popper);
 
 export default {
   name: "admin-dashboard",
+  props: ["nodes"],
   data: () => ({
     graph_style: graph_style.style,
     // The nodes objects from `src/assets/nodes.json`
-    nodes: json.Nodes,
+    graph_nodes: {},
     // Will become an object with setters and getters for fields of the selected element on selection
     selectedElement: null,
     // The available input fields for a node
@@ -208,7 +211,7 @@ export default {
       undoableDrag: false
     });
 
-    this.parseJson(this.nodes);
+    this.parseJson(this.graph_nodes);
     this.cy
       .layout({
         name: "breadthfirst"
@@ -274,6 +277,29 @@ export default {
       }
       document.getElementById("jsonOrPositions").value = JSON.stringify(output);
     },
+    getGraphJson() {
+      let output = {};
+      let nodes = this.cy.$(".graph-node");
+      for (let node = 0; node < nodes.length; node++) {
+        let element = nodes[node];
+        let nodeId = element.data("id");
+        output[nodeId] = {
+          title: element.data("title"),
+          input: element.data("input"),
+          options: []
+        };
+        let edges = this.cy.edges('[source = "' + nodeId + '"]');
+        for (let edge = 0; edge < edges.length; edge++) {
+          element = edges[edge];
+          output[nodeId].options.push({
+            title: element.data("title"),
+            add_time: element.data("add_time"),
+            next_node: element.data("target")
+          });
+        }
+      }
+      return output;
+    },
     outputPositions() {
       let output = [];
       let nodes = this.cy.$(".graph-node");
@@ -281,6 +307,14 @@ export default {
         output.push(nodes[node].relativePosition());
       }
       document.getElementById("jsonOrPositions").value = JSON.stringify(output);
+    },
+    getPositions() {
+      let output = [];
+      let nodes = this.cy.$(".graph-node");
+      for (let node = 0; node < nodes.length; node++) {
+        output.push(nodes[node].relativePosition());
+      }
+      return output;
     },
     loadPositions() {
       var json = document.getElementById("jsonOrPositions").value;
@@ -327,11 +361,13 @@ export default {
       div.style.visibility = "hidden";
     },
     saveAsNewGraph() {
+      var graph_json = this.getGraphJson();
+      var cords_json = this.getPositions();
       var tosend = JSON.stringify({
-        GRAPH_DATA: "ASDFASD",
-        GRAPH_NAME: "Asd",
-        CORDS: "aDSF"
+        GRAPH_DATA: graph_json,
+        CORDS: cords_json
       });
+      console.log(tosend);
       fetch("http://localhost:8000/database/savegraph/", {
         method: "POST",
         body: tosend,
@@ -342,13 +378,34 @@ export default {
       });
     },
     saveGraph() {
+      //if (graph_status == "D") {
+      var graph_json = this.getGraphJson();
+      var cords_json = this.getPositions();
       var tosend = JSON.stringify({
-        GRAPH_DATA: "ASDFASD",
+        GRAPH_DATA: graph_json,
         GRAPH_ID: "1",
-        CORDS: "aDSF",
+        CORDS: cords_json,
         GRAPH_STATUS: "D"
       });
       fetch("http://localhost:8000/database/updategraph/", {
+        method: "POST",
+        body: tosend,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: this.auth
+        }
+      });
+      //}
+    },
+    activateGraph() {
+      var graph_json = this.getGraphJson();
+      var cords_json = this.getPositions();
+      var tosend = JSON.stringify({
+        GRAPH_DATA: graph_json,
+        GRAPH_ID: "11",
+        CORDS: cords_json
+      });
+      fetch("http://localhost:8000/database/activategraph/", {
         method: "POST",
         body: tosend,
         headers: {

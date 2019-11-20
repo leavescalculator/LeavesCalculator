@@ -43,12 +43,17 @@ def get_graphs(request):
     return JsonResponse(graphs, safe=False)
 
 @csrf_exempt
+def get_active_graph(request):
+    graph = query_active_graph()
+    return JsonResponse(graph, safe=False)
+
+@csrf_exempt
 def save_new_graph(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     #if body:
-    new_graph = graph.objects.create(graph_data=body.get('GRAPH_DATA'), graph_name=body.get('GRAPH_NAME'), graph_cords=body.get('CORDS'))
-    return new_graph
+    new_graph = graph.objects.create(graph_data=body.get('GRAPH_DATA'), graph_cords=body.get('CORDS'))
+    return HttpResponse("200")
 
 @csrf_exempt
 def update_existing_graph(request):
@@ -62,14 +67,17 @@ def update_existing_graph(request):
 
 @csrf_exempt
 def make_graph_active(request):
-    # TODO: get graph id
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     if body:
+        print("ID: ", body.get('GRAPH_ID'))
         graph_to_activate, created = graph.objects.get_or_create(
-            id=body.get('GRAPH_ID'), defaults=None,
+            id=body.get('GRAPH_ID'), defaults={'graph_data': body.get('GRAPH_DATA'), 'graph_cords': body.get('CORDS')},
         )
+        print(graph_to_activate)
         graph_to_activate.make_active()
+        return HttpResponse("200")
+    return HttpResponse("400")
 
 @csrf_exempt
 def save_new_report(request):
@@ -81,7 +89,6 @@ def save_new_report(request):
 
 @csrf_exempt
 def update_existing_report(request):
-    # TODO: get report Json blob and report id and employee id
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     if body:
