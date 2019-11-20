@@ -33,6 +33,7 @@
             :addWeeks="addWeeks"
             @getEmployee="getEmployee"
             :Nodes="nodes"
+            @stack="storeStack"
           ></router-view>
         </div>
       </div>
@@ -121,6 +122,9 @@ export default {
           }
       }
 
+    },
+    storeStack(s) {
+        this.user.stack = s;
     }
   },
   computed: {
