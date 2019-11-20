@@ -47,7 +47,7 @@
 import Header from "./components/Header";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
-import Questions from "./assets/nodes.json";
+//import AdminDashboard from "./components/AdminDashboard";
 
 export default {
   name: "app",
@@ -63,6 +63,7 @@ export default {
   }),
   components: {
     appHeader: Header
+    //AdminDashboard
   },
   methods: {
     authSuccess(event) {
@@ -156,14 +157,14 @@ export default {
       this.graph_status = graph.graph_status;
       this.graph_id = graph.id;
       console.log("load ", this.graph_status, this.graph_id);
+      //WHY STATUS AND ID UNDEFINED IN ADMIN DASHBOARD????
       //Switch to admin page
+      //this.component = AdminDashboard;
     }
   },
   computed: {},
   mounted() {
     this.getActiveGraph();
-    //console.log(Questions.Nodes);
-    //this.nodes = Questions.Nodes;
   }
 };
 </script>

@@ -219,6 +219,8 @@ export default {
         name: "breadthfirst"
       })
       .run();
+    console.log("status: " + this.graph_status);
+    console.log("id: " + this.graph_id);
   },
   methods: {
     parseJson(nodes) {
