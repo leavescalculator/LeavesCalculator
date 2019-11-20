@@ -75,6 +75,16 @@
 
       <!-- Edge -->
       <template v-if="selectedElement && selectedElement.isEdge">
+        <div class="row input-group" v-if="cy.$id(selectedElement.source).data('input') === 'button-descriptive'">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeDesc">Description:</label>
+          </div>
+          <textarea
+            id="edgeDesc"
+            class="col form-control"
+            v-model="selectedElement.description"
+          ></textarea>
+        </div>
         <div class="row input-group">
           <div class="col input-group-prepend">
             <label class="input-group-text" for="edgeHours">
@@ -151,6 +161,17 @@
 
       <!-- Node -->
       <template v-else-if="selectedElement">
+        <div class="row input-group" v-if="selectedElement.description">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="nodeDesc">Description:</label>
+          </div>
+          <textarea
+            id="nodeDesc"
+            class="col form-control"
+            v-model="selectedElement.description"
+          ></textarea>
+        </div>
+
         <div class="row input-group">
           <div class="col input-group-prepend">
             <span class="input-group-text">Id:</span>
@@ -211,7 +232,7 @@
           // Will become an object with setters and getters for fields of the selected element on selection
           selectedElement: null,
           // The available input fields for a node
-          inputTypes: [ 'button', 'drop down', 'display', 'database' ],
+          inputTypes: [ 'button', 'button-descriptive', 'drop down', 'display', 'database', 'report' ],
           // The types of leave and their corresponding acronyms
           leaveTypes: [
             { type: 'Not Applicable', value: 'n/a' },
@@ -262,9 +283,13 @@
                     },
                     classes: 'graph-node',
                 });
+                if(nodes[node].input == 'display') {
+                  element.data('description', nodes[node].description);
+                }
                 element.on('select', this.showInfo)
                 element.on('unselect', this.hideInfo)
             }
+            console.log("parsing edges");
             for (const node of Object.keys(nodes)) {
                 for (const option of nodes[node].options) {
                     try {
@@ -278,6 +303,9 @@
                             },
                             classes: 'graph-edge',
                         });
+                        if(nodes[node].input == 'button-descriptive') {
+                          edge.data('description', option.description);
+                        }
                         edge.on('select', this.showInfo)
                         edge.on('unselect', this.hideInfo)
                     } catch (err) {
@@ -377,6 +405,12 @@
                                 element.data('title', title)
                                 element.data('label', title.substring(0, 30))
                             },
+                            get description() {
+                              return element.data('description')
+                            },
+                            set description(description) {
+                              element.data('description', description)
+                            },
                             get add_time() {
                                 return element.data('add_time')
                             },
@@ -391,12 +425,18 @@
                             isEdge: false,
                             get id() {
                                 return element.data('id')
-                            },
+                            },                            
                             get title() {
                                 return element.data('title')
                             },
                             set title(title) {
                                 element.data('title', title)
+                            },
+                            get description() {
+                              return element.data('description')
+                            },
+                            set description(description) {
+                              element.data('description', description)
                             },
                             get input() {
                                 return element.data('input')
