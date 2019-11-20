@@ -14,6 +14,7 @@
         :isAdmin="isAdmin"
         :Nodes="nodes"
         @change-user="changeEmployee"
+        @change-graph="changeGraph"
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
@@ -56,7 +57,9 @@ export default {
     isAdmin: false,
     infoError: "",
     user: {},
-    nodes: {}
+    nodes: {},
+    graph_status: "",
+    graph_id: ""
   }),
   components: {
     appHeader: Header
@@ -126,11 +129,34 @@ export default {
           console.log("request good");
           response.json().then(data => {
             this.nodes = data.graph_data;
+            this.graph_status = data.graph_status;
+            this.graph_id = data.id;
+            console.log("active ", this.graph_id, this.graph_status);
           });
         })
         .catch(function(error) {
           console.log("Request failed", error);
         });
+    },
+    changeGraph(event) {
+      if (this.isAdmin) {
+        this.loadGraph(event);
+        console.log(
+          "Now using graph: #" +
+            this.graph_id +
+            "with status: " +
+            this.graph_status
+        );
+      } else {
+        console.log("Graph did not get changed");
+      }
+    },
+    loadGraph(graph) {
+      this.nodes = JSON.parse(graph.graph_data);
+      this.graph_status = graph.graph_status;
+      this.graph_id = graph.id;
+      console.log("load ", this.graph_status, this.graph_id);
+      //Switch to admin page
     }
   },
   computed: {},

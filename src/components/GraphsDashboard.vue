@@ -2,7 +2,7 @@
   <div id="graph-dashboard">
     <div>
       <h1>Graph History</h1>
-      <b-table striped hover :items="graphs" :fields="fields"></b-table>
+      <b-table striped hover :items="graphs" :fields="fields" @row-clicked="loadGraph"></b-table>
     </div>
   </div>
 </template>
@@ -46,6 +46,11 @@ export default {
         .catch(function(error) {
           console.log("Request failed", error);
         });
+    },
+    loadGraph(item, index, event) {
+      console.log("item: ", item);
+      console.log("Attempting to change to graph #" + item.id);
+      this.$emit("change-graph", item);
     }
   },
   created: function() {

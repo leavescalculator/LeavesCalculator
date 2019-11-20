@@ -169,7 +169,7 @@ cytoscape.use(popper);
 
 export default {
   name: "admin-dashboard",
-  props: ["Nodes"],
+  props: ["Nodes", "graph_status", "graph_id"],
   data: () => ({
     graph_style: graph_style.style,
     // The nodes objects from `src/assets/nodes.json`
@@ -380,31 +380,32 @@ export default {
       });
     },
     saveGraph() {
-      //if (graph_status == "D") {
-      var graph_json = this.getGraphJson();
-      var cords_json = this.getPositions();
-      var tosend = JSON.stringify({
-        GRAPH_DATA: graph_json,
-        GRAPH_ID: "1",
-        CORDS: cords_json,
-        GRAPH_STATUS: "D"
-      });
-      fetch("http://localhost:8000/database/updategraph/", {
-        method: "POST",
-        body: tosend,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: this.auth
-        }
-      });
-      //}
+      if (this.graph_status == "D") {
+        var graph_json = this.getGraphJson();
+        var cords_json = this.getPositions();
+        var tosend = JSON.stringify({
+          GRAPH_DATA: graph_json,
+          GRAPH_ID: this.graph_id,
+          CORDS: cords_json,
+          GRAPH_STATUS: this.graph_status
+        });
+        fetch("http://localhost:8000/database/updategraph/", {
+          method: "POST",
+          body: tosend,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: this.auth
+          }
+        });
+      }
     },
     activateGraph() {
+      console.log("id and status: ", this.graph_id, this.graph_status);
       var graph_json = this.getGraphJson();
       var cords_json = this.getPositions();
       var tosend = JSON.stringify({
         GRAPH_DATA: graph_json,
-        GRAPH_ID: "11",
+        GRAPH_ID: this.graph_id,
         CORDS: cords_json
       });
       fetch("http://localhost:8000/database/activategraph/", {
