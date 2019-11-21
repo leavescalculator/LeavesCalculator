@@ -2,7 +2,28 @@
   <div id="graph-dashboard">
     <div>
       <h1>Graph History</h1>
-      <b-table striped hover :items="graphs" :fields="fields" @row-clicked="loadGraph"></b-table>
+      <div>
+        <b-table
+          striped
+          hover
+          :items="graphs"
+          :fields="fields"
+          :tbody-tr-class="highlightActive"
+          @row-clicked="loadGraph"
+        >
+          <!--<template v-slot:cell(id)="data">
+          <router-link
+            to="/graph-dashboard"
+            class="nav-item nav-link"
+            tag="li"
+            active-class="active"
+            v-if="isAdmin"
+          >
+            <a>{{data.value}}</a>
+          </router-link>
+          </template>-->
+        </b-table>
+      </div>
     </div>
   </div>
 </template>
@@ -15,7 +36,7 @@ Vue.use(BootstrapVue);
 
 export default {
   name: "graph-dashboard",
-  props: ["auth"],
+  props: ["isAdmin"],
   data: () => ({
     fields: [
       { key: "id", sortable: true, label: "#" },
@@ -50,6 +71,9 @@ export default {
     loadGraph(item, index, event) {
       console.log("Attempting to change to graph #" + item.id);
       this.$emit("change-graph", item);
+    },
+    highlightActive(item, type) {
+      if (item.graph_status == "A") return "table-success";
     }
   },
   created: function() {

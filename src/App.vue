@@ -49,6 +49,24 @@
 import Header from "./components/Header";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
+import AdminDashboard from "./components/AdminDashboard";
+/*import Vue from "vue";
+import VueRouter from "vue-router";
+Vue.use(VueRouter);
+
+const router = new VueRouter({
+  routes: [
+    {
+      path: "/admin-dashboard",
+      component: AdminDashboard,
+      props: true,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: this.auth
+      }
+    }
+  ]
+});*/
 
 export default {
   name: "app",
@@ -146,9 +164,13 @@ export default {
         console.log(
           "Now using graph: #" +
             this.graphId +
-            "with status: " +
+            " with status: " +
             this.graphStatus
         );
+        //Switch to admin page
+        /*this.$router.push({
+          path: "graph-dashboard"
+        });*/
       } else {
         console.log("Graph did not get changed");
       }
@@ -159,8 +181,6 @@ export default {
       var ID = graph.id;
       this.graphStatus = STATUS;
       this.graphId = ID;
-      //Switch to admin page
-      //this.component = AdminDashboard;
     }
   },
   computed: {},
