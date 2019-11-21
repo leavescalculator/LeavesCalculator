@@ -86,8 +86,6 @@
     <hr />
 
     <h3>Leave Request</h3>
-    <h6>Enter date into [Leave Start] and [Leave End] to get Table for [Leave Plan]</h6>
-    <a href="#" data-toggle="tooltip" title="Some tooltip text!">Hover over me</a>
     <table width="800" class="form-inline">
       <tr class="form-group">
         <td class="input-group">
@@ -96,7 +94,15 @@
               Leave Start:
             </label>
           </div>
-          <input type="date" v-model="startLeaveDate" id="leaveStart" ref="leaveStart" class="form-control" />
+          <input
+            type="date"
+            v-model="startLeaveDate"
+            id="leaveStart"
+            class="form-control"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            data-trigger="manual"
+          />
         </td>
         <td class="input-group">
           <div class="input-group-prepend">
@@ -104,7 +110,15 @@
               Leave End:
             </label>
           </div>
-          <input type="date" v-model="endLeaveDate" id="leaveEnd" class="form-control" />
+          <input
+            type="date"
+            v-model="endLeaveDate"
+            id="leaveEnd"
+            class="form-control"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            data-trigger="manual"
+          />
         </td>
       </tr>
       <tr class="form-group">
@@ -305,12 +319,21 @@
 
 <script>
 import moment from 'moment'
-import Tooltip from 'tooltip.js'
-import PopperJs from 'popper.js'
+import $ from 'jquery'
 export default {
   name: 'report',
   props: ['user', 'isAdmin'],
   data: () => ({
+    errors: {
+      leaveStart: {
+        empty: "Input the date you'd like to start your leave",
+        invalid: "Please select a valid start date"
+      },
+      leaveEnd: {
+        empty: "Input the date you'd like to end your leave",
+        invalid: "Please select a valid end date"
+      }
+    },
     notes: '',
     total_request: 0.0,
     full_time: 0.0,
@@ -361,21 +384,17 @@ export default {
       return total
     }
   },
-
-mounted: function(){
-  console.log(this.$refs.leaveStart)
-  const instance = new Tooltip(this.$refs.leaveStart, {
-    title: "Hey there",
-    trigger: "hover",
-});
-instance.show();
-},
+  mounted: function() {
+    $('#leaveStart').attr('title', this.errors.leaveStart.empty)
+    $('#leaveEnd').attr('title', this.errors.leaveEnd.empty)
+    $('#leaveStart, #leaveEnd').addClass("error").tooltip('show')
+  },
   watch: {
     startLeaveDate: function() {
-      this.setNumWeeks()
+      this.checkValidDates()
     },
     endLeaveDate: function() {
-      this.setNumWeeks()
+      this.checkValidDates()
     },
   },
   methods: {
@@ -455,15 +474,57 @@ instance.show();
         this.leavePlan.pop()
       }
     },
-    paid_percent(type){
+    paid_percent(type) {
       if(type!="STD")
         return 100
         else {
           return 60
         }
-    }
+    },
+    checkValidDates() {
+      if(!this.startLeaveDate) {
+        $('#leaveStart')
+          .addClass('error')
+          .tooltip('dispose')
+          .attr('title', this.errors.leaveStart.empty)
+          .tooltip('show')
+      } else if(this.startLeaveDate && !this.endLeaveDate) {
+        $('#leaveStart')
+          .removeClass('error')
+          .tooltip('dispose')
+          .attr('title', '')
+      }
+
+      if(!this.endLeaveDate) {
+        $('#leaveEnd')
+          .addClass('error')
+          .tooltip('dispose')
+          .attr('title', this.errors.leaveEnd.empty)
+          .tooltip('show')
+      } else if(!this.startLeaveDate && this.endLeaveDate) {
+        $('#leaveEnd')
+          .removeClass('error')
+          .tooltip('dispose')
+          .attr('title', '')
+      } else if(this.startLeaveDate && this.endLeaveDate) {
+        if(this.startLeaveDate < this.endLeaveDate) {
+          $('#leaveStart, #leaveEnd')
+            .removeClass('error')
+            .tooltip('dispose')
+            .attr('title', '')
+          this.setNumWeeks()
+        } else {
+          $('#leaveStart').attr('title', this.errors.leaveStart.invalid)
+          $('#leaveEnd').attr('title', this.errors.leaveEnd.invalid)
+          $('#leaveStart, #leaveEnd').tooltip('dispose').addClass('error').tooltip('show')
+        }
+      }
+    },
   }
 }
 </script>
 <style>
+  .error {
+    border: 1px solid red;
+  }
 </style>
