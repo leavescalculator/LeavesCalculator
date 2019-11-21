@@ -219,8 +219,6 @@ export default {
         name: "breadthfirst"
       })
       .run();
-    console.log("status: " + this.graphStatus);
-    console.log("id: " + this.graphId);
   },
   methods: {
     parseJson(nodes) {
@@ -351,7 +349,6 @@ export default {
     loadJson() {
       var json = document.getElementById("jsonOrPositions").value;
       var nodes = { Nodes: JSON.parse(json) };
-      console.log();
       this.cy.$(".graph-node").remove();
       this.parseJson(nodes.Nodes);
       this.cy
@@ -371,7 +368,6 @@ export default {
         GRAPH_DATA: graph_json,
         CORDS: cords_json
       });
-      console.log(tosend);
       fetch("http://localhost:8000/database/savegraph/", {
         method: "POST",
         body: tosend,
@@ -402,7 +398,6 @@ export default {
       }
     },
     activateGraph() {
-      console.log("id and status: ", this.graphId, this.graphStatus);
       var graph_json = this.getGraphJson();
       var cords_json = this.getPositions();
       var tosend = JSON.stringify({

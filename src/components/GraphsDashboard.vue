@@ -48,7 +48,6 @@ export default {
         });
     },
     loadGraph(item, index, event) {
-      console.log("item: ", item);
       console.log("Attempting to change to graph #" + item.id);
       this.$emit("change-graph", item);
     }

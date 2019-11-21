@@ -147,7 +147,6 @@ class graph(models.Model):
         result = graph.objects.filter(graph_status='A')
         if result:
             current_active_graph = result[0]
-            print(current_active_graph)
             current_active_graph.graph_status = 'D'
             current_active_graph.save()
         self.graph_status = 'A'

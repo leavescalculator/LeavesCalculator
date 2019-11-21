@@ -70,11 +70,9 @@ def make_graph_active(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     if body:
-        print("ID: ", body.get('GRAPH_ID'))
         graph_to_activate, created = graph.objects.get_or_create(
             id=body.get('GRAPH_ID'), defaults={'graph_data': body.get('GRAPH_DATA'), 'graph_cords': body.get('CORDS')},
         )
-        print(graph_to_activate)
         graph_to_activate.make_active()
         return HttpResponse("200")
     return HttpResponse("400")

@@ -129,14 +129,11 @@ export default {
         .then(response => {
           console.log("request good");
           response.json().then(data => {
-            console.log(typeof data.id);
-            console.log(typeof data.graph_status);
             this.nodes = data.graph_data;
             let STATUS = data.graph_status;
             let ID = data.id;
             this.graphStatus = STATUS;
             this.graphId = ID;
-            console.log(typeof this.graphId, typeof this.graphStatus);
           });
         })
         .catch(function(error) {
@@ -157,15 +154,11 @@ export default {
       }
     },
     loadGraph(graph) {
-      console.log(typeof graph.id);
-      console.log(typeof graph.graph_status);
       this.nodes = JSON.parse(graph.graph_data);
       var STATUS = graph.graph_status;
       var ID = graph.id;
       this.graphStatus = STATUS;
       this.graphId = ID;
-      console.log(typeof this.graphId, typeof this.graphStatus);
-      //WHY STATUS AND ID UNDEFINED IN ADMIN DASHBOARD????
       //Switch to admin page
       //this.component = AdminDashboard;
     }
