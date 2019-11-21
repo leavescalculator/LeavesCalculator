@@ -432,10 +432,11 @@ class Employee(models.Model):
                 self.reports = reports
 
     #This function queries for the currently active graph
-    def query_current_graph(self):
+    '''def query_current_graph(self):
         active_graph = query_active_graph()
         if active_graph:
             self.graph = active_graph
+    '''
 
     #This function combines previously listed queries above into one call
     def query_other_employee_info(self):
@@ -447,7 +448,7 @@ class Employee(models.Model):
         self.query_protected_leave_hrs_taken()
         self.query_current_paid_leaves_balances()
         self.query_reports()
-        self.query_current_graph()
+        #self.query_current_graph()
         return
 
     #This function sets the employee's username

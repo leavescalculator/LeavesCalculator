@@ -91,9 +91,10 @@ def make_graph_active(request):
 def save_new_report(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
-    #if body:
-    new_report = leavereports.objects.create(leavereports_pidm=body.get('EMPLOYEE_ID'), leavereports_report=body.get('REPORT'))
-    return HttpResponse("Saved!")
+    if body:
+        new_report = leavereports.objects.create(leavereports_pidm=body.get('EMPLOYEE_ID'), leavereports_report=body.get('REPORT'))
+        return HttpResponse("Saved!")
+    return HttpResponse("Not saved!")
 
 #This view will save the new updates to the report passed in the body of the request as a new
 #report if it exists. Otherwise, it will be saved as a new report.
