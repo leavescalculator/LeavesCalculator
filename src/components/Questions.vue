@@ -21,47 +21,10 @@
       </div>
     </div>
     <div v-if="user.employee_id != null">
-      <!--<btn-question
-        :title="Nodes[currentNode].title"
-        :options="Nodes[currentNode].options"
-        @option-selected="optionSelected"
-        v-if="Nodes[currentNode].input === 'button'"
-      ></btn-question>
-
-      <btn-descriptive-question
-        :title="Nodes[currentNode].title"
-        :options="Nodes[currentNode].options"
-        @option-selected="optionSelected"
-        v-if="Nodes[currentNode].input === 'button-descriptive'"
-      ></btn-descriptive-question>
-
-      <display-question
-        :title="Nodes[currentNode].title"
-        :options="Nodes[currentNode].options"
-        @option-selected="optionSelected"
-        v-if="Nodes[currentNode].input === 'display'"
-      ></display-question>
-
-      <drop-down-question
-        :title="Nodes[currentNode].title"
-        :options="Nodes[currentNode].options"
-        @option-selected="optionSelected"
-        v-if="Nodes[currentNode].input === 'drop down'"
-      ></drop-down-question>
-
-      <database-question
-        :title="Nodes[currentNode].title"
-        :options="Nodes[currentNode].options"
-        @option-selected="optionSelected"
-        v-if="Nodes[currentNode].input === 'database'"
-        :user="user"
-      ></database-question>
-      -->
       <component :is="selectedComponent"
                  :title="Nodes[currentNode].title"
                  :options="Nodes[currentNode].options"
                  @option-selected="optionSelected"
-                 v-if="Nodes[currentNode].input === 'database'"
                  :user="user"
       ></component>
       <br />
@@ -95,7 +58,8 @@ export default {
   }),
   computed: {
       selectedComponent() {
-          switch (this.Nodes[this.currentNode].input) {
+          let input = this.Nodes[this.currentNode].input;
+          switch (input) {
               case "button":
                   return "btn-question";
               case "button-descriptive":
@@ -119,7 +83,7 @@ export default {
     BtnDescriptiveQuestion
   },
   mounted() {
-    //console.log(this.Nodes);
+      console.log(this.Nodes[this.currentNode]);
   },
   methods: {
     optionSelected(selected) {
