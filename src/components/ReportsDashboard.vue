@@ -2,7 +2,7 @@
   <div id="report-dashboard">
     <div>
       <h1>Reports History</h1>
-      <b-table striped hover :items="reports" :fields="fields"></b-table>
+      <b-table striped hover :items="reports" :fields="fields"   @row-clicked="loadReport"></b-table>
     </div>
   </div>
 </template>
@@ -31,6 +31,11 @@ export default {
         for (let i = 0; i < num_reports; ++i) {
             this.reports.push(this.user.reports[i]);
         }
+    },
+    loadReport(item, index, event){
+      console.log("attempting to load")
+      console.log(item.leavereports_report);
+      this.$emit("change-report", item);
     }
   },
   created: function() {

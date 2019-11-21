@@ -17,6 +17,8 @@
         @change-graph="changeGraph"
         :graph-id="graphId"
         :graph-status="graphStatus"
+        @change-report="changeReport"
+        :report="report"
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
@@ -38,6 +40,8 @@
             @add-weeks="addWeeks"
             @getEmployee="getEmployee"
             :Nodes="nodes"
+            @change-report="changeReport"
+            :report="report"
           ></router-view>
         </div>
       </div>
@@ -78,7 +82,8 @@ export default {
     user: {},
     nodes: {},
     graphStatus: "",
-    graphId: ""
+    graphId: "",
+    report: ""
   }),
   components: {
     appHeader: Header
@@ -183,6 +188,16 @@ export default {
       this.nodes = JSON.parse(graph.graph_data);
       this.graphStatus = graph.graph_status;
       this.graphId = graph.id;
+    },
+    changeReport(event) {
+      console.log("in app.vue change report")
+      this.loadReport(event);
+    },
+    loadReport(report) {
+      console.log("here");
+      console.log(report);
+      this.report = report;
+
     }
   },
   computed: {},
