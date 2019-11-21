@@ -161,7 +161,7 @@ import edgehandles from "cytoscape-edgehandles";
 import undoRedo from "cytoscape-undo-redo";
 import popper from "cytoscape-popper";
 import graph_style from "../assets/graph-style.json";
-import json from "../assets/nodes.json";
+//import json from "../assets/nodes.json";
 
 cytoscape.use(edgehandles);
 cytoscape.use(undoRedo);
@@ -169,12 +169,12 @@ cytoscape.use(popper);
 
 export default {
   name: "admin-dashboard",
-  props: ["Nodes", "graph_status", "graph_id"],
+  props: ["Nodes", "graph-status", "graph-id"],
   data: () => ({
     graph_style: graph_style.style,
     // The nodes objects from `src/assets/nodes.json`
     //TODO: Need to update this to load the one from App.vue
-    //nodes: json.Nodes,
+    //nodes: Nodes
     // Will become an object with setters and getters for fields of the selected element on selection
     selectedElement: null,
     // The available input fields for a node
@@ -219,8 +219,8 @@ export default {
         name: "breadthfirst"
       })
       .run();
-    console.log("status: " + this.graph_status);
-    console.log("id: " + this.graph_id);
+    console.log("status: " + this.graphStatus);
+    console.log("id: " + this.graphId);
   },
   methods: {
     parseJson(nodes) {
@@ -382,14 +382,14 @@ export default {
       });
     },
     saveGraph() {
-      if (this.graph_status == "D") {
+      if (this.graphStatus == "D") {
         var graph_json = this.getGraphJson();
         var cords_json = this.getPositions();
         var tosend = JSON.stringify({
           GRAPH_DATA: graph_json,
-          GRAPH_ID: this.graph_id,
+          GRAPH_ID: this.graphId,
           CORDS: cords_json,
-          GRAPH_STATUS: this.graph_status
+          GRAPH_STATUS: this.graphStatus
         });
         fetch("http://localhost:8000/database/updategraph/", {
           method: "POST",
@@ -402,12 +402,12 @@ export default {
       }
     },
     activateGraph() {
-      console.log("id and status: ", this.graph_id, this.graph_status);
+      console.log("id and status: ", this.graphId, this.graphStatus);
       var graph_json = this.getGraphJson();
       var cords_json = this.getPositions();
       var tosend = JSON.stringify({
         GRAPH_DATA: graph_json,
-        GRAPH_ID: this.graph_id,
+        GRAPH_ID: this.graphId,
         CORDS: cords_json
       });
       fetch("http://localhost:8000/database/activategraph/", {

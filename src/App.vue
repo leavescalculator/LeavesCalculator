@@ -15,6 +15,8 @@
         :Nodes="nodes"
         @change-user="changeEmployee"
         @change-graph="changeGraph"
+        :graph-id="graphId"
+        :graph-status="graphStatus"
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
@@ -47,7 +49,6 @@
 import Header from "./components/Header";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
-//import AdminDashboard from "./components/AdminDashboard";
 
 export default {
   name: "app",
@@ -58,12 +59,11 @@ export default {
     infoError: "",
     user: {},
     nodes: {},
-    graph_status: "",
-    graph_id: ""
+    graphStatus: "",
+    graphId: ""
   }),
   components: {
     appHeader: Header
-    //AdminDashboard
   },
   methods: {
     authSuccess(event) {
@@ -129,10 +129,14 @@ export default {
         .then(response => {
           console.log("request good");
           response.json().then(data => {
+            console.log(typeof data.id);
+            console.log(typeof data.graph_status);
             this.nodes = data.graph_data;
-            this.graph_status = data.graph_status;
-            this.graph_id = data.id;
-            console.log("active ", this.graph_id, this.graph_status);
+            let STATUS = data.graph_status;
+            let ID = data.id;
+            this.graphStatus = STATUS;
+            this.graphId = ID;
+            console.log(typeof this.graphId, typeof this.graphStatus);
           });
         })
         .catch(function(error) {
@@ -144,19 +148,23 @@ export default {
         this.loadGraph(event);
         console.log(
           "Now using graph: #" +
-            this.graph_id +
+            this.graphId +
             "with status: " +
-            this.graph_status
+            this.graphStatus
         );
       } else {
         console.log("Graph did not get changed");
       }
     },
     loadGraph(graph) {
+      console.log(typeof graph.id);
+      console.log(typeof graph.graph_status);
       this.nodes = JSON.parse(graph.graph_data);
-      this.graph_status = graph.graph_status;
-      this.graph_id = graph.id;
-      console.log("load ", this.graph_status, this.graph_id);
+      var STATUS = graph.graph_status;
+      var ID = graph.id;
+      this.graphStatus = STATUS;
+      this.graphId = ID;
+      console.log(typeof this.graphId, typeof this.graphStatus);
       //WHY STATUS AND ID UNDEFINED IN ADMIN DASHBOARD????
       //Switch to admin page
       //this.component = AdminDashboard;
