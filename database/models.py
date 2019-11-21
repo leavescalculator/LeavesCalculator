@@ -10,7 +10,16 @@ MonkeyPatch.patch_fromisoformat()
 
 #Todays date as a Date object
 TODAY = date.today()
-
+#The minimum number of months employeed for fmla eligibility
+FMLA_MINIMUM_LENGTH = 12
+#The minimum number of months employeed for ofla eligibility
+OFLA_MINIMUM_LENGTH = 6
+#The minimum number of hours worked for fmla eligibility
+FMLA_MINIMUM_HOURS = 1250
+#The minimum number of hours worked for ofla eligibility
+OFLA_MINIMUM_HOURS = 650
+#The minimum number of hours worked for ofla military leave eligibility
+OFLA_MILITARY_EXCEPTIONS_HOURS = 520
 
 #The following schema was provided by PSU. They also provided mock information
 #that's supposed to simulate the information that they store in their own
@@ -278,12 +287,12 @@ class Employee(models.Model):
         ptrearn_eligible = ptrearn.objects.filter(ptrearn_fmla_eligible_hrs_ind='Y')
         pay_info = pay_info.filter(perjtot_earn_code__in=ptrearn_eligible)
         num = pay_info.count()
-        if num >= 12:
-            pay_info = pay_info[num-12:num]
+        if num >= FMLA_MINIMUM_LENGTH:
+            pay_info = pay_info[num-FMLA_MINIMUM_LENGTH:num]
         self.month_lookback_12 = pay_info.aggregate(Sum('perjtot_hrs')).get('perjtot_hrs__sum')
         num = pay_info.count()
-        if num >= 6:
-            pay_info2 = pay_info[num-6:num]
+        if num >= OFLA_MINIMUM_LENGTH:
+            pay_info2 = pay_info[num-OFLA_MINIMUM_LENGTH:num]
         self.month_lookback_6 = pay_info2.aggregate(Sum('perjtot_hrs')).get('perjtot_hrs__sum')
 
     #This function will query for all of the employee's emails
@@ -308,28 +317,23 @@ class Employee(models.Model):
 
     #This function will check the number of hours worked and lenght of time employed (in months) at psu,
     #and determine if they are eligible for fmla/ofla, or meet any exceptions that might make them qualified
-    #FMLA_MINIMUM_LENGTH = 12
-    #OFLA_MINIMUM_LENGTH = 6
-    #FMLA_MINIMUM_HOURS = 1250
-    #OFLA_MINIMUM_HOURS = 650
-    #OFLA_MILITARY_EXCEPTIONS_HOURS = 520
     def query_leave_eligibility(self):
         if not self.fte:
             self.fmla_eligibility = 'F' #not eligible
             self.ofla_eligibility = 'F'
             return
         len = (TODAY - self.hire_date).days / 30
-        if (len >= 12  and self.month_lookback_12 >= 1250):
+        if (len >= FMLA_MINIMUM_LENGTH  and self.month_lookback_12 >= FMLA_MINIMUM_HOURS):
             self.fmla_eligibility = 'T' #eligible
         else:
             self.fmla_eligibility = 'F'
-        if (len < 6):
+        if (len < OFLA_MINIMUM_LENGTH):
             self.ofla_eligibility = 'M' #military leave only
             return
-        if (self.month_lookback_6 >= 650):
+        if (self.month_lookback_6 >= OFLA_MINIMUM_HOURS):
             self.ofla_eligibility = 'T'
             return
-        elif (self.month_lookback_6 >= 520):
+        elif (self.month_lookback_6 >= OFLA_MILITARY_EXCEPTIONS_HOURS):
             self.ofla_eligibility = 'B' #both military and parental leave
         else:
             self.ofla_eligibility = 'P' #Parental leave only
