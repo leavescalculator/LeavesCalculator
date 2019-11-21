@@ -49,7 +49,7 @@
 import Header from "./components/Header";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
-/*import AdminDashboard from "./components/AdminDashboard";
+import AdminDashboard from "./components/AdminDashboard";
 import Vue from "vue";
 import VueRouter from "vue-router";
 Vue.use(VueRouter);
@@ -58,15 +58,15 @@ const router = new VueRouter({
   routes: [
     {
       path: "/admin-dashboard",
+      name: "admin-dashboard",
       component: AdminDashboard,
       props: true,
-      headers: {
-        "Content-Type": "application/json",
+      meta: {
         Authorization: this.auth
       }
     }
   ]
-});*/
+});
 
 export default {
   name: "app",
@@ -171,9 +171,9 @@ export default {
             this.graphStatus
         );
         //Redirect to admin page
-        /*this.$router.push({
-          path: "graph-dashboard"
-        });*/
+        this.$router.push({
+          path: "/admin-dashboard"
+        });
       } else {
         console.log("Graph did not get changed");
       }
