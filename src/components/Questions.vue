@@ -8,7 +8,7 @@
         <input
           type="text"
           id="usrname"
-          placeholder="other usrname"
+          placeholder="other username"
           class="form-control"
           v-model="usrname"
           @keydown.enter="changeUser"
@@ -16,10 +16,12 @@
       </div>
       <div class="col-md-2">
         <button class="btn btn-success" @click="changeUser">Change User</button>
+        <br>
+        <p>running as: {{ usrname }}</p>
       </div>
     </div>
     <div v-if="user.employee_id != null">
-      <btn-question
+      <!--<btn-question
         :title="Nodes[currentNode].title"
         :options="Nodes[currentNode].options"
         @option-selected="optionSelected"
@@ -54,7 +56,14 @@
         v-if="Nodes[currentNode].input === 'database'"
         :user="user"
       ></database-question>
-
+      -->
+      <component :is="selectedComponent"
+                 :title="Nodes[currentNode].title"
+                 :options="Nodes[currentNode].options"
+                 @option-selected="optionSelected"
+                 v-if="Nodes[currentNode].input === 'database'"
+                 :user="user"
+      ></component>
       <br />
       <button class="btn btn-success" @click="goBack()" v-if="stack[0]">
         Back
@@ -84,7 +93,24 @@ export default {
     stack: [], // structure containing nodes visited
     usrname: "",
   }),
-  computed: {},
+  computed: {
+      selectedComponent() {
+          switch (this.Nodes[this.currentNode].input) {
+              case "button":
+                  return "btn-question";
+              case "button-descriptive":
+                  return "btn-descriptive-question";
+              case "display":
+                  return "display-question";
+              case "drop down":
+                  return "drop-down-question";
+              case "database":
+                  return "database-question";
+              default:
+                  return "";
+          }
+      }
+  },
   components: {
     BtnQuestion,
     DisplayQuestion,
