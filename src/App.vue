@@ -49,8 +49,8 @@
 import Header from "./components/Header";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
-import AdminDashboard from "./components/AdminDashboard";
-/*import Vue from "vue";
+/*import AdminDashboard from "./components/AdminDashboard";
+import Vue from "vue";
 import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
@@ -137,6 +137,8 @@ export default {
       //change weeks here
     },
     getActiveGraph() {
+      //This function will retrieve the active graph from the database for deployment
+      //It is the default graph to display in the admin dashboard
       fetch("http://localhost:8000/database/getactivegraph/", {
         method: "GET",
         headers: {
@@ -148,10 +150,8 @@ export default {
           console.log("request good");
           response.json().then(data => {
             this.nodes = data.graph_data;
-            let STATUS = data.graph_status;
-            let ID = data.id;
-            this.graphStatus = STATUS;
-            this.graphId = ID;
+            this.graphStatus = data.graph_status;
+            this.graphId = data.id;
           });
         })
         .catch(function(error) {
@@ -159,6 +159,9 @@ export default {
         });
     },
     changeGraph(event) {
+      //This function will allow the admin to choose a graph to load into
+      //the admin dashboard. It listens for the event for this case, and
+      //calls another function to set the graph.
       if (this.isAdmin) {
         this.loadGraph(event);
         console.log(
@@ -167,7 +170,7 @@ export default {
             " with status: " +
             this.graphStatus
         );
-        //Switch to admin page
+        //Redirect to admin page
         /*this.$router.push({
           path: "graph-dashboard"
         });*/
@@ -176,11 +179,10 @@ export default {
       }
     },
     loadGraph(graph) {
+      //This function will set the graph display to the one passed in
       this.nodes = JSON.parse(graph.graph_data);
-      var STATUS = graph.graph_status;
-      var ID = graph.id;
-      this.graphStatus = STATUS;
-      this.graphId = ID;
+      this.graphStatus = graph.graph_status;
+      this.graphId = graph.id;
     }
   },
   computed: {},

@@ -161,7 +161,6 @@ import edgehandles from "cytoscape-edgehandles";
 import undoRedo from "cytoscape-undo-redo";
 import popper from "cytoscape-popper";
 import graph_style from "../assets/graph-style.json";
-//import json from "../assets/nodes.json";
 
 cytoscape.use(edgehandles);
 cytoscape.use(undoRedo);
@@ -172,9 +171,6 @@ export default {
   props: ["Nodes", "graph-status", "graph-id"],
   data: () => ({
     graph_style: graph_style.style,
-    // The nodes objects from `src/assets/nodes.json`
-    //TODO: Need to update this to load the one from App.vue
-    //nodes: Nodes
     // Will become an object with setters and getters for fields of the selected element on selection
     selectedElement: null,
     // The available input fields for a node
@@ -280,6 +276,7 @@ export default {
       document.getElementById("jsonOrPositions").value = JSON.stringify(output);
     },
     getGraphJson() {
+      //This function will get the nodes of the graph and its information in JSON
       let output = {};
       let nodes = this.cy.$(".graph-node");
       for (let node = 0; node < nodes.length; node++) {
@@ -311,6 +308,7 @@ export default {
       document.getElementById("jsonOrPositions").value = JSON.stringify(output);
     },
     getPositions() {
+      //This function will get the positions of the nodes of the graph in JSON
       let output = [];
       let nodes = this.cy.$(".graph-node");
       for (let node = 0; node < nodes.length; node++) {
@@ -362,6 +360,8 @@ export default {
       div.style.visibility = "hidden";
     },
     saveAsNewGraph() {
+      //This function will allow admin to save a copy of the graph
+      //they are working on, preserving the current graph
       var graph_json = this.getGraphJson();
       var cords_json = this.getPositions();
       var tosend = JSON.stringify({
@@ -378,6 +378,8 @@ export default {
       });
     },
     saveGraph() {
+      //This function will allow admin to save the new updates of
+      //the graph they are working on to itself
       if (this.graphStatus == "D") {
         var graph_json = this.getGraphJson();
         var cords_json = this.getPositions();
@@ -398,6 +400,8 @@ export default {
       }
     },
     activateGraph() {
+      //This function will allow the admin to make the current graph
+      //they are working on the active graph for deployment
       var graph_json = this.getGraphJson();
       var cords_json = this.getPositions();
       var tosend = JSON.stringify({
