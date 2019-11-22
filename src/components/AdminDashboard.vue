@@ -243,6 +243,7 @@
         { type: 'Vacation',       value: 'LTV' },
         { type: 'AAUP/SEIU',      value: 'LW1' },
         { type: 'STD',            value: 'STD' },
+        { type: 'Pregnancy',      value: 'PD' },
         { type: 'Unpaid Leave',   value: 'LW3' },
         { type: 'FLSA/NLFA',      value: 'LSA' },
         { type: 'Personal Day',   value: 'Per' },

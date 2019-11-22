@@ -102,6 +102,7 @@
             data-toggle="tooltip"
             data-placement="bottom"
             data-trigger="manual"
+            placeholder="mm/dd/yyyy"
           />
         </td>
         <td class="input-group">
@@ -118,6 +119,7 @@
             data-toggle="tooltip"
             data-placement="bottom"
             data-trigger="manual"
+            placeholder="mm/dd/yyyy"
           />
         </td>
       </tr>
@@ -322,16 +324,17 @@ import moment from 'moment'
 import $ from 'jquery'
 export default {
   name: 'report',
-  props: ['user', 'isAdmin'],
+  props: ['user', 'isAdmin', 'Nodes'],
   data: () => ({
     errors: {
       leaveStart: {
-        empty: "Input the date you'd like to start your leave",
-        invalid: "Please select a valid start date"
+        empty:   "Input the date you'd like to start your leave",
+        invalid: "Input a start date that occurs before the given end date",
+        past:    "Input a start date after today"
       },
-      leaveEnd: {
-        empty: "Input the date you'd like to end your leave",
-        invalid: "Please select a valid end date"
+      leaveEnd:  {
+        empty:   "Input the date you'd like to end your leave",
+        invalid: "Input an end date that occurs after the given start date",
       }
     },
     notes: '',
@@ -342,6 +345,7 @@ export default {
     startLeaveDate: '',
     endLeaveDate: '',
     picked: '',
+    numWeeks: 0,
     leavePlan: [],
 
     leaveTypes: [
@@ -364,6 +368,15 @@ export default {
     ],
   }),
   computed: {
+    std_hours: function() {
+      let weeks = 0
+      for(let i = 0; i < this.user.stack.length; i++) {
+        let edge = this.Nodes[this.user.stack[i].node].options[this.user.stack[i].edge]
+        if(edge.type === 'STD')
+          weeks += edge.weeks
+      }
+      return 40 * this.user.fte * weeks
+    },
     lst: function () {
       return this.user.deductions_eligibility.includes("LST")
     },
@@ -466,13 +479,15 @@ export default {
       var numWeeks = duration.asWeeks();
 
       // Add missing weeks
-      for(let weekIndex = this.leavePlan.length; weekIndex < numWeeks; weekIndex++) {
+      for(let weekIndex = this.numWeeks; weekIndex < numWeeks; weekIndex++) {
         this.leavePlan.push({ week: weekIndex + 1, leaveType: '', leaveUsed: 0.0 })
       }
       // Remove extra weeks
-      for(let weekIndex = numWeeks; weekIndex < this.leavePlan.length; weekIndex++) {
+      for(let weekIndex = numWeeks; weekIndex < this.numWeeks; weekIndex++) {
+        // TODO: handle multiple leavetypes for removed weeks
         this.leavePlan.pop()
       }
+      this.numWeeks = numWeeks
     },
     paid_percent(type) {
       if(type!="STD")
@@ -481,14 +496,32 @@ export default {
           return 60
         }
     },
+    // When the start and end dates are changed, this function will be called.
+    // If the dates are invalid, a tooltip will appear informing the user.
     checkValidDates() {
+      let startDate = moment(this.startLeaveDate)
+      let endDate = moment(this.endDate)
+      let today = moment()
       if(!this.startLeaveDate) {
         $('#leaveStart')
           .addClass('error')
           .tooltip('dispose')
           .attr('title', this.errors.leaveStart.empty)
           .tooltip('show')
-      } else if(this.startLeaveDate && !this.endLeaveDate) {
+      } else if(startDate <= today) {
+        $('#leaveStart')
+          .addClass('error')
+          .tooltip('dispose')
+          .attr('title', this.errors.leaveStart.past)
+          .tooltip('show')
+      } else if(this.endLeaveDate && startDate >= endDate) {
+        $('#leaveEnd')
+          .addClass('error')
+          .tooltip('dispose')
+          .attr('title', this.errors.leaveStart.past)
+          .tooltip('show')
+
+      } else if(!this.endLeaveDate) {
         $('#leaveStart')
           .removeClass('error')
           .tooltip('dispose')
@@ -501,13 +534,13 @@ export default {
           .tooltip('dispose')
           .attr('title', this.errors.leaveEnd.empty)
           .tooltip('show')
-      } else if(!this.startLeaveDate && this.endLeaveDate) {
+      } else if(!this.startLeaveDate) {
         $('#leaveEnd')
           .removeClass('error')
           .tooltip('dispose')
           .attr('title', '')
-      } else if(this.startLeaveDate && this.endLeaveDate) {
-        if(this.startLeaveDate < this.endLeaveDate) {
+      } else if (startDate > today) {
+        if(startDate < endDate) {
           $('#leaveStart, #leaveEnd')
             .removeClass('error')
             .tooltip('dispose')
