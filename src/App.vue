@@ -56,36 +56,6 @@
 
 <script>
 import Header from "./components/Header";
-import AdminDashboard from "./components/AdminDashboard";
-import Report from "./components/Report";
-import "bootstrap";
-import "bootstrap/dist/css/bootstrap.css";
-import Vue from "vue";
-import VueRouter from "vue-router";
-Vue.use(VueRouter);
-
-const router = new VueRouter({
-  routes: [
-    {
-      path: "/admin-dashboard",
-      name: "admin-dashboard",
-      component: AdminDashboard,
-      props: true,
-      meta: {
-        Authorization: this.auth
-      }
-    },
-    {
-      path: "/report",
-      name: "report",
-      component: Report,
-      props: true,
-      meta: {
-        Authorization: this.auth
-      }
-    }
-  ]
-});
 
 export default {
   name: "app",
