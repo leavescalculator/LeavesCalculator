@@ -2,7 +2,7 @@
   <div id="report-dashboard">
     <div>
       <h1>Reports History</h1>
-      <b-table striped hover :items="reports" :fields="fields"   @row-clicked="loadReport"></b-table>
+      <b-table striped hover :items="reports" :fields="fields" @row-clicked="loadReport"></b-table>
     </div>
   </div>
 </template>
@@ -20,20 +20,20 @@ export default {
     fields: [
       { key: "leavereports_pidm", sortable: true, label: "PIDM" },
       { key: "leavereports_date", sortable: true, label: "Last Modified" },
-      { key: "leavereports_report", sortable: false, label: "Name" },
+      { key: "leavereports_report", sortable: false, label: "Name" }
     ],
     reports: []
   }),
 
   methods: {
     getReports() {
-        var num_reports = this.user.reports.length;
-        for (let i = 0; i < num_reports; ++i) {
-            this.reports.push(this.user.reports[i]);
-        }
+      var num_reports = this.user.reports.length;
+      for (let i = 0; i < num_reports; ++i) {
+        this.reports.push(this.user.reports[i]);
+      }
     },
-    loadReport(item, index, event){
-      console.log("attempting to load")
+    loadReport(item, index, event) {
+      console.log("attempting to load");
       console.log(item.leavereports_report);
       this.$emit("change-report", item);
     }

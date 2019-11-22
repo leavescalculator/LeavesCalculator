@@ -315,6 +315,7 @@ export default {
         .catch(error => {
           this.saveError = error;
         });
+      this.$emit("update-employee");
     },
     saveReport() {
       //This function will allow admin/user to save the new updates of
@@ -332,6 +333,7 @@ export default {
           Authorization: this.auth
         }
       });
+      this.$emit("update-employee");
     }
   }
 };

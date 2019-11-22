@@ -20,6 +20,7 @@
         :graph-status="graphStatus"
         @change-report="changeReport"
         :report="report"
+        @update-employee="updateEmployee"
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
@@ -44,6 +45,7 @@
             :Cords="cords"
             @change-report="changeReport"
             :report="report"
+            @update-employee="updateEmployee"
           ></router-view>
         </div>
       </div>
@@ -120,6 +122,10 @@ export default {
       } else {
         console.log("Nice try bozo.");
       }
+    },
+    updateEmployee() {
+      console.log(this.user.username);
+      this.getEmployee(this.user.odin_username);
     },
     getEmployee(name) {
       var data = JSON.stringify({ name });
