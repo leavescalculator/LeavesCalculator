@@ -205,7 +205,8 @@
         <td>{{total}}</td>
       </tr>
       <tr>
-        <button class="btn btn-success" @click="saveReport">Save Report</button>
+        <button class="btn btn-success" @click="saveAsNewReport">Save As New Report</button>
+        <button class="btn btn-success" @click="saveReport">Update Report</button>
       </tr>
     </table>
     <hr />
@@ -215,9 +216,9 @@
 <script>
 export default {
   name: "report",
-  props: ["user", "auth"],
+  props: ["user", "auth", "report", "report-id"],
   data: () => ({
-    saveError: '',
+    saveError: "",
     notes: "",
     Lts: "Yes",
     total: 0.0,
@@ -286,28 +287,50 @@ export default {
     addWeek() {
       this.leavePlan.push({ leaveType: "", leaveUsed: 0.0 });
     },
-    saveReport() {
-      var data = JSON.stringify({ 
-        EMPLOYEE_ID: this.user.employee_id, 
-        REPORT: this.leaveSummary,
-      })
+    saveAsNewReport() {
+      //This function will allow admin/user to save a copy of the report
+      //they are working on, preserving the current report
+      var data = JSON.stringify({
+        EMPLOYEE_ID: this.user.employee_id,
+        REPORT: this.leavePlan
+      });
 
-      fetch('http://localhost:8000/database/savereport/', {
-        method: 'POST',
+      fetch("http://localhost:8000/database/savereport/", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': this.auth,
+          "Content-Type": "application/json",
+          Authorization: this.auth
         },
-        body:data,
-      }).then(response => {
-        if(response.ok) {
-          throw Error("Saving report failed.")
+        body: data
+      })
+        .then(response => {
+          if (response.ok) {
+            throw Error("Saving report failed.");
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(JSON.stringify(data));
+        })
+        .catch(error => {
+          this.saveError = error;
+        });
+    },
+    saveReport() {
+      //This function will allow admin/user to save the new updates of
+      //the report they are working on to itself
+      var tosend = JSON.stringify({
+        REPORT_ID: this.reportId,
+        EMPLOYEE_ID: this.user.employee_id,
+        REPORT: this.leavePlan
+      });
+      fetch("http://localhost:8000/database/updatereport/", {
+        method: "POST",
+        body: tosend,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: this.auth
         }
-        return response.json()
-      }).then(data => {
-        console.log(JSON.stringify(data))
-      }).catch(error => {
-        this.saveError = error
       });
     }
   }

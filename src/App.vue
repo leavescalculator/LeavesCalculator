@@ -13,6 +13,7 @@
         :user="user"
         :isAdmin="isAdmin"
         :Nodes="nodes"
+        :Cords="cords"
         @change-user="changeEmployee"
         @change-graph="changeGraph"
         :graph-id="graphId"
@@ -40,6 +41,7 @@
             @add-weeks="addWeeks"
             @getEmployee="getEmployee"
             :Nodes="nodes"
+            :Cords="cords"
             @change-report="changeReport"
             :report="report"
           ></router-view>
@@ -51,9 +53,10 @@
 
 <script>
 import Header from "./components/Header";
+import AdminDashboard from "./components/AdminDashboard";
+import Report from "./components/Report";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
-import AdminDashboard from "./components/AdminDashboard";
 import Vue from "vue";
 import VueRouter from "vue-router";
 Vue.use(VueRouter);
@@ -64,6 +67,15 @@ const router = new VueRouter({
       path: "/admin-dashboard",
       name: "admin-dashboard",
       component: AdminDashboard,
+      props: true,
+      meta: {
+        Authorization: this.auth
+      }
+    },
+    {
+      path: "/report",
+      name: "report",
+      component: Report,
       props: true,
       meta: {
         Authorization: this.auth
@@ -81,9 +93,11 @@ export default {
     infoError: "",
     user: {},
     nodes: {},
+    cords: "",
     graphStatus: "",
     graphId: "",
-    report: ""
+    report: {},
+    reportId: ""
   }),
   components: {
     appHeader: Header
@@ -157,6 +171,7 @@ export default {
             this.nodes = data.graph_data;
             this.graphStatus = data.graph_status;
             this.graphId = data.id;
+            this.cords = data.cords;
           });
         })
         .catch(function(error) {
@@ -188,16 +203,24 @@ export default {
       this.nodes = JSON.parse(graph.graph_data);
       this.graphStatus = graph.graph_status;
       this.graphId = graph.id;
+      this.cords = graph.cords;
     },
     changeReport(event) {
-      console.log("in app.vue change report")
+      //This function will allow user/admin to choose a report to load into
+      //the report vue. It listens for the event for this case, and
+      //calls another function to set the report.
+      console.log("in app.vue change report");
       this.loadReport(event);
+      console.log("Now using report: #" + this.reportId);
+      //Redirect to report page
+      this.$router.push({ path: "/report" });
     },
     loadReport(report) {
+      //This function will set the report display to the one passed in
       console.log("here");
       console.log(report);
-      this.report = report;
-
+      this.report = JSON.parse(report.leavereports_reports);
+      this.reportId = report.id;
     }
   },
   computed: {},

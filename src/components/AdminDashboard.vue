@@ -168,7 +168,7 @@ cytoscape.use(popper);
 
 export default {
   name: "admin-dashboard",
-  props: ["Nodes", "graph-status", "graph-id"],
+  props: ["Nodes", "graph-status", "graph-id", "Cords"],
   data: () => ({
     graph_style: graph_style.style,
     // Will become an object with setters and getters for fields of the selected element on selection
@@ -317,8 +317,7 @@ export default {
       return output;
     },
     loadPositions() {
-      var json = document.getElementById("jsonOrPositions").value;
-      let positions = JSON.parse(json);
+      let positions = this.cords;
       for (let node = 0; node < positions.length; node++) {
         this.cy.$(".graph-node")[node].relativePosition(positions[node]);
       }
