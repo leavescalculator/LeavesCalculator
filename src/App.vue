@@ -12,6 +12,9 @@
         :isAdmin="isAdmin"
         :Nodes="nodes"
         @change-user="changeEmployee"
+        :addWeeks="addWeeks"
+        @getEmployee="getEmployee"
+        @stack="storeStack"
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
