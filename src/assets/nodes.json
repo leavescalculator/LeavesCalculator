@@ -129,17 +129,8 @@
       "work injury info": {
         "title" : "Work related injury information",
         "input": "display",
-        "options": [
-          {
-            "title": "If an employee experiences an accidental injury, or occupational disease that qualifies for workers' compensation protections, medical and/or time loss benefits may be available through SAIF Corporation.\n Injuries must be reported, even if you do not seek medical treatment.\n More info: https://www.pdx.edu/hr/workers-compensation ",
-            "add_time": {
-              "hours": 0,
-              "weeks" : 0,
-              "type": "n/a"
-            },
-            "next_node": ""
-          }
-        ]
+        "description": "If an employee experiences an accidental injury, or occupational disease that qualifies for workers' compensation protections, medical and/or time loss benefits may be available through SAIF Corporation.\n Injuries must be reported, even if you do not seek medical treatment.\n More info: https://www.pdx.edu/hr/workers-compensation ",
+        "options": []
       },
       "only entitled for ADA": {
         "title" : "You are only entitled for ADA: Is it a Disability?",
@@ -225,17 +216,8 @@
       "serious health condition description": {
         "title" : "Description of Serious Health Condition",
         "input": "display",
-        "options": [
-          {
-            "title": "A serious health condition is an illness, injury, impairment, or physical or mental condition that incapacitates you or an eligible family member for 3 consecutive days or longer, and involves at least one of the following: \n Hospital care, \n Absence plus treatment, \n Pregnancy, \n Chronic conditions, \n Permanent/Long-term conditions requiring supervision, \n Multiple treatments (Non-chronic conditions), \n Important definitions for understanding what qualifies as a serious health conditions include: \n ,Incapacity: the inability to work, attend school or perform other regular daily activities due to a serious health condition or treatment for or recovery from a serious health condition , \n Treatment: includes examinations to determine if a serious health condition exists and evaluations of the condition. It does not include routine physical examinations, eye examinations or dental examinations",
-            "add_time": {
-              "hours": 0,
-              "weeks" : 0,
-              "type": "n/a"
-            },
-            "next_node": ""
-          }
-        ]
+        "description": "A serious health condition is an illness, injury, impairment, or physical or mental condition that incapacitates you or an eligible family member for 3 consecutive days or longer, and involves at least one of the following: \n Hospital care, \n Absence plus treatment, \n Pregnancy, \n Chronic conditions, \n Permanent/Long-term conditions requiring supervision, \n Multiple treatments (Non-chronic conditions), \n Important definitions for understanding what qualifies as a serious health conditions include: \n ,Incapacity: the inability to work, attend school or perform other regular daily activities due to a serious health condition or treatment for or recovery from a serious health condition , \n Treatment: includes examinations to determine if a serious health condition exists and evaluations of the condition. It does not include routine physical examinations, eye examinations or dental examinations",
+        "options": []
       },
       "serious health condition selection": {
         "title":"List of Serious Health Conditions",
@@ -316,32 +298,14 @@
       "talk to HR": {
         "title" : "Talk to Jack",
         "input": "display",
-        "options": [
-          {
-            "title": "Please call Jack ***-***-**** or Email: jack@pdx.edu",
-            "add_time": {
-              "hours": 0,
-              "weeks" : 0,
-              "type": "n/a"
-            },
-            "next_node": ""
-          }
-        ]
+        "description": "Please call Jack ***-***-**** or Email: jack@pdx.edu",
+        "options": []
       },
       "disability info": {
         "title" : "Information on Disabilities",
         "input": "display",
-        "options": [
-          {
-            "title": "An individual with a disability is a person who: \n Has a physical or mental impairment that substantially limits one or more major life activities; \n Has a record of such impairment; or \n Is regarded as having such an impairment \n Under the ADAAA (ADA Amendments Act) Major life Activities now additionally includes Major Bodily Functions. In total a disability would be any impairment that substantially limits any of the following: Major life activities include, but are not limited to, caring for oneself, performing manual tasks, seeing, hearing, eating, sleeping, walking, standing, lifting, bending, speaking, breathing, learning, reading, concentrating, thinking, communicating, and working. Major Bodily Functions include, but are not limited to, functions of the immune system, normal cell growth, digestive, bowel, bladder, neurological, brain, respiratory, circulatory, endocrine, and reproductive functions. \n The term “substantially limits” should be construed broadly in favor of expansive coverage to the maximum extent permitted by the terms of the ADA. The primary focus of the ADA is on whether discrimination occurred, the determination of disability should not require extensive analysis. \n A qualified employee or applicant with a disability is an individual who, with or without reasonable accommodation, can perform the essential functions of the job in question \n Please note that HR will never disclose and a supervisor should never discuss or request disability-specific medical information. The employee's privacy will be maintained at all times. All medical certification and any determination of an underlying disability will be performed exclusively by HR. \n More info: https://www.pdx.edu/hr/employee-accommodations ",
-            "add_time": {
-              "hours": 0,
-              "weeks" : 0,
-              "type": "n/a"
-            },
-            "next_node": ""
-          }
-        ]
+        "description": "An individual with a disability is a person who: \n Has a physical or mental impairment that substantially limits one or more major life activities; \n Has a record of such impairment; or \n Is regarded as having such an impairment \n Under the ADAAA (ADA Amendments Act) Major life Activities now additionally includes Major Bodily Functions. In total a disability would be any impairment that substantially limits any of the following: Major life activities include, but are not limited to, caring for oneself, performing manual tasks, seeing, hearing, eating, sleeping, walking, standing, lifting, bending, speaking, breathing, learning, reading, concentrating, thinking, communicating, and working. Major Bodily Functions include, but are not limited to, functions of the immune system, normal cell growth, digestive, bowel, bladder, neurological, brain, respiratory, circulatory, endocrine, and reproductive functions. \n The term “substantially limits” should be construed broadly in favor of expansive coverage to the maximum extent permitted by the terms of the ADA. The primary focus of the ADA is on whether discrimination occurred, the determination of disability should not require extensive analysis. \n A qualified employee or applicant with a disability is an individual who, with or without reasonable accommodation, can perform the essential functions of the job in question \n Please note that HR will never disclose and a supervisor should never discuss or request disability-specific medical information. The employee's privacy will be maintained at all times. All medical certification and any determination of an underlying disability will be performed exclusively by HR. \n More info: https://www.pdx.edu/hr/employee-accommodations ",
+        "options": []
       },
       "which family member?": {
         "title" : "Which Family member is suffering a serious health condition?",
@@ -423,7 +387,8 @@
       },
       "report": {
         "title" : "Report",
-        "input": "report"
+        "input": "report",
+        "options": []
       },
       "pregnancy disability": {
         "title" : "Type of Birth",
@@ -452,17 +417,8 @@
       "ADA info": {
         "title" : "ADA Information",
         "input": "display",
-        "options": [
-          {
-            "title": "Title I of the Americans with Disabilities Act of 1990 prohibits private employers, state and local governments, employment agencies and labor unions from discriminating against qualified individuals with disabilities in job application procedures, hiring, firing, advancement, compensation, job training, and other terms, conditions, and privileges of employment. Briefly Title I of the ADA \n Helps people with disabilities access the same employment opportunities and benefits available to people without disabilities. \n Applies to employers with 15 or more employees. \n Requires employers to provide reasonable accommodations to qualified applicants or employees. A “reasonable accommodation” is a change that accommodates employees with disabilities so they can do the job without causing the employer “undue hardship” (too much difficulty or expense). \n Defines disability, establishes guidelines for the reasonable accommodation process, and addresses medical examinations and inquiries. \n Regulated and enforced by the U.S. Equal Employment Opportunity Commission. ",
-            "add_time": {
-              "hours": 0,
-              "weeks" : 0,
-              "type": "n/a"
-            },
-            "next_node": "n/a"
-          }
-        ]
+        "description": "Title I of the Americans with Disabilities Act of 1990 prohibits private employers, state and local governments, employment agencies and labor unions from discriminating against qualified individuals with disabilities in job application procedures, hiring, firing, advancement, compensation, job training, and other terms, conditions, and privileges of employment. Briefly Title I of the ADA \n Helps people with disabilities access the same employment opportunities and benefits available to people without disabilities. \n Applies to employers with 15 or more employees. \n Requires employers to provide reasonable accommodations to qualified applicants or employees. A “reasonable accommodation” is a change that accommodates employees with disabilities so they can do the job without causing the employer “undue hardship” (too much difficulty or expense). \n Defines disability, establishes guidelines for the reasonable accommodation process, and addresses medical examinations and inquiries. \n Regulated and enforced by the U.S. Equal Employment Opportunity Commission. ",
+        "options": []
       },
       "exceptions": {
         "title" : "Exceptions",
@@ -589,25 +545,17 @@
       },
       "do not qualify for protected leave": {
         "title" : "You Do not Qualify for Protected Leave",
-        "input": "button",
+        "input": "button-descriptive",
         "options": [
           {
-            "title": "Your employee type does not receive protected leave \n You have not accumulated enough working hours to qualify \n You have not worked for the required length of time to qualify",
-            "add_time": {
-              "hours": 0,
-              "weeks" : 0,
-              "type": "n/a"
-            },
-            "next_node": "n/a"
-          },
-          {
             "title": "If you feel this answer is not correct, please contact Jack Dorkey",
+            "description": "Your employee type does not receive protected leave \n You have not accumulated enough working hours to qualify \n You have not worked for the required length of time to qualify",
             "add_time": {
               "hours": 0,
               "weeks" : 0,
               "type": "n/a"
             },
-            "next_node": "Talk to Jack"
+            "next_node": "talk to HR"
           }
         ]
       }

@@ -36,6 +36,7 @@
       <display-question
         :title="Nodes[currentNode].title"
         :options="Nodes[currentNode].options"
+        :description="Nodes[currentNode].description"
         @option-selected="optionSelected"
         v-if="Nodes[currentNode].input === 'display'"
       ></display-question>

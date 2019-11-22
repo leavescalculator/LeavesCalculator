@@ -34,8 +34,7 @@
       </div>
 
       <!-- The legend -->
-      <div class="col-1">
-        Input types:
+      <div class="col-2">
         <img src="../assets/legend.png" id="legend" />
       </div>
 
@@ -92,6 +91,16 @@
 
       <!-- If the selected element is an edge -->
       <template v-if="selectedElement && selectedElement.isEdge">
+        <div class="row input-group" v-if="cy.$id(selectedElement.source).data('input') === 'button-descriptive'">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="edgeDesc">Description:</label>
+          </div>
+          <textarea
+            id="edgeDesc"
+            class="col form-control"
+            v-model="selectedElement.description"
+          ></textarea>
+        </div>
         <div class="row input-group">
           <div class="col input-group-prepend">
             <label class="input-group-text" for="edgeHours">
@@ -134,7 +143,7 @@
               v-for="addedTimeType in leaveTypes"
               :value="addedTimeType.value"
               :key="addedTimeType.value"
-              :selected="addedTimeType.value == selectedElement.add_time.type"
+              :selected="addedTimeType.value === selectedElement.add_time.type"
             >{{ addedTimeType.type }}</option>
           </select>
         </div>
@@ -168,6 +177,17 @@
 
       <!-- If the selected element is a node -->
       <template v-else-if="selectedElement">
+        <div class="row input-group" v-if="selectedElement.description">
+          <div class="col input-group-prepend">
+            <label class="input-group-text" for="nodeDesc">Description:</label>
+          </div>
+          <textarea
+            id="nodeDesc"
+            class="col form-control"
+            v-model="selectedElement.description"
+          ></textarea>
+        </div>
+
         <div class="row input-group">
           <div class="col input-group-prepend">
             <span class="input-group-text">Id:</span>
@@ -190,7 +210,7 @@
               v-for="inputType in inputTypes"
               :value="inputType"
               :key="inputType"
-              :selected="inputType == selectedElement.input"
+              :selected="inputType === selectedElement.input"
             >{{ inputType }}</option>
           </select>
         </div>
@@ -235,7 +255,7 @@
       // Will become an object with setters and getters for fields of the selected element on selection
       selectedElement: null,
       // The available input fields for a node
-      inputTypes: [ 'button', 'drop down', 'display', 'database' ],
+      inputTypes: [ 'button', 'button-descriptive', 'drop down', 'display', 'database', 'report' ],
       // The types of leave and their corresponding acronyms
       leaveTypes: [
         { type: 'Not Applicable', value: 'n/a' },
@@ -261,6 +281,9 @@
         handleNodes: '.graph-node',
         complete: (sourceNode, targetNode, edge) => {
           edge.data('title', '')
+          if(sourceNode.data('input') === 'button-descriptive') {
+            edge.data('description', '');
+          }
           edge.data('label', '')
           edge.data('add_time', { hours: 0, type: 'n/a' })
           edge.addClass('graph-edge')
@@ -287,19 +310,23 @@
       // Parses the provided map of node id's -> node objects into
       // Cytoscape.js nodes and edges.
       parseJson(nodes) {
+        let element
         // First, creating the nodes
         for (const node of Object.keys(nodes)) {
-          let element = this.cy.add({
-            data: {
-              id: node,
-              label: node,
-              title: nodes[node].title,
-              input: nodes[node].input,
-            },
-            classes: [ 'graph-node', this.legendClass(nodes[node].input) ],
-          })
-          element.on('select', this.showInfo)
-          element.on('unselect', this.hideInfo)
+            element = this.cy.add({
+                data: {
+                    id: node,
+                    label: node,
+                    title: nodes[node].title,
+                    input: nodes[node].input,
+                },
+                classes: [ 'graph-node', this.legendClass(nodes[node].input) ]
+            });
+            if(nodes[node].input === 'display') {
+              element.data('description', nodes[node].description);
+            }
+            element.on('select', this.showInfo)
+            element.on('unselect', this.hideInfo)
         }
 
         // Then creating the edges
@@ -308,22 +335,26 @@
             // TODO: Remove this try-catch when condifident that the graph's
             // JSON structure has no invalid `next_node` id's
             try {
-              let edge = this.cy.add({
-                data: {
-                  title: option.title,
-                  label: option.title.substring(0, 30),
-                  add_time: option.add_time,
-                  source: node,
-                  target: option.next_node,
-                },
-                classes: 'graph-edge',
-              })
-              edge.style('target-arrow-color', this.cy.$id(option.next_node).style('background-color'))
-              edge.on('select', this.showInfo)
-              edge.on('unselect', this.hideInfo)
+                element = this.cy.add({
+                    data: {
+                        title: option.title,
+                        label: option.title.substring(0, 30),
+                        add_time: option.add_time,
+                        source: node,
+                        target: option.next_node,
+                    },
+                    classes: 'graph-edge',
+                });
+                if(nodes[node].input === 'button-descriptive') {
+                  element.data('description', option.description);
+                }
+                element.style('target-arrow-color', this.cy.$id(option.next_node).style('background-color'))
+                element.on('select', this.showInfo)
+                element.on('unselect', this.hideInfo)
             } catch (err) {
-              console.log(nodes[node].title)
-              console.log(err)
+                console.log(nodes[node].title)
+                console.log(option.title)
+                console.log(err)
             }
           }
         }
@@ -341,6 +372,9 @@
             input: element.data('input'),
             options: [],
           }
+          if(output[nodeId].input === 'display') {
+            output[nodeId].description = element.data('description')
+          }
           let edges = this.cy.edges('[source = "' + nodeId + '"]')
           for(let edge = 0; edge < edges.length; edge++) {
             element = edges[edge]
@@ -349,6 +383,9 @@
               add_time: element.data('add_time'),
               next_node: element.data('target'),
             })
+            if(output[nodeId].input === 'button-descriptive') {
+              output[nodeId].options[edge].description = element.data('description')
+            }
           }
         }
         this.jsonOrPositions = JSON.stringify(output)
@@ -380,7 +417,7 @@
             label: id.substring(0, 30),
             input: input,
           },
-          classes: 'graph-node'
+          classes: [ 'graph-node', this.legendClass(input) ]
         })
         node.on('select', this.showInfo)
         node.on('unselect', this.hideInfo)
@@ -394,8 +431,8 @@
       },
       // Parses the JSON in the header's textbox and updates the graph's state
       loadJson() {
-        let nodes = JSON.parse(this.jsonOrPositions)
         this.cy.$('.graph-node').remove()
+        let nodes = JSON.parse(this.jsonOrPositions)
         this.parseJson(nodes)
         this.cy.$('.graph-node, .graph-edge').layout({
           name: 'breadthfirst'
@@ -424,6 +461,12 @@
                   element.data('title', title)
                   element.data('label', title.substring(0, 30))
                 },
+                get description() {
+                  return element.data('description')
+                },
+                set description(description) {
+                  element.data('description', description)
+                },
                 get add_time() {
                   return element.data('add_time')
                 },
@@ -432,8 +475,8 @@
                 },
                 source: element.data('source'),
                 target: element.data('target'),
-              }
-            } else { // Node
+              };
+            } else {
               this.selectedElement = {
                 isEdge: false,
                 get id() {
@@ -444,6 +487,12 @@
                 },
                 set title(title) {
                   element.data('title', title)
+                },
+                get description() {
+                  return element.data('description')
+                },
+                set description(description) {
+                  element.data('description', description)
                 },
                 get input() {
                   return element.data('input')
@@ -490,8 +539,6 @@
     width: 100%;
     height: calc(200px - 42px);
     padding-top: 8px;
-    z-index: 2;
-    position: fixed;
     overflow-y: hidden;
   }
 
@@ -510,7 +557,6 @@
     border: 2px solid #ccc;
     background: #fff;
     padding: 10px;
-    z-index: 1;
   }
 
   /* For the large textbox in the header
@@ -523,6 +569,6 @@
   }
 
   #legend {
-    height: 120px;
+    height: 140px;
   }
 </style>
