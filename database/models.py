@@ -8,8 +8,18 @@ from django.forms.models import model_to_dict
 from backports.datetime_fromisoformat import MonkeyPatch
 MonkeyPatch.patch_fromisoformat()
 
+#Todays date as a Date object
 TODAY = date.today()
-
+#The minimum number of months employeed for fmla eligibility
+FMLA_MINIMUM_LENGTH = 12
+#The minimum number of months employeed for ofla eligibility
+OFLA_MINIMUM_LENGTH = 6
+#The minimum number of hours worked for fmla eligibility
+FMLA_MINIMUM_HOURS = 1250
+#The minimum number of hours worked for ofla eligibility
+OFLA_MINIMUM_HOURS = 650
+#The minimum number of hours worked for ofla military leave eligibility
+OFLA_MILITARY_EXCEPTIONS_HOURS = 520
 
 #The following schema was provided by PSU. They also provided mock information
 #that's supposed to simulate the information that they store in their own
@@ -133,44 +143,62 @@ class pdrdedn(models.Model):
     def _str_(self):
         return self.name
 
+#The following models are those that should be saved into the database
+#to store the information relating to this webapp and its functionalities.
+#These are added by our capstone group.
+
+#This model will store the information relating to the graph representing
+#the questions pathway.
+#id: the id of the graph version saved. This is a primary key, and is by default, created by the database
+#graph_date: date of last update to the graph
+#graph_data: questions, answers, states, etc. of the graph
+#graph_cords: location of the nodes of the graph in relation to each other
+#graph_status: whether or not it is the active/deployed graph ("A"), or a dormant one ("D")
+#NOTE: for future approvements/functionality
+# - graph_name: name of the graph version that the admin has saved it as
 class graph(models.Model):
-    #id = models.IntegerField(primary_key=True)
-    #graph_name = models.CharField(max_length=200, default=String(id))
-    #graph_date = models.DateField(auto_now=True)
-    date = models.DateField(auto_now=True)
-    graph_data = jsonfield.JSONField()
-    # 'D' means dormat, 'A' means active
-    #graph_status = models.CharField(max_length=1, primary_key=True, default='D')
+    #graph_name = models.CharField(max_length=200, default=str(id))
+    graph_date = models.DateField(auto_now=True)
+    graph_data = jsonfield.JSONField(null=True)
+    graph_cords =  models.TextField(default=0)
+    graph_status = models.CharField(max_length=1, default='D')
     def _str_(self):
         return self.name
-    '''
-    def query_all_graphs(self):
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM database_graph;")
-            return dictfetchall(cursor)
 
-    def query_active_graph(self):
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM database_graph WHERE graph_status = 'A';")
-            return dictfetchall(cursor)
-
+    #This function will make this graph the active graph, while deactivating the
+    #now, previously active graph, and save these changes to the database
     def make_active(self):
-        current_active_graph = graph.objects.filter(graph_status='A')
-        if current_active_graph:
+        result = graph.objects.filter(graph_status='A')
+        if result:
+            current_active_graph = result[0]
             current_active_graph.graph_status = 'D'
             current_active_graph.save()
         self.graph_status = 'A'
         self.save()
-    '''
+
+#This function will retrieve the active graph from the database
+def query_active_graph():
+    active_graph = graph.objects.filter(graph_status='A').values('id', 'graph_date', 'graph_data', 'graph_cords', 'graph_status')
+    if active_graph:
+        return active_graph[0]
+
+#This function will retrieve all the graph versions from the database
+def query_all_graphs():
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM database_graph;")
+        return dictfetchall(cursor)
+
+#This model will store the information relating to the leave reports generated
+#for the employees.
+#id: the id of the report version. This is a primary key, that is by default, created by the database
+#leavereports_pidm: the employee id to which the report belongs to
+#leavereports_report: the JSON storing all of the report information/setup
 class leavereports(models.Model):
-    #id = models.IntegerField(primary_key=True)
-    #leavereports_pidm = models.IntegerField()
-    leavereports_pidm = models.IntegerField(primary_key=True)
+    leavereports_pidm = models.IntegerField()
     leavereports_date = models.DateField(auto_now=True)
     leavereports_report = jsonfield.JSONField()
     def _str_(self):
         return self.name
-# Helper models below
 
 #This function is provided by django tutorials at: https://docs.djangoproject.com/en/2.2/topics/db/sql/
 def dictfetchall(cursor):
@@ -181,9 +209,35 @@ def dictfetchall(cursor):
         for row in cursor.fetchall()
         ]
 
+#The models below are helper models that will not be saved in the database.
+#Their purpose is to create objects that contains the joined information
+#from the other models/tables in the database.
+
 #The employee class queries for all the information stored in the tables regarding one
 #particular employee. The employee's request is made with an employee's username. An example
 #of this can be observed in views.py.
+#employee_id: the employee's id
+#odin_username: the employee's odin username
+#psu_id: the employee's psu id
+#first_name: the employee's first name
+#last_name: the employee's last name
+#email: a list of the employee's emails
+#hire_date: the date the employee was first hired at psu
+#fte: the status of their employment
+# - i.e. 1.0 = full-time, 0.0 = not employed/not qualified for fmla/ofla, other = part-time
+#employee_classification: type of employee (i.e. XA = student employee)
+#month_lookback_12: hours worked in the past 12 months
+#month_lookback_6: hours worked in the past 6 months
+#fmla_eligibility: whether or not they qualify for fmla ("T" = true, "F" = false)
+#ofla_eligibility: whether or not they qualify for ofla
+# - "T" = true, "F" = false, "P" = parental leave only, "M" = military leave only, "B" = both parental and military leave
+#deductions_eligibility: list of deduction codes that the employee qualifies for
+# - i.e. STD = short term disability. This also includes "AAUP" for AAUP/SIEU
+#paid_leave_balances: a JSON of of paid leave balances and the corresponding balance (i.e. LTS = sick pay)
+#protected_leave_hrs_taken: the total hours of protected leave already taken in the past 12 months
+#max_protected_leave_hrs: the maximum hours of protected leave that the employee can take
+#reports: a list of all the leave reports generated
+#graph: the currently active graph in deployment that the user should navigate
 class Employee(models.Model):
     employee_id  = models.IntegerField(primary_key=True)
     odin_username = models.CharField(max_length=200)
@@ -203,13 +257,16 @@ class Employee(models.Model):
     protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     max_protected_leave_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     #reports = jsonfield.JSONField()
-    #graph = jsonfield.JSONField()
+    reports = models.TextField(null=True)
+    graph = jsonfield.JSONField(null=True)
 
+    #This function will query for the employee id
     def query_employee_id(self):
         gobeacc_user = gobeacc.objects.filter(gobeacc_username=self.odin_username)
         if gobeacc_user:
             self.employee_id = gobeacc_user[0].id
 
+    #This function will query for the employee username
     def query_spriden(self):
         spriden_user = spriden.objects.filter(id=self.employee_id)
         if spriden_user:
@@ -217,29 +274,35 @@ class Employee(models.Model):
             self.first_name = spriden_user[0].spriden_first_name
             self.last_name = spriden_user[0].spriden_last_name
 
+    #This function will query for the employee's first date of hire at psu
     def query_hire_date(self):
         pebempl_user = pebempl.objects.filter(id=self.employee_id, pebempl_empl_status = 'A')
         # if no hire date, that means they're not active right now
         if pebempl_user:
             self.hire_date=pebempl_user[0].pebempl_first_hire_date
 
+    #This function will query for the hours that the employee has worked in the past 12 and 6 months
     def query_lookback_hrs(self):
         pay_info = perjtot.objects.filter(perjtot_pidm = self.employee_id).filter(Q(perjtot_year = TODAY.year) | Q(perjtot_year = TODAY.year-1))
         ptrearn_eligible = ptrearn.objects.filter(ptrearn_fmla_eligible_hrs_ind='Y')
         pay_info = pay_info.filter(perjtot_earn_code__in=ptrearn_eligible)
         num = pay_info.count()
-        if num >= 12:
-            pay_info = pay_info[num-12:num]
+        if num >= FMLA_MINIMUM_LENGTH:
+            pay_info = pay_info[num-FMLA_MINIMUM_LENGTH:num]
         self.month_lookback_12 = pay_info.aggregate(Sum('perjtot_hrs')).get('perjtot_hrs__sum')
         num = pay_info.count()
-        if num >= 6:
-            pay_info2 = pay_info[num-6:num]
+        if num >= OFLA_MINIMUM_LENGTH:
+            pay_info2 = pay_info[num-OFLA_MINIMUM_LENGTH:num]
         self.month_lookback_6 = pay_info2.aggregate(Sum('perjtot_hrs')).get('perjtot_hrs__sum')
 
+    #This function will query for all of the employee's emails
     def query_emails(self):
         emails = list(goremal.objects.filter(goremal_id=self.employee_id).distinct().values_list('goremal_email_address', flat=True))
         self.email = emails
 
+    #This function will query for the employee's fte and employee status. The fte will be 0.0
+    #if they are a not currently an active employee, or is of a classification that does not
+    #qualify them for fmla/ofla (i.e. XA, XB, XC = student worker)
     def query_fte_and_classification(self):
         nbrjobs_user = nbrjobs.objects.filter(nbrjobs_pidm=self.employee_id)
         nbrbjob_user = nbrbjob.objects.filter(nbrbjob_pidm=self.employee_id).filter(Q(nbrbjob_begin_date__lte=TODAY) & (Q(nbrbjob_end_date__isnull=True) | Q(nbrbjob_end_date__gt=TODAY)))
@@ -252,28 +315,32 @@ class Employee(models.Model):
                     if employee_classification:
                         self.employee_classification = employee_classification[0][0]
 
+    #This function will check the number of hours worked and lenght of time employed (in months) at psu,
+    #and determine if they are eligible for fmla/ofla, or meet any exceptions that might make them qualified
     def query_leave_eligibility(self):
         if not self.fte:
             self.fmla_eligibility = 'F' #not eligible
             self.ofla_eligibility = 'F'
             return
         len = (TODAY - self.hire_date).days / 30
-        if (len >= 12  and self.month_lookback_12 >= 1250):
+        if (len >= FMLA_MINIMUM_LENGTH  and self.month_lookback_12 >= FMLA_MINIMUM_HOURS):
             self.fmla_eligibility = 'T' #eligible
         else:
             self.fmla_eligibility = 'F'
-        if (len < 6):
+        if (len < OFLA_MINIMUM_LENGTH):
             self.ofla_eligibility = 'M' #military leave only
             return
-        if (self.month_lookback_6 >= 650):
+        if (self.month_lookback_6 >= OFLA_MINIMUM_HOURS):
             self.ofla_eligibility = 'T'
             return
-        elif (self.month_lookback_6 >= 520):
+        elif (self.month_lookback_6 >= OFLA_MILITARY_EXCEPTIONS_HOURS):
             self.ofla_eligibility = 'B' #both military and parental leave
         else:
             self.ofla_eligibility = 'P' #Parental leave only
         return self
 
+    #This function will query for deductions eligibility, such as STD (short term disability),
+    #and will include AAUP eligibility
     def query_deductions_info(self):
         # stuff like short term disibility etc.
         deductions_info = []
@@ -289,6 +356,7 @@ class Employee(models.Model):
                     deductions_info.append('AAUP')
         self.deductions_eligibility = deductions_info
 
+    #This function will query for how many protected leave hours they have already taken in the past 12 months
     def query_protected_leave_hrs_taken(self):
         hrs_claimed = 0
         anniversary = date.fromisoformat(str(self.hire_date))
@@ -311,6 +379,9 @@ class Employee(models.Model):
                     hrs_claimed += c[0]
         self.protected_leave_hrs_taken = hrs_claimed
 
+    #This function will query for the employee's current paid leave balances for things such as
+    #sick, vaction, etc. hours they have accumulated. PLH = paid leave hours.
+    #Current PLH = accrued PLH + potential PLH - PLH taken
     def query_current_paid_leaves_balances(self):
         perleav_balances = perleav.objects.filter(perleav_pidm=self.employee_id).annotate(current_leave_total=F('perleav_begin_balance') - F('perleav_taken')).values_list('perleav_leave_code', 'current_leave_total')
         # accrued paid leave Leave_balances
@@ -352,15 +423,22 @@ class Employee(models.Model):
             for r in result:
                 self.paid_leave_balances[r["leave_code"]] = r["balance"]
 
-    #def query_reports(self):
-    #    reports = leavereports.objects.filter(leavereports_pidm=self.employee_id)
-    #    self.reports = model_to_dict(reports)
+    #This function will query for all of the employee's previously generated leave reports
+    def query_reports(self):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM database_leavereports WHERE leavereports_pidm = %s;", [self.employee_id])
+            reports = dictfetchall(cursor)
+            if reports:
+                self.reports = reports
 
-    #def query_current_graph(self):
-        #active_graph = Graph()
-        #active_graph = graph.query_active_graph()
-        #self.graph = model_to_dict(active_graph)
+    #This function queries for the currently active graph
+    '''def query_current_graph(self):
+        active_graph = query_active_graph()
+        if active_graph:
+            self.graph = active_graph
+    '''
 
+    #This function combines previously listed queries above into one call
     def query_other_employee_info(self):
         self.query_lookback_hrs()
         self.query_emails()
@@ -369,24 +447,30 @@ class Employee(models.Model):
         self.query_deductions_info()
         self.query_protected_leave_hrs_taken()
         self.query_current_paid_leaves_balances()
-        #self.query_reports()
+        self.query_reports()
         #self.query_current_graph()
         return
 
+    #This function sets the employee's username
     def set_username(self, username: str):
         self.odin_username = username
 
+    #This function sets the employee's OFLA eligibility status
     def set_ofla_eligibility(self, eligibility: str):
         self.ofla_eligibility = eligibility
 
+    #This function sets the employee's FMLA eligibility status
     def set_fmla_eligibility(self, eligibility: str):
         self.fmla_eligibility = eligibility
 
+    #This function retrieves the employee's id
     def get_employee_id(self):
         return self.employee_id
 
+    #This function retrieves the employee's hire date
     def get_hire_date(self):
         return self.hire_date
 
+    #This function retrieves the employee's fte
     def get_fte(self):
         return self.fte
