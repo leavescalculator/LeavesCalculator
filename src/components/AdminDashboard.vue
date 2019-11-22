@@ -33,6 +33,8 @@
         </div>
       </div>
 
+   
+
       <!-- The legend -->
       <div class="col-2">
         <img src="../assets/legend.png" id="legend" />
@@ -63,6 +65,7 @@
           </select>
         </div>
         <button class="btn btn-success" @click="addNode">Add a Node</button>
+        <PopUp />
       </div>
 
       <!-- This button allows for element removal to be undone -->
@@ -244,9 +247,12 @@
   // TODO: This file will be deleted and the graph will be stored on the DB
   import json from '../assets/nodes.json'
 
+  import PopUp from './PopUp.vue'
+
   export default {
     name: 'admin-dashboard',
     props: ['isAdmin'],
+    components: { PopUp },
     data: () => ({
       // The data stored in the large textbox within the header
       // TODO: this field can be removed when we are saving and loading
