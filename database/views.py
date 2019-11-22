@@ -96,6 +96,12 @@ def save_new_report(request):
         return HttpResponse("Saved!")
     return HttpResponse("Not saved!")
 
+
+@csrf_exempt
+def get_reports(request, id):
+    reports = query_reports_id(id);
+    return JsonResponse(reports, safe=False)
+
 #This view will save the new updates to the report passed in the body of the request as a new
 #report if it exists. Otherwise, it will be saved as a new report.
 @csrf_exempt

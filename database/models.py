@@ -200,6 +200,11 @@ class leavereports(models.Model):
     def _str_(self):
         return self.name
 
+def query_reports_id(emp):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM database_leavereports WHERE leavereports_pidm = %s;", [emp])
+        return dictfetchall(cursor)
+        
 #This function is provided by django tutorials at: https://docs.djangoproject.com/en/2.2/topics/db/sql/
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"

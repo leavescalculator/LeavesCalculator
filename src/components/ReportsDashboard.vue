@@ -27,11 +27,27 @@ export default {
 
   methods: {
     getReports() {
-      var num_reports = this.user.reports.length;
-      for (let i = 0; i < num_reports; ++i) {
-        this.reports.push(this.user.reports[i]);
+    var tosend = this.user.employee_id;
+    fetch("http://localhost:8000/database/getreports/" + tosend + "/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: this.auth
       }
-    },
+    })
+      .then(response => {
+        console.log(response);
+        response.json().then(data => {
+          let len = data.length;
+          for (let i = 0; i < len; ++i) {
+            this.reports.push(data[i]);
+          }
+        });
+      })
+      .catch(function(error) {
+        console.log("Request failed", error);
+      });
+  },
     loadReport(item, index, event) {
       console.log("attempting to load");
       console.log(item.leavereports_report);

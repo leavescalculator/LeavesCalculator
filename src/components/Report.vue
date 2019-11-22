@@ -257,22 +257,28 @@ export default {
     mounted() {
     var B ={};
     B = JSON.parse(this.Report);
-    console.log(B);
-    this.leaveSummary = B;
-
+    this.leavePlan = B;
     for (var week in this.leavePlan) {
-      if(this.leaveSummary[week].hours > 0.0){
-        this.leavePlan[week].leaveType = this.leaveSummary[week].name;
-        this.leavePlan[week].leaveUsed += parseFloat(this.leaveSummary[week].hours);
-        this.total = parseFloat(this.leaveSummary[week].hours);
+      for (var type in this.leaveSummary) {
+        if (this.leavePlan[week].leaveType == this.leaveSummary[type].name)
+          this.leaveSummary[type].hours += parseFloat(
+            this.leavePlan[week].leaveUsed
+          );
       }
-
     }
-
-
+    this.total = 0.0;
+    for (var week in this.leavePlan) {
+      for (var type in this.leaveSummary) {
+        if (this.leavePlan[week].leaveType == this.leaveSummary[type].name)
+          if (this.leavePlan[week].leaveUsed != 0) {
+            this.total += parseFloat(this.leavePlan[week].leaveUsed);
+          }
+      }
+    }
   },
   methods: {
     updateSummary() {
+
       this.leaveSummary = [
         { real: "Sick", name: "LTS", hours: 0.0 },
         { real: "Vacation", name: "LTV", hours: 0.0 },
@@ -299,6 +305,7 @@ export default {
             }
         }
       }
+
     },
     addWeek() {
       this.leavePlan.push({ leaveType: "", leaveUsed: 0.0 });
@@ -332,7 +339,6 @@ export default {
         .catch(error => {
           this.saveError = error;
         });
-      this.$emit("update-employee");
     },
     saveReport() {
       //This function will allow admin/user to save the new updates of
