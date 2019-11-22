@@ -216,7 +216,7 @@
 <script>
 export default {
   name: "report",
-  props: ["user", "auth", "report", "report-id"],
+  props: ["user", "auth", "Report", "report-id"],
   data: () => ({
     saveError: "",
     notes: "",
@@ -254,7 +254,23 @@ export default {
       return this.user.deductions_eligibility.includes("PXS") ? "Yes" : "No";
     }
   },
+    mounted() {
+    var B ={};
+    B = JSON.parse(this.Report);
+    console.log(B);
+    this.leaveSummary = B;
 
+    for (var week in this.leavePlan) {
+      if(this.leaveSummary[week].hours > 0.0){
+        this.leavePlan[week].leaveType = this.leaveSummary[week].name;
+        this.leavePlan[week].leaveUsed += parseFloat(this.leaveSummary[week].hours);
+        this.total = parseFloat(this.leaveSummary[week].hours);
+      }
+
+    }
+
+
+  },
   methods: {
     updateSummary() {
       this.leaveSummary = [
@@ -287,6 +303,7 @@ export default {
     addWeek() {
       this.leavePlan.push({ leaveType: "", leaveUsed: 0.0 });
     },
+
     saveAsNewReport() {
       //This function will allow admin/user to save a copy of the report
       //they are working on, preserving the current report

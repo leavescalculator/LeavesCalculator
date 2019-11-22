@@ -15,7 +15,7 @@ Vue.use(BootstrapVue);
 
 export default {
   name: "report-dashboard",
-  props: ["user"],
+  props: ["user", "Report"],
   data: () => ({
     fields: [
       { key: "leavereports_pidm", sortable: true, label: "PIDM" },
@@ -35,7 +35,10 @@ export default {
     loadReport(item, index, event) {
       console.log("attempting to load");
       console.log(item.leavereports_report);
+      this.report = item.leavereports_report;
+      console.log(this.report);
       this.$emit("change-report", item);
+
     }
   },
   created: function() {

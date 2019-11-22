@@ -19,7 +19,7 @@
         :graph-id="graphId"
         :graph-status="graphStatus"
         @change-report="changeReport"
-        :report="report"
+        :Report="report"
         @update-employee="updateEmployee"
       ></router-view>
     </div>
@@ -44,7 +44,7 @@
             :Nodes="nodes"
             :Cords="cords"
             @change-report="changeReport"
-            :report="report"
+            :Report="report"
             @update-employee="updateEmployee"
             @stack="storeStack"
           ></router-view>
@@ -206,8 +206,8 @@ export default {
     loadReport(report) {
       //This function will set the report display to the one passed in
       console.log("here");
-      console.log(report);
-      this.report = report;
+
+      this.report = report.leavereports_report;
       this.reportId = report.id;
     }
   },
