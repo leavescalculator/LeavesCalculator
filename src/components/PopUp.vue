@@ -1,5 +1,5 @@
 <template>
-<div style="float: right;">
+<div style="padding-top: 5px;">
   <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
     Database Logic
   </button>

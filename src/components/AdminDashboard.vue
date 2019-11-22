@@ -65,7 +65,6 @@
           </select>
         </div>
         <button class="btn btn-success" @click="addNode">Add a Node</button>
-        <PopUp />
       </div>
 
       <!-- This button allows for element removal to be undone -->
@@ -73,6 +72,7 @@
         <button @click="() => this.ur.undo()" class="btn btn-warning">
           Undo Element Removal
         </button>
+        <PopUp />
       </div>
     </div>
 
