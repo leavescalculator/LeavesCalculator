@@ -98,7 +98,7 @@ export default {
     cords: "",
     graphStatus: "",
     graphId: "",
-    report: {},
+    report: "",
     reportId: ""
   }),
   components: {
@@ -225,7 +225,7 @@ export default {
       //This function will set the report display to the one passed in
       console.log("here");
       console.log(report);
-      this.report = JSON.parse(report.leavereports_reports);
+      this.report = report;
       this.reportId = report.id;
     }
   },
