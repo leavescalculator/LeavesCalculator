@@ -39,13 +39,14 @@
             :username="username"
             @logout="logOut"
             :user="user"
-            @add-weeks="addWeeks"
+            :addWeeks="addWeeks"
             @getEmployee="getEmployee"
             :Nodes="nodes"
             :Cords="cords"
             @change-report="changeReport"
             :report="report"
             @update-employee="updateEmployee"
+            @stack="storeStack"
           ></router-view>
         </div>
       </div>
@@ -158,8 +159,19 @@ export default {
       this.isAdmin = false;
       this.user = {};
     },
-    addWeeks(n) {
+    addWeeks(n, type) {
       //change weeks here
+      console.log("ADDING WEEKS: " + type + ": " + n);
+      if (this.user.hasOwnProperty("paid_leave_balances")) {
+        if (this.user.paid_leave_balances.hasOwnProperty(type)) {
+          this.user.paid_leave_balances[type] += n;
+        } else {
+          this.user.paid_leave_balances[type] = n;
+        }
+      }
+    },
+    storeStack(s) {
+      this.user.stack = s;
     },
     getActiveGraph() {
       //This function will retrieve the active graph from the database for deployment
@@ -235,17 +247,21 @@ export default {
   }
 };
 </script>
-<!-- styling for the component -->
 <style>
-/*
- *** Had to temporarily comment out parent styling so admin-dashboard would look better.
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+.row {
+  margin: 2px;
 }
- */
+
+.input-group-prepend {
+  padding: 0;
+}
+
+.input-group-text {
+  width: inherit;
+}
+
+.form-control {
+  height: auto;
+  min-width: 200px;
+}
 </style>

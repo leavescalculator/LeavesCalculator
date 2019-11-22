@@ -3,7 +3,7 @@
     <div v-if="isAdmin" class="row">
       <div class="input-group mb-3 col-md-3">
         <div class="input-group-prepend">
-          <span class="input-group-text">Run as: </span>
+          <label for="usrname" class="input-group-text">Run as: </label>
         </div>
         <input
           type="text"
@@ -16,125 +16,130 @@
       </div>
       <div class="col-md-2">
         <button class="btn btn-success" @click="changeUser">Change User</button>
+        <br>
+        <p>running as: {{ usrname }}</p>
       </div>
     </div>
-
-    <btn-question
-      :title="Nodes[currentNode].title"
-      :options="Nodes[currentNode].options"
-      @option-selected="optionSelected"
-      v-if="Nodes[currentNode].input === 'button'"
-    ></btn-question>
-
-    <display-question
-      :title="Nodes[currentNode].title"
-      :options="Nodes[currentNode].options"
-      @option-selected="optionSelected"
-      v-if="Nodes[currentNode].input === 'display'"
-    ></display-question>
-
-    <drop-down-question
-      :title="Nodes[currentNode].title"
-      :options="Nodes[currentNode].options"
-      @option-selected="optionSelected"
-      v-if="Nodes[currentNode].input === 'drop down'"
-    ></drop-down-question>
-
-    <!--<btn-question
-      :title="currentNode"
-      :options="Nodes[currentNode].options"
-      @option-selected="optionSelected"
-      v-if="Nodes[currentNode].input === 'database'"
-    ></btn-question>
-    -->
-    <database-question
-      :title="Nodes[currentNode].title"
-      :options="Nodes[currentNode].options"
-      @option-selected="optionSelected"
-      v-if="Nodes[currentNode].input === 'database'"
-      :user="user"
-      ></database-question>
-
-    <br />
-    <button class="btn btn-success" @click="goBack()" v-if="stack[0]">
-      Back
-    </button>
+    <div v-if="user.employee_id != null">
+      <component :is="selectedComponent"
+                 :title="Nodes[currentNode].title"
+                 :options="Nodes[currentNode].options"
+                 @option-selected="optionSelected"
+                 :user="user"
+                 :description="Nodes[currentNode].description"
+      ></component>
+      <br />
+      <button class="btn btn-success" @click="goBack()" v-if="stack[0]">
+        Back
+      </button>
+    </div>
+    <div v-if="user.employee_id == null && !isAdmin">
+      <router-link to="/" class="nav-item nav-link" tag="li" active-class="active"><a>Login</a></router-link>
+    </div>
   </div>
 </template>
 
 <script>
-import BtnQuestion from './BtnQuestion.vue';
-import DisplayQuestion from './DisplayQuestion.vue';
-import DropDownQuestion from './DropDownQuestion.vue';
-import DatabaseQuestion from './DatabaseQuestion.vue';
+    import BtnQuestion from './BtnQuestion.vue';
+    import DisplayQuestion from './DisplayQuestion.vue';
+    import DropDownQuestion from './DropDownQuestion.vue';
+    import DatabaseQuestion from './DatabaseQuestion.vue';
+    import BtnDescriptiveQuestion from "./BtnDescriptiveQuestion";
 
 
 
-export default {
-  name: "questions",
-  props: ["isAdmin", "user", "Nodes"],
-  data: () => ({
-    currentNode: "work related injury", // initialized to first node of JSON graph structure
-    hours: 0, // accumulated leave hours
-    stack: [], // structure containing nodes visited
-    usrname: "",
-  }),
-  computed: {},
-  components: {
-    BtnQuestion,
-    DisplayQuestion,
-    DropDownQuestion,
-    DatabaseQuestion
-  },
-  mounted() {
-    console.log(this.Nodes);
-  },
-  methods: {
-    optionSelected(selected) {
-      console.log(selected);
-      //do any relevant stuff here ie addWeeks
-      let curr = this.Nodes[this.currentNode].options[selected];
+    export default {
+        name: "questions",
+        props: ["isAdmin", "user", "Nodes", "addWeeks"],
+        data: () => ({
+            currentNode: "work related injury", // initialized to first node of JSON graph structure
+            hours: 0, // accumulated leave hours
+            stack: [], // structure containing nodes visited
+            usrname: "",
+        }),
+        computed: {
+            selectedComponent() {
+                let input = this.Nodes[this.currentNode].input;
+                switch (input) {
+                    case "button":
+                        return "btn-question";
+                    case "button-descriptive":
+                        return "btn-descriptive-question";
+                    case "display":
+                        return "display-question";
+                    case "drop down":
+                        return "drop-down-question";
+                    case "database":
+                        return "database-question";
+                    default:
+                        return "";
+                }
+            }
+        },
+        components: {
+            BtnQuestion,
+            DisplayQuestion,
+            DropDownQuestion,
+            DatabaseQuestion,
+            BtnDescriptiveQuestion
+        },
+        mounted() {
+            //console.log(this.Nodes);
+        },
+        methods: {
+            optionSelected(selected) {
+                //console.log(this.stack);
+                //do any relevant stuff here ie addWeeks
+                let curr = this.Nodes[this.currentNode].options[selected];
 
-      this.stack.push(this.currentNode);
-      this.currentNode = curr.next_node;
-    },
-    goBack() {
-      console.log("in go back");
-      let oldNode = this.currentNode;
-      this.currentNode = this.stack.pop();
-      //logic to find Nodes[currentNod] option leading to oldNode
-      // then update weeks if needed
-        let option;
-        //Find the path from the node we backed up to, to the one we left
-        for (let o in this.Nodes[this.currentNode].options) {
-            if (o.next_node === oldNode) {
-                option = o;
-                break;
+                if (curr.hasOwnProperty("add_time") && curr.add_time.hasOwnProperty("weeks") && curr.add_time.hasOwnProperty("type"))
+                {
+                    console.log("weeks: " + curr.add_time.weeks);
+                    if(curr.add_time.type !== "n/a") {
+                        this.addWeeks(curr.add_time.weeks, curr.add_time.type);
+                    }
+                }
+
+                if(this.Nodes[this.currentNode].input !== 'database') {
+                    this.stack.push({
+                        "node": this.currentNode,
+                        "edge": selected
+                    });
+                }
+                this.currentNode = curr.next_node;
+                if (this.currentNode === "report"){
+                    this.$emit("stack", this.stack);
+                    this.$router.push("/report");
+                }
+            },
+            goBack() {
+                //console.log("in go back");
+                let node = this.stack.pop();
+                this.currentNode = node.node;
+                //logic to find Nodes[currentNod] option leading to oldNode
+                let option = this.Nodes[node.node].options[node.edge];
+                if(option.add_time.weeks !== 0) {
+                    this.addWeeks(-option.add_time.weeks, option.add_time.type)
+                }
+            },
+            changeUser() {
+                //add code to replace the user object with a new one based on a provided username
+                console.log(this.usrname);
+                console.log("Attempting to change to :" + this.usrname);
+                this.currentNode = "work related injury",
+                    this.$emit('change-user', this.usrname);
             }
         }
-        //If this edge modifies the number of protected weeks, undo that change because
-        //we are backing up
-        //if(option.hasOwnProperty('weeks')){
-          //  this.$emit('add-weeks', -option.weeks);
-        //}
-    },
-    changeUser() {
-      //add code to replace the user object with a new one based on a provided username
-      console.log(this.usrname);
-      console.log("Attempting to change to :" + this.usrname);
-      this.$emit('change-user', this.usrname);
-    }
-  }
-};
+    };
 </script>
 <!-- styling for the component -->
 <style>
-#questions {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  #questions {
+    font-family: "Avenir", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    margin-top: 60px;
+  }
 </style>
