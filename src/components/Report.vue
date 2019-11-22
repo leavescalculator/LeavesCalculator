@@ -68,12 +68,8 @@
         <td>
           Exchange: {{ user.paid_leave_balances['XCHG'] }}
         </td>
-        <td><div v-if="aaup">
-          DSLB Total: {{ user.fte*320 }}
-        </div>
-          <div v-else>
-            DSLB Total: {{ 0 }}
-        </div>
+        <td>
+          DSLB Total: {{ dslb }}
         </td>
       </tr>
       <tr>
@@ -267,7 +263,7 @@
         <td>
           &nbsp;{{ leavePlanElement.week }}
         </td>
-        <td>&nbsp;{{ 'y' }}</td>
+        <td>&nbsp;{{ protect(index,leavePlan[index].leaveType) }}</td>
         <td>
           <select
             v-model="leavePlanElement.leaveType"
@@ -339,8 +335,9 @@ export default {
     full_time: 0.0,
     inter_time: 0.0,
     hrs: 0.0,
-    startLeaveDate: '',
-    endLeaveDate: '',
+    numWeeks: 0,
+    startLeaveDate: '10/10/2019',
+    endLeaveDate: '12/12/2019',
     picked: '',
     leavePlan: [],
 
@@ -364,6 +361,17 @@ export default {
     ],
   }),
   computed: {
+    unpaid_hours: function(){
+      let NoUnpaid_total = 0.0
+      for(var week in this.leavePlan) {
+        if(this.leavePlan[week].leaveType !== 'LW3')
+            NoUnpaid_total += parseFloat(this.leavePlan[week].leaveUsed)
+          }
+      return (this.user.max_protected_leave_hrs - this.user.protected_leave_hrs_taken) - NoUnpaid_total
+    },
+    dslb: function(){
+      return this.aaup ? this.user.fte*320 : 0
+    },
     lst: function () {
       return this.user.deductions_eligibility.includes("LST")
     },
@@ -466,20 +474,49 @@ export default {
       var numWeeks = duration.asWeeks();
 
       // Add missing weeks
-      for(let weekIndex = this.leavePlan.length; weekIndex < numWeeks; weekIndex++) {
+      for(let weekIndex = this.numWeeks; weekIndex < numWeeks; weekIndex++) {
         this.leavePlan.push({ week: weekIndex + 1, leaveType: '', leaveUsed: 0.0 })
       }
       // Remove extra weeks
-      for(let weekIndex = numWeeks; weekIndex < this.leavePlan.length; weekIndex++) {
+      for(let weekIndex = numWeeks; weekIndex < this.numWeeks; weekIndex++) {
         this.leavePlan.pop()
       }
+      this.numWeeks = numWeeks
     },
+
     paid_percent(type) {
       if(type!="STD")
         return 100
         else {
           return 60
         }
+    },
+    protect(week,type){
+      let protect_total = 0.0
+      for(let weekIndex = 0; weekIndex <= week; weekIndex++){
+        if(type !== ''){
+        if(this.leavePlan[weekIndex].leaveType===type){
+          protect_total+= parseFloat(this.leavePlan[weekIndex].leaveUsed)
+          console.log(type)
+          console.log(protect_total)
+        }
+      }
+    }
+      if(type === 'LTS' && (protect_total > this.user.paid_leave_balances['ASIC'] || !this.user.paid_leave_balances['ASIC'])) {
+        return 'No'}
+        else if (type === 'LTV' && (protect_total > this.user.paid_leave_balances['AVAC'] || !this.user.paid_leave_balances['AVAC'])) {
+          return 'No'}
+        else if (type === 'Per' && (protect_total > this.user.paid_leave_balances['PERS'] || !this.user.paid_leave_balances['PERS'])) {
+            return 'No'}
+        else if (type === 'LSA' && (protect_total > this.user.paid_leave_balances['FLSA'] || !this.user.paid_leave_balances['FLSA'])) {
+                return 'No'}
+        else if (type === 'LW1' && protect_total > this.dslb) {
+                    return 'No'}
+        else if (type === 'LW3' && protect_total > this.unpaid_hours) {
+                      return 'No'}
+        else {
+            return 'Yes'
+          }
     },
     checkValidDates() {
       if(!this.startLeaveDate) {
