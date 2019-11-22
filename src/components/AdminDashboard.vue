@@ -490,6 +490,30 @@ export default {
         }
       });
     },
+    getGraphJson() {
+      //This function will get the nodes of the graph and its information in JSON
+      let output = {};
+      let nodes = this.cy.$(".graph-node");
+      for (let node = 0; node < nodes.length; node++) {
+        let element = nodes[node];
+        let nodeId = element.data("id");
+        output[nodeId] = {
+          title: element.data("title"),
+          input: element.data("input"),
+          options: []
+        };
+        let edges = this.cy.edges('[source = "' + nodeId + '"]');
+        for (let edge = 0; edge < edges.length; edge++) {
+          element = edges[edge];
+          output[nodeId].options.push({
+            title: element.data("title"),
+            add_time: element.data("add_time"),
+            next_node: element.data("target")
+          });
+        }
+      }
+      return output;
+    },
     // Shows the popper element, which displays and allows the changing
     // of specific graph elements.
     showInfo() {
