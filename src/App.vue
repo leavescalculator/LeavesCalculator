@@ -21,6 +21,9 @@
         @change-report="changeReport"
         :report="report"
         @update-employee="updateEmployee"
+        :addWeeks="addWeeks"
+        @getEmployee="getEmployee"
+        @stack="storeStack"
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
