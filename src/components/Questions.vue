@@ -26,6 +26,7 @@
                  :options="Nodes[currentNode].options"
                  @option-selected="optionSelected"
                  :user="user"
+                 :description="Nodes[currentNode].description"
       ></component>
       <br />
       <button class="btn btn-success" @click="goBack()" v-if="stack[0]">
@@ -83,7 +84,7 @@ export default {
     BtnDescriptiveQuestion
   },
   mounted() {
-      console.log(this.Nodes[this.currentNode]);
+    //console.log(this.Nodes);
   },
   methods: {
     optionSelected(selected) {
