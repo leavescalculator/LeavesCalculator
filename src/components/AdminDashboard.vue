@@ -202,8 +202,6 @@ cytoscape.use(popper);
 // The styling for the Cytoscape.js graph
 import graph_style from "../assets/graph-style.json";
 // The default graph representation
-// TODO: This file will be deleted and the graph will be stored on the DB
-import json from "../assets/nodes.json";
 
 export default {
   name: "admin-dashboard",
@@ -267,7 +265,7 @@ export default {
     });
 
     // Parsing the JSON graph
-    this.parseJson(json.Nodes);
+    this.parseJson(this.Nodes);
 
     // Displaying the graph as a tree
     this.cy
@@ -502,6 +500,9 @@ export default {
           input: element.data("input"),
           options: []
         };
+        if (output[nodeId].input === "display") {
+          output[nodeId].description = element.data("description");
+        }
         let edges = this.cy.edges('[source = "' + nodeId + '"]');
         for (let edge = 0; edge < edges.length; edge++) {
           element = edges[edge];
@@ -510,6 +511,11 @@ export default {
             add_time: element.data("add_time"),
             next_node: element.data("target")
           });
+          if (output[nodeId].input === "button-descriptive") {
+            output[nodeId].options[edge].description = element.data(
+              "description"
+            );
+          }
         }
       }
       return output;
