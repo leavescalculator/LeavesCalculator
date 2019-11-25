@@ -419,6 +419,10 @@ export default {
       this.checkValidDates()
     },
   },
+  beforeRouteLeave(to, from, next) {
+    $('[data-toggle = "tooltip"]').tooltip('dispose')
+    next()
+  },
   methods: {
     updateSummary () {
       this.leaveSummary = [
