@@ -32,6 +32,20 @@
       }
     },
     {
+      "selector": ".report",
+      "style": {
+        "background-color": "orange",
+        "shape": "star"
+      }
+    },
+    {
+      "selector": ".button-descriptive",
+      "style": {
+        "background-color": "teal",
+        "shape": "barrel"
+      }
+    },
+    {
       "selector": ".drop-down",
       "style": {
         "background-color": "yellow",

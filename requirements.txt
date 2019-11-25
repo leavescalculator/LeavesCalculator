@@ -6,3 +6,4 @@ jsonfield
 django-jsonfield
 backports-datetime-fromisoformat
 npm
+requests

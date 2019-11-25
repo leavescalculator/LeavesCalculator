@@ -11,11 +11,12 @@ Vue.use(VueRouter);
 //define your routes
 import { routes } from "./routes";
 //import the login component
-import Login from "./components/Login";
+//import Login from "./components/Login";
 //import the login component
-import Questions from "./components/Questions";
+//import Questions from "./components/Questions";
 //import the report component
-import Report from "./components/Report";
+//import Report from "./components/Report";
+//import GraphsDashboard from "./components/GraphsDashboard";
 
 // Create the router instance and pass the `routes` option
 // You can pass in additional options here, but let's

@@ -318,6 +318,7 @@
 <script>
 import moment from 'moment'
 import $ from 'jquery'
+import 'bootstrap'
 export default {
   name: 'report',
   props: ['user', 'isAdmin', 'Nodes'],
