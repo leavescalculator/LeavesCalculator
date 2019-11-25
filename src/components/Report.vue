@@ -507,30 +507,30 @@ export default {
     },
     protect(week,type){
       let protect_total = 0.0
-      for(let weekIndex = 0; weekIndex <= week; weekIndex++){
-        if(type !== ''){
-        if(this.leavePlan[weekIndex].leaveType===type){
-          protect_total+= parseFloat(this.leavePlan[weekIndex].leaveUsed)
-          console.log(type)
-          console.log(protect_total)
+      for(let weekIndex = 0; weekIndex <= week; weekIndex++) {
+        if(type !== '') {
+          if(this.leavePlan[weekIndex].leaveType===type) {
+            protect_total+= parseFloat(this.leavePlan[weekIndex].leaveUsed)
+            console.log(type)
+            console.log(protect_total)
+          }
         }
       }
-    }
       if(type === 'LTS' && (protect_total > this.user.paid_leave_balances['ASIC'] || !this.user.paid_leave_balances['ASIC'])) {
-        return 'No'}
-        else if (type === 'LTV' && (protect_total > this.user.paid_leave_balances['AVAC'] || !this.user.paid_leave_balances['AVAC'])) {
-          return 'No'}
-        else if (type === 'Per' && (protect_total > this.user.paid_leave_balances['PERS'] || !this.user.paid_leave_balances['PERS'])) {
-            return 'No'}
-        else if (type === 'LSA' && (protect_total > this.user.paid_leave_balances['FLSA'] || !this.user.paid_leave_balances['FLSA'])) {
-                return 'No'}
-        else if (type === 'LW1' && protect_total > this.dslb) {
-                    return 'No'}
-        else if (type === 'LW3' && protect_total > this.unpaid_hours) {
-                      return 'No'}
-        else {
-            return 'Yes'
-          }
+        return 'No'
+      } else if (type === 'LTV' && (protect_total > this.user.paid_leave_balances['AVAC'] || !this.user.paid_leave_balances['AVAC'])) {
+        return 'No'
+      } else if (type === 'Per' && (protect_total > this.user.paid_leave_balances['PERS'] || !this.user.paid_leave_balances['PERS'])) {
+        return 'No'
+      } else if (type === 'LSA' && (protect_total > this.user.paid_leave_balances['FLSA'] || !this.user.paid_leave_balances['FLSA'])) {
+        return 'No'
+      } else if (type === 'LW1' && protect_total > this.dslb) {
+        return 'No'
+      } else if (type === 'LW3' && protect_total > this.unpaid_hours) {
+        return 'No'
+      } else {
+        return 'Yes'
+      }
     },
     // When the start and end dates are changed, this function will be called.
     // If the dates are invalid, a tooltip will appear informing the user.
@@ -556,7 +556,6 @@ export default {
           .tooltip('dispose')
           .attr('title', this.errors.leaveStart.past)
           .tooltip('show')
-
       } else if(!this.endLeaveDate) {
         $('#leaveStart')
           .removeClass('error')
