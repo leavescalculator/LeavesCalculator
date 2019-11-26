@@ -6,11 +6,9 @@
 <template>
   <div id="admin-dashboard" v-if="isAdmin">
     <div class="header row">
-      <!--
-        TODO: This textbox and associated buttons will be replaced with the
-        ability to save and load graphs from the database.
-      -->
       <div class="col-5">
+        <br />
+        <p>Graph ID: {{ this.graphId }}</p>
         <div class="btn-group" role="group">
           <button class="btn btn-info" @click="saveAsNewGraph">Save As New Graph</button>
           <button class="btn btn-info" @click="saveGraph">Update Graph</button>
@@ -566,5 +564,12 @@ export default {
 
 #legend {
   height: 140px;
+}
+
+#graphTitle {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
 }
 </style>
