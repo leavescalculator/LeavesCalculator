@@ -20,7 +20,7 @@
         :graph-status="graphStatus"
         @change-report="changeReport"
         :Report="report"
-        @update-employee="updateEmployee"
+
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
@@ -45,7 +45,6 @@
             :Cords="cords"
             @change-report="changeReport"
             :Report="report"
-            @update-employee="updateEmployee"
             @stack="storeStack"
           ></router-view>
         </div>
@@ -94,14 +93,9 @@ export default {
         console.log("Nice try bozo.");
       }
     },
-    updateEmployee() {
-      console.log(this.user.username);
-      this.getEmployee(this.user.odin_username);
-    },
     getEmployee(name) {
       var data = JSON.stringify({ name });
       var emp_u = name.toUpperCase();
-      console.log(emp_u);
       fetch("http://localhost:8000/database/" + emp_u + "/", {
         method: "GET",
         headers: {
@@ -206,7 +200,6 @@ export default {
     loadReport(report) {
       //This function will set the report display to the one passed in
       console.log("here");
-
       this.report = report.leavereports_report;
       this.reportId = report.id;
     }

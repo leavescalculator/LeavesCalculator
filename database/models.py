@@ -7,6 +7,9 @@ import jsonfield
 from django.forms.models import model_to_dict
 from backports.datetime_fromisoformat import MonkeyPatch
 MonkeyPatch.patch_fromisoformat()
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 #Todays date as a Date object
 TODAY = date.today()
@@ -27,6 +30,7 @@ OFLA_MILITARY_EXCEPTIONS_HOURS = 520
 #the application as a whole.
 
 class gobeacc(models.Model):
+    permission_classes = [IsAuthenticated]
     id = models.IntegerField(primary_key=True)
     gobeacc_username = models.CharField(max_length=30)
 
@@ -34,6 +38,7 @@ class gobeacc(models.Model):
         return self.name
 
 class goremal(models.Model):
+    permission_classes = [IsAuthenticated]
     goremal_id = models.IntegerField(default=0)
     goremal_emal_code = models.CharField(max_length=4)
     goremal_email_address = models.CharField(max_length=128)
@@ -41,6 +46,7 @@ class goremal(models.Model):
         return self.name
 
 class gorsdav(models.Model):
+    permission_classes = [IsAuthenticated]
     gorsdav_table_name = models.CharField(max_length=30)
     gorsdav_attr_name = models.CharField(max_length=30)
     gorsdav_pk_parenttab = models.CharField(max_length=512)
@@ -49,6 +55,7 @@ class gorsdav(models.Model):
         return self.name
 
 class nbrjobs(models.Model):
+    permission_classes = [IsAuthenticated]
     nbrjobs_pidm = models.IntegerField(default=0)
     nbrjobs_posn = models.CharField(max_length=6)
     nbrjobs_suff = models.CharField(max_length=2)
@@ -59,6 +66,7 @@ class nbrjobs(models.Model):
         return self.name
 
 class nbrbjob(models.Model):
+    permission_classes = [IsAuthenticated]
     nbrbjob_pidm = models.IntegerField(default=0)
     nbrbjob_posn = models.CharField(max_length=6)
     nbrbjob_suff = models.CharField(max_length=2)
@@ -69,6 +77,7 @@ class nbrbjob(models.Model):
         return self.name
 
 class spriden(models.Model):
+    permission_classes = [IsAuthenticated]
     id = models.IntegerField(primary_key=True)
     spriden_id = models.CharField(max_length=9)
     spriden_last_name = models.CharField(max_length=60)
@@ -77,6 +86,7 @@ class spriden(models.Model):
         return self.name
 
 class pebempl(models.Model):
+    permission_classes = [IsAuthenticated]
     id = models.IntegerField(primary_key=True)
     pebempl_empl_status = models.CharField(max_length=1)
     pebempl_first_hire_date = models.DateField()
@@ -84,6 +94,7 @@ class pebempl(models.Model):
         return self.name
 
 class phraccr(models.Model):
+    permission_classes = [IsAuthenticated]
     phraccr_pidm =  models.IntegerField(default=0)
     phraccr_leav_code = models.CharField(max_length=4)
     phraccr_curr_accr = models.IntegerField()
@@ -92,6 +103,7 @@ class phraccr(models.Model):
         return self.name
 
 class perleav(models.Model):
+    permission_classes = [IsAuthenticated]
     perleav_pidm = models.IntegerField(default=0)
     perleav_leave_code = models.CharField(max_length=4)
     perleav_begin_balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -101,6 +113,7 @@ class perleav(models.Model):
         return self.name
 
 class perefml(models.Model):
+    permission_classes = [IsAuthenticated]
     id = models.IntegerField(primary_key=True)
     perefml_perbfmla_id = models.IntegerField()
     perefml_earn_code = models.CharField(max_length=3)
@@ -109,6 +122,7 @@ class perefml(models.Model):
         return self.name
 
 class perfmla(models.Model):
+    permission_classes = [IsAuthenticated]
     perfmla_id = models.IntegerField(default=0)
     perfmla_perbfml_id = models.IntegerField()
     perfmla_begin_date = models.DateField();
@@ -116,6 +130,7 @@ class perfmla(models.Model):
         return self.name
 
 class perbfml(models.Model):
+    permission_classes = [IsAuthenticated]
     perbfml_pidm = models.IntegerField(default=0)
     perbfml_max_units = models.IntegerField(default=0)
     perbfml_id = models.IntegerField(default=0)
@@ -123,6 +138,7 @@ class perbfml(models.Model):
         return self.name
 
 class perjtot(models.Model):
+    permission_classes = [IsAuthenticated]
     perjtot_pidm = models.IntegerField(default=0)
     perjtot_earn_code = models.CharField(max_length=3)
     perjtot_year = models.IntegerField()
@@ -132,10 +148,12 @@ class perjtot(models.Model):
         return self.name
 
 class ptrearn(models.Model):
+    permission_classes = [IsAuthenticated]
     id = models.CharField(max_length=3,primary_key=True)
     ptrearn_fmla_eligible_hrs_ind = models.CharField(max_length=1)
 
 class pdrdedn(models.Model):
+    permission_classes = [IsAuthenticated]
     pdrdedn_pidm =models.IntegerField()
     pdrdedn_bdca_code = models.CharField(max_length=3)
     pdrdedn_effective_date = models.DateField()
@@ -157,6 +175,7 @@ class pdrdedn(models.Model):
 #NOTE: for future approvements/functionality
 # - graph_name: name of the graph version that the admin has saved it as
 class graph(models.Model):
+    permission_classes = [IsAuthenticated]
     #graph_name = models.CharField(max_length=200, default=str(id))
     graph_date = models.DateField(auto_now=True)
     graph_data = jsonfield.JSONField(null=True)
@@ -194,6 +213,7 @@ def query_all_graphs():
 #leavereports_pidm: the employee id to which the report belongs to
 #leavereports_report: the JSON storing all of the report information/setup
 class leavereports(models.Model):
+    permission_classes = [IsAuthenticated]
     leavereports_pidm = models.IntegerField()
     leavereports_date = models.DateField(auto_now=True)
     leavereports_report = jsonfield.JSONField()
@@ -204,7 +224,7 @@ def query_reports_id(emp):
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM database_leavereports WHERE leavereports_pidm = %s;", [emp])
         return dictfetchall(cursor)
-        
+
 #This function is provided by django tutorials at: https://docs.djangoproject.com/en/2.2/topics/db/sql/
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
@@ -244,6 +264,7 @@ def dictfetchall(cursor):
 #reports: a list of all the leave reports generated
 #graph: the currently active graph in deployment that the user should navigate
 class Employee(models.Model):
+    permission_classes = [IsAuthenticated]
     employee_id  = models.IntegerField(primary_key=True)
     odin_username = models.CharField(max_length=200)
     psu_id = models.IntegerField(default=0)

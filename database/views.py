@@ -5,7 +5,6 @@ from django.forms.models import model_to_dict
 from database.models import *
 import json
 import requests
-
 import json
 
 def index(request):
