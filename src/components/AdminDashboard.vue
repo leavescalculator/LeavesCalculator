@@ -502,7 +502,10 @@ export default {
                 return element.data("input");
               },
               set input(input) {
+                // TODO call legendClass for `drop down`
+                element.removeClass(element.data('input'))
                 element.data("input", input);
+                element.addClass(input);
               }
             };
           }
@@ -530,7 +533,7 @@ export default {
       } else {
         return inputType;
       }
-    }
+    },
   }
 };
 </script>
