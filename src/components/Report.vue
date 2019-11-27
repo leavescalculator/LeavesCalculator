@@ -7,14 +7,28 @@
     <table width="800">
       <tr>
         <td>Employee Name: {{ user.first_name }} {{ user.last_name }}</td>
-        <td>Date: {{ new Date().toDateString() }}</td>
       </tr>
       <tr>
         <td>Hire Date: {{ user.hire_date }}</td>
-        <td>PSU ID #: {{ user.employee_id }}</td>
+        <td>PSU ID #: {{ user.psu_id }}</td>
       </tr>
       <tr>
-        <td>Payrate: {{ 0 }}  </td>
+        <td class="input-group">
+          <div class="input-group-prepend">
+            <label for="payrate" class="input-group-text">
+              Payrate
+            </label>
+          </div>
+          <input
+            type="text"
+            v-model="payrate"
+            id="payrate"
+            class="form-control"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            data-trigger="manual"
+          />
+        </td>
       </tr>
     </table>
     <hr />
@@ -228,11 +242,10 @@
     </div>
     <hr />
     <h3>Leave Plan</h3>
-    <div v-if="user.paid_leave_balances['ASIC'] > 40">
+    <div v-if="is_classified && user.paid_leave_balances['AVAC'] > 40">
       <h6>Want to hold 40 hours vacation leave?</h6>
       <label class="inline-radio">
         <input type="radio" value="yes" v-model="picked">
-        Yes (Vacation Leave will change to {{ user.paid_leave_balances['AVAC'] - 40 }})
       </label>
       &nbsp;&nbsp;
       <label class="inline-radio">
@@ -240,7 +253,6 @@
         No
       </label>
       <br />
-      <span>Picked: {{ picked }}</span>
     </div>
     <table width="800">
       <tr>
@@ -250,6 +262,7 @@
         <th>Leave Type</th>
         <th>% Paid</th>
         <th>Leave Used</th>
+        <th>Pay</th>
       </tr>
       <tr
         v-for="(leavePlanElement, index) in leavePlan"
@@ -269,7 +282,7 @@
         <td>
           <select
             v-model="leavePlanElement.leaveType"
-            @keyup="updateSummary"
+            @click="updateSummary"
             class="form-control"
           >
             <option
@@ -280,7 +293,7 @@
             >{{ leaveType.type }}</option>
           </select>
         </td>
-        <td>&nbsp;{{ paid_percent(leavePlanElement.leaveType) }}</td>
+        <td>&nbsp;{{ paid_percent(leavePlanElement.leaveType) }}%</td>
         <td>
           <input
             type="text"
@@ -288,6 +301,9 @@
             @keyup="updateSummary"
             class="form-control"
           />
+        </td>
+        <td>
+          &nbsp;{{ pay(leavePlanElement) }}
         </td>
       </tr>
     </table>
@@ -299,13 +315,21 @@
     </div>
     <h3>Leave Summary</h3>
     <table width="400">
+      <tr>
+        <th>Leave Type</th>
+        <th>Hours Used</th>
+        <th>Pay</th>
+      </tr>
       <tr v-for="(amount, index) in leaveSummary" :key="index">
         <td>{{ leaveTypes[index].type }}</td>
         <td>{{ amount }}</td>
+        <td v-if="leaveTypes[index].value !== 'STD'">${{ (amount * payrate).toFixed(2) }}</td>
+        <td v-else>${{ (amount * payrate * 0.6).toFixed(2) }}</td>
       </tr>
       <tr>
         <td><h4>Total</h4></td>
-        <td>{{ total }}</td>
+        <td>{{ total.hours }}</td>
+        <td>${{ total.pay.toFixed(2) }}</td>
       </tr>
     </table>
     <hr />
@@ -324,6 +348,9 @@ export default {
   props: ['user', 'isAdmin', 'Nodes'],
   data: () => ({
     errors: {
+      payrate: {
+        empty:   "Input your hourly income",
+      },
       leaveStart: {
         empty:   "Input the date you'd like to start your leave",
         invalid: "Input a start date that occurs before the given end date",
@@ -341,30 +368,44 @@ export default {
     hrs: 0.0,
     startLeaveDate: '',
     endLeaveDate: '',
+    payrate: '',
     picked: '',
     numWeeks: 0,
     leavePlan: [],
-
     leaveTypes: [
-      { type: 'Sick',         value: 'LTS' },
-      { type: 'Vacation',     value: 'LTV' },
-      { type: 'AAUP/SEIU',    value: 'LW1' },
-      { type: 'STD',          value: 'STD' },
-      { type: 'Unpaid Leave', value: 'LW3' },
-      { type: 'FLSA/NLFA',    value: 'LSA' },
-      { type: 'Personal Day', value: 'Per' },
+      { type: 'Sick',                  value: 'LTS' },
+      { type: 'Vacation',              value: 'LTV' },
+      { type: 'AAUP/SEIU',             value: 'LW1' },
+      { type: 'Short Term Disability', value: 'STD' },
+      { type: 'Pregnancy',             value: 'PD' },
+      { type: 'Unpaid Leave',          value: 'LW3' },
+      { type: 'FLSA/NLFA',             value: 'LSA' },
+      { type: 'Personal Day',          value: 'Per' },
     ],
     leaveSummary: [
       0.0, // LTS
       0.0, // LTV
       0.0, // LW1
       0.0, // STD
+      0.0, // PD
       0.0, // LW3
       0.0, // LSA
       0.0, // Per
     ],
   }),
   computed: {
+    is_classified: function() {
+      switch(this.user.employee_classification) {
+        case 'CA':
+        case 'CB':
+        case 'CD':
+        case 'CE':
+        case 'GI':
+        case 'GJ':
+          return true
+      }
+      return false
+    },
     std_hours: function() {
       let weeks = 0
       for(let i = 0; i < this.user.stack.length; i++) {
@@ -398,24 +439,45 @@ export default {
       return this.user.deductions_eligibility.includes("SEIU")
     },
     total: function() {
-      let total = 0.0
+      let hours = 0.0
+      let pay = 0.0
       for(var type in this.leaveSummary) {
-        total += parseFloat(this.leaveSummary[type])
+        hours += this.leaveSummary[type]
+        if(this.payrate) {
+          if(this.leaveTypes[type].value === 'STD') {
+            pay += this.leaveSummary[type] * parseFloat(this.payrate) * 0.6
+          } else {
+            pay += this.leaveSummary[type] * parseFloat(this.payrate)
+          }
+        }
       }
-      return total
+      return { hours, pay }
     }
   },
   mounted: function() {
-    $('#leaveStart').attr('title', this.errors.leaveStart.empty)
-    $('#leaveEnd').attr('title', this.errors.leaveEnd.empty)
-    $('#leaveStart, #leaveEnd').addClass("error").tooltip('show')
+    this.showError('#payrate', this.errors.payrate.empty)
+    this.showError('#leaveStart', this.errors.leaveStart.empty)
+    this.showError('#leaveEnd', this.errors.leaveEnd.empty)
   },
   watch: {
+    // TODO have it so picking 'yes' removes 40 hours from the original paid vacation time, rather than removing 40 hours every time yes is picked
+    picked: function() {
+      switch(this.picked) {
+        case 'yes':
+          this.user.paid_leave_balances['AVAC'] -= 40
+          break
+        case 'no':
+          break
+      }
+    },
     startLeaveDate: function() {
       this.checkValidDates()
     },
     endLeaveDate: function() {
       this.checkValidDates()
+    },
+    payrate: function() {
+      this.checkValidPayrate()
     },
   },
   beforeRouteLeave(to, from, next) {
@@ -429,14 +491,15 @@ export default {
         0.0, // LTV
         0.0, // LW1
         0.0, // STD
+        0.0, // PD
         0.0, // LW3
         0.0, // LSA
         0.0, // Per
       ]
-      for(var week in this.leavePlan) {
+      for(var index in this.leavePlan) {
         for(var type in this.leaveSummary) {
-          if(this.leavePlan[week].leaveType === this.leaveTypes[type].value && this.leavePlan[week].leaveUsed !== '') {
-            this.leaveSummary[type] += parseFloat(this.leavePlan[week].leaveUsed)
+          if(this.leavePlan[index].leaveType === this.leaveTypes[type].value && this.leavePlan[index].leaveUsed !== '') {
+            this.leaveSummary[type] += parseFloat(this.leavePlan[index].leaveUsed)
           }
         }
       }
@@ -456,6 +519,7 @@ export default {
       this.total_request = 0.0
       this.total_request = parseFloat(this.full_time) + parseFloat(this.inter_time)
     },
+    // TODO the leave balances are not being evaulated correctly in this method
     validLeaveType(leavePlanIndex, leaveType) {
       let currentLeaveBalances = Object.assign({}, this.user.paid_leave_balances)
       let leavePlanElement = this.leavePlan[leavePlanIndex]
@@ -463,26 +527,38 @@ export default {
         if(index !== leavePlanIndex) {
           switch(this.leavePlan[index].leaveType) {
             case 'LTS':
-              currentLeaveBalances['ASIC'] -= this.leavePlan[index].leaveUsed
-              break;
+              currentLeaveBalances['ASIC'] -= parseFloat(this.leavePlan[index].leaveUsed)
+              break
+            case 'LTV':
+              currentLeaveBalances['AVAC'] -= parseFloat(this.leavePlan[index].leaveUsed)
+              break
           }
         }
       }
 
       if(this.lst) {
-        if(leavePlanElement.week == 1 && currentLeaveBalances['ASIC'] > 0) {
-          return leaveType === 'LTS'
-        } else if(leavePlanElement.week <= 7
-                  || (leavePlanElement.week === 1 && currentLeaveBalances['ASIC'] === 0)) {
-          return leaveType === 'STD' || currentLeaveBalances['ASIC'] > 0
+        if(this.leavePlan[leavePlanIndex].week == 1) {
+          if(currentLeaveBalances['ASIC'] > 0) {
+            return leaveType === 'LTS'
+          } else if(currentLeaveBalances['AVAC'] > 0) {
+            return leaveType === 'LTV'
+          } else {
+            return leaveType !== 'STD'
+          }
+        } else if(currentLeaveBalances['AVAC'] > 0) {
+          return leaveType === 'LTV'
+        } else if(leavePlanElement.week <= 8) {
+          return leaveType === 'STD'
         } else {
-          return true
+          return leaveType !== 'STD'
         }
       } else {
         if(currentLeaveBalances['ASIC'] > 0) {
           return leaveType === 'LTS'
+        } else if(currentLeaveBalances['AVAC'] > 0) {
+          return leaveType === 'LTV'
         } else {
-          return true
+          return leaveType !== 'STD'
         }
       }
     },
@@ -491,15 +567,18 @@ export default {
       var numWeeks = duration.asWeeks();
 
       // Add missing weeks
-      for(let weekIndex = this.numWeeks; weekIndex < numWeeks; weekIndex++) {
-        this.leavePlan.push({ week: weekIndex + 1, leaveType: '', leaveUsed: 0.0 })
+      for(let index = this.numWeeks; index < numWeeks; index++) {
+        this.leavePlan.push({ week: index + 1, leaveType: '', leaveUsed: 0.0 })
       }
       // Remove extra weeks
-      for(let weekIndex = numWeeks; weekIndex < this.numWeeks; weekIndex++) {
+      for(let index = this.leavePlan.length - 1; index >= numWeeks; index--) {
         // TODO: handle multiple leavetypes for removed weeks
-        this.leavePlan.pop()
+        if(this.leavePlan[index].week > numWeeks)
+          this.leavePlan.pop()
+        else
+          break
       }
-      this.numWeeks = numWeeks
+      this.numWeeks = Math.ceil(numWeeks)
     },
 
     paid_percent(type) {
@@ -515,8 +594,6 @@ export default {
         if(type !== '') {
           if(this.leavePlan[weekIndex].leaveType===type) {
             protect_total+= parseFloat(this.leavePlan[weekIndex].leaveUsed)
-            console.log(type)
-            console.log(protect_total)
           }
         }
       }
@@ -549,6 +626,13 @@ export default {
         .tooltip('dispose')
         .attr('title', '')
     },
+    checkValidPayrate() {
+      if(!this.payrate) {
+        this.showError('#payrate', this.errors.payrate.empty)
+      } else {
+        this.removeError('#payrate')
+      }
+    },
     // When the start and end dates are changed, this function will be called.
     // If the dates are invalid, a tooltip will appear informing the user.
     checkValidDates() {
@@ -565,9 +649,9 @@ export default {
 
       if(!this.endLeaveDate) {
         this.showError('#leaveEnd', this.errors.leaveEnd.empty)
-      } else if(!this.startLeaveDate) {
+      } else if(!this.startLeaveDate || startDate <= today) {
         this.removeError('#leaveEnd')
-      } else if (startDate > today) {
+      } else if(startDate > today) {
         if(startDate < endDate) {
           this.removeError('#leaveStart, #leaveEnd')
           this.setNumWeeks()
@@ -577,6 +661,22 @@ export default {
         }
       }
     },
+    pay(leavePlanElement) {
+      if(leavePlanElement.leaveUsed) {
+        if(this.payrate) {
+          let pay = parseFloat(leavePlanElement.leaveUsed) * parseFloat(this.payrate)
+          if(leavePlanElement.leaveType === 'STD') {
+            return '$' + (pay * 0.6).toFixed(2)
+          } else {
+            return '$' + (pay).toFixed(2)
+          }
+        } else {
+          return leavePlanElement.leaveUsed + 'hrs * payrate'
+        }
+      } else {
+        return ''
+      }
+    }
   }
 }
 </script>
