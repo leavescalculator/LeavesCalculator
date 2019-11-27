@@ -339,9 +339,8 @@ export default {
     full_time: 0.0,
     inter_time: 0.0,
     hrs: 0.0,
-    numWeeks: 0,
-    startLeaveDate: '10/10/2019',
-    endLeaveDate: '12/12/2019',
+    startLeaveDate: '',
+    endLeaveDate: '',
     picked: '',
     numWeeks: 0,
     leavePlan: [],
@@ -537,59 +536,44 @@ export default {
         return 'Yes'
       }
     },
+    showError: function(id, title) {
+      $(id)
+        .addClass('error')
+        .tooltip('dispose')
+        .attr('title', title)
+        .tooltip('show')
+    },
+    removeError: function(ids) {
+      $(ids)
+        .removeClass('error')
+        .tooltip('dispose')
+        .attr('title', '')
+    },
     // When the start and end dates are changed, this function will be called.
     // If the dates are invalid, a tooltip will appear informing the user.
     checkValidDates() {
       let startDate = moment(this.startLeaveDate)
-      let endDate = moment(this.endDate)
+      let endDate = moment(this.endLeaveDate)
       let today = moment()
       if(!this.startLeaveDate) {
-        $('#leaveStart')
-          .addClass('error')
-          .tooltip('dispose')
-          .attr('title', this.errors.leaveStart.empty)
-          .tooltip('show')
+        this.showError('#leaveStart', this.errors.leaveStart.empty)
       } else if(startDate <= today) {
-        $('#leaveStart')
-          .addClass('error')
-          .tooltip('dispose')
-          .attr('title', this.errors.leaveStart.past)
-          .tooltip('show')
-      } else if(this.endLeaveDate && startDate >= endDate) {
-        $('#leaveEnd')
-          .addClass('error')
-          .tooltip('dispose')
-          .attr('title', this.errors.leaveStart.past)
-          .tooltip('show')
+        this.showError('#leaveStart', this.errors.leaveStart.past)
       } else if(!this.endLeaveDate) {
-        $('#leaveStart')
-          .removeClass('error')
-          .tooltip('dispose')
-          .attr('title', '')
+        this.removeError('#leaveStart')
       }
 
       if(!this.endLeaveDate) {
-        $('#leaveEnd')
-          .addClass('error')
-          .tooltip('dispose')
-          .attr('title', this.errors.leaveEnd.empty)
-          .tooltip('show')
+        this.showError('#leaveEnd', this.errors.leaveEnd.empty)
       } else if(!this.startLeaveDate) {
-        $('#leaveEnd')
-          .removeClass('error')
-          .tooltip('dispose')
-          .attr('title', '')
+        this.removeError('#leaveEnd')
       } else if (startDate > today) {
         if(startDate < endDate) {
-          $('#leaveStart, #leaveEnd')
-            .removeClass('error')
-            .tooltip('dispose')
-            .attr('title', '')
+          this.removeError('#leaveStart, #leaveEnd')
           this.setNumWeeks()
         } else {
-          $('#leaveStart').attr('title', this.errors.leaveStart.invalid)
-          $('#leaveEnd').attr('title', this.errors.leaveEnd.invalid)
-          $('#leaveStart, #leaveEnd').tooltip('dispose').addClass('error').tooltip('show')
+          this.showError('#leaveStart', this.errors.leaveStart.invalid)
+          this.showError('#leaveEnd', this.errors.leaveEnd.invalid)
         }
       }
     },
