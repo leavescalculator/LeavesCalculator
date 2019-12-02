@@ -1,3 +1,14 @@
+<!--
+ Here are a list of things that will need to be saved for each report on the db:
+ - The `startLeaveDate` and `endLeaveDate` values
+ - The `leavePlan` array
+ - The `notes` value
+
+ Here is a list of features that still need to be implemented:
+ - parental can't use intermittent (without permission, thus should just be a warning)
+ - std leave can't use intermitent
+ - warn user of submitting report with unprotected leave
+-->
 <template>
   <div id="report" v-if="user.employee_id != null">
     <h1>Portland State University Leave Worksheet</h1>
@@ -78,8 +89,8 @@
           <b>Total Paid Leave Available: {{ total_paid_leave }}</b>
         </td>
         <td>
+          <!-- TODO possibly remove since this is shown in the leave summary -->
           <b>Total Leave Request: {{ total.hours }}</b>
-          <!--<b>Total Leave Request: {{ total_request }}</b>-->
         </td>
       </tr>
       <tr>
@@ -149,9 +160,10 @@
       <tr class="form-group">
         <td class="input-group">
           <div class="input-group-prepend">
+            <!-- TODO same considerations as for `Full Time Leave` and `Intermittent Leave` row below -->
             <label for="hrWeek" class="input-group-text">HR/Week:</label>
           </div>
-          <input type="text" id="hrWeek" v-model="hrs" class="form-control" @keyup="change_hours" />
+          <input type="text" id="hrWeek" class="form-control" />
         </td>
       </tr>
       <tr class="form-group">
@@ -174,6 +186,9 @@
           </select>
         </td>
       </tr>
+        <!-- TODO possibly remove since this appears to have originally been used to estimate
+          the leave summary in the excel document with the HR/Week field.  Alternatively, this
+          should be done in `computed` rather than having textboxes -->
       <tr class="form-group">
         <td class="input-group">
           <div class="input-group-prepend">
@@ -182,8 +197,6 @@
           <input
             class="form-control"
             type="text"
-            v-model="full_time"
-            @keyup="total_r"
             id="fullTime"
           />
         </td>
@@ -194,8 +207,6 @@
           <input
             class="form-control"
             type="text"
-            v-model="inter_time"
-            @keyup="total_r"
             id="interTime"
           />
         </td>
@@ -246,27 +257,32 @@
         <th>Leave Used</th>
         <th>Pay</th>
       </tr>
-      <tr v-for="(leavePlanElement, index) in leavePlan" :key="index">
-        <!-- TODO: add logic to below -->
-        <td v-if="index==0||leavePlanElement.week!=leavePlan[index-1].week">
-          <button @click="addLeaveType(index)" class="btn btn-info">Add Leave Type</button>
+      <tr
+        v-for="(leavePlanElement, index) in leavePlan"
+        :key="index"
+        :id="'leavePlan-' + index"
+        data-toggle="tooltip"
+        data-trigger="manual"
+      >
+        <td v-if="index===0||leavePlanElement.week!==leavePlan[index-1].week">
+          <button @click="addLeaveType(index) || updateSummary()" class="btn btn-info">Add Leave Type</button>
         </td>
         <td v-else>
-          <button @click="removeLeaveType(index)" class="btn btn-danger">Remove Leave Type</button>
+          <button @click="removeLeaveType(index) || updateSummary()" class="btn btn-danger">Remove Leave Type</button>
         </td>
         <td>&nbsp;{{ leavePlanElement.week }}</td>
-        <td>&nbsp;{{ protect(index,leavePlan[index].leaveType) }}</td>
+        <td>&nbsp;{{ is_protected(index,leavePlanElement.leaveType) ? "Yes" : "No" }}</td>
         <td>
           <select v-model="leavePlanElement.leaveType" @click="updateSummary" class="form-control">
             <option
-              v-for="leaveType in leaveTypes"
-              :value="leaveType.value"
-              :key="leaveType.value"
-              :disabled="!validLeaveType(index, leaveType.value)"
-            >{{ leaveType.type }}</option>
+              v-for="value of Object.keys(leaveTypes)"
+              :value="value"
+              :key="value"
+              :disabled="!validLeaveType(index, value)"
+            >{{ leaveTypes[value] }}</option>
           </select>
         </td>
-        <td>&nbsp;{{ paid_percent(leavePlanElement.leaveType) }}%</td>
+        <td>&nbsp;{{ paid_percent(leavePlanElement.leaveType) * 100 }}%</td>
         <td>
           <input
             type="text"
@@ -291,19 +307,21 @@
         <th>Hours Used</th>
         <th>Pay</th>
       </tr>
-      <tr v-for="(amount, index) in leaveSummary" :key="index">
-        <td>{{ leaveTypes[index].type }}</td>
-        <td>{{ amount }}</td>
-        <td v-if="leaveTypes[index].value === 'STD'">${{ (amount * payrate * 0.6).toFixed(2) }}</td>
-        <td v-else-if="leaveTypes[index].value === 'LW3'">${{ (amount * payrate * 0).toFixed(2) }}</td>
-        <td v-else>${{ (amount * payrate).toFixed(2) }}</td>
+      <tr v-for="type of Object.keys(leaveSummary)" :key="type">
+        <td>{{ leaveTypes[type] }}</td>
+        <td>{{ leaveSummary[type] }}</td>
+        <td>${{ (leaveSummary[type] * payrate * paid_percent(type)).toFixed(2) }}</td>
       </tr>
       <tr>
         <td>
           <h4>Total</h4>
         </td>
-        <td>{{ total.hours }}</td>
-        <td>${{ total.pay.toFixed(2) }}</td>
+        <td>
+          <h4>{{ total.hours }}</h4>
+        </td>
+        <td>
+          <h4>${{ total.pay.toFixed(2) }}</h4>
+        </td>
       </tr>
     </table>
     <hr />
@@ -316,13 +334,18 @@
 </template>
 
 <script>
+// Used for date comparisons, and getting the number of weeks between two dates
 import moment from "moment";
+// Used for displaying and removing Bootstrap tooltips manually
 import $ from "jquery";
+// Needed for Bootstrap tooltips
+// TODO look into using BootstrapVue tooltips instead
 import "bootstrap";
 export default {
   name: "report",
   props: ["user", "isAdmin", "Nodes"],
   data: () => ({
+    // The various error messages that will appear in Boostrap tooltips when relevant
     errors: {
       payrate: {
         empty: "Input your hourly income"
@@ -340,7 +363,9 @@ export default {
         invalid: "Input a value that does not exceed your max available hours"
       }
     },
+    // The classified employee types that are compared to `user.employee_classification`
     classifiedEmpList: ["CA", "CB", "CD", "CE", "GI", "GJ"],
+    // The unclassified employee types that are compared to `user.employee_classification`
     unclassifiedEmpList: [
       "TS",
       "UA",
@@ -355,45 +380,56 @@ export default {
       "UV",
       "UW"
     ],
+    // The v-model value set from conditionally rendered radio buttons,
+    // set to 'yes' or 'no' by a classified employee as to whether or not
+    // they want to hold 40hrs of vacation time
     classifiedPicked: "",
+    // The v-model value set from conditionally rendered radio buttons,
+    // set to 'yes' or 'no' by an unclassified employee as to whether or not
+    // they want to save their vacation hours
     unclassifiedPicked: "",
+    // The v-model value from the Notes textarea
     notes: "",
-    total_request: 0.0,
-    full_time: 0.0,
-    inter_time: 0.0,
-    hrs: 0.0,
+    // The start date of the leave being submitted
     startLeaveDate: "",
+    // The end date of the leave being submitted
     endLeaveDate: "",
+    // The $/hr provided by the employee
     payrate: "",
+    // The number of weeks between the start and end dates
     numWeeks: 0,
+    // The array of objects representing the leave plan table; which each holds a leave type, and number of hours used
     leavePlan: [],
-    leaveTypes: [
-      { type: "Sick", value: "LTS" },
-      { type: "Vacation", value: "LTV" },
-      { type: "AAUP/SEIU", value: "LW1" },
-      { type: "Short Term Disability", value: "STD" },
-      { type: "Unpaid Leave", value: "LW3" },
-      { type: "FLSA/NLFA", value: "LSA" },
-      { type: "Personal Day", value: "Per" }
-    ],
-    leaveMax: [
-      0.0, // LTS
-      0.0, // LTV
-      0.0, // LW1
-      0.0, // STD
-      0.0, // LW3
-      0.0, // LSA
-      0.0 // Per
-    ],
-    leaveSummary: [
-      0.0, // LTS
-      0.0, // LTV
-      0.0, // LW1
-      0.0, // STD
-      0.0, // LW3
-      0.0, // LSA
-      0.0 // Per
-    ],
+    // The different leave types that exist
+    leaveTypes: {
+      LTS: "Sick",
+      LTV: "Vacation",
+      LW1: "AAUP/SEIU",
+      STD: "Short Term Disability",
+      LW3: "Unpaid Leave",
+      LSA: "FLSA/NLFA",
+      Per: "Personal Day",
+    },
+    leaveMax: {
+      LTS: 0.0,
+      LTV: 0.0,
+      LW1: 0.0,
+      STD: 0.0,
+      LW3: 0.0,
+      LSA: 0.0,
+      Per: 0.0,
+    },
+    // The summary of the number of hours used for each leave type within `leavePlan`
+    // Is updated in the `updateSummary` method
+    leaveSummary: {
+      LTS: 0.0,
+      LTV: 0.0,
+      LW1: 0.0,
+      STD: 0.0,
+      LW3: 0.0,
+      LSA: 0.0,
+      Per: 0.0,
+    },
     leaveStatus: [
       "FMLA-Female EE's pregnancy and care of newborn",
       "FMLA-Male EE's care of newborn",
@@ -439,22 +475,24 @@ export default {
   }),
   computed: {
     fmlaEligibility: function() {
-      if (this.user.fmla_eligibility == "T") {
+      if (this.user.fmla_eligibility === "T") {
         return "Eligible";
       }
       return "Not Eligible";
     },
     oflaEligibility: function() {
-      if (this.user.ofla_eligibility == "T") {
-        return "Eligible";
-      } else if (this.user.ofla_eligibility == "B") {
-        return "Parental or Military Leave only";
-      } else if (this.user.ofla_eligibility == "M") {
-        return "Military Leave only";
-      } else if (this.user.ofla_eligibility == "P") {
-        return "Parental Leave only";
+      switch(this.user.ofla_eligibility) {
+        case "T":
+          return "Eligible";
+        case "B":
+          return "Parental or Military Leave only";
+        case "M":
+          return "Military Leave only";
+        case "P":
+          return "Parental Leave only";
+        default:
+          return "Not Eligible";
       }
-      return "Not Eligible";
     },
     pathway: function() {
       var reason = [];
@@ -489,17 +527,17 @@ export default {
     std_hours: function() {
       if (this.lst) {
         if (this.pd_hours) {
-          this.leaveMax[3] = this.pd_hours;
+          this.leaveMax.STD = this.pd_hours;
           return this.pd_hours;
         }
         /*
         TODO: check this
         else if (serious health condition self; pre-existing condition){
-          this.leaveMax[3] = 40 * this.user.fte * 4;
+          this.leaveMax.STD = 40 * this.user.fte * 4;
           return 40 * this.user.fte * 4;
         }
         else if (serious health condition self; not a pre-existing health condition){
-          this.leaveMax[3] = 40 * this.user.fte * 13;
+          this.leaveMax.STD = 40 * this.user.fte * 13;
           return 40 * this.user.fte * 13;
         }
         */
@@ -519,10 +557,11 @@ export default {
         if (this.leavePlan[week].leaveType !== "LW3")
           NoUnpaid_total += parseFloat(this.leavePlan[week].leaveUsed);
       }
-      return this.max_protected_leave_hrs - NoUnpaid_total;
+      this.leaveMax.LW3 = this.max_protected_leave_hrs - NoUnpaid_total;
+      return this.leaveMax.LW3;
     },
     dslb: function() {
-      this.leaveMax[2] += this.user.aaup ? this.user.fte * 320 : 0;
+      this.leaveMax.LW1 += this.user.aaup ? this.user.fte * 320 : 0;
       return this.aaup ? this.user.fte * 320 : 0;
     },
     lst: function() {
@@ -540,60 +579,35 @@ export default {
     total: function() {
       let hours = 0.0;
       let pay = 0.0;
-      for (var type in this.leaveSummary) {
+      for (const type of Object.keys(this.leaveSummary)) {
         hours += this.leaveSummary[type];
         if (this.payrate) {
-          if (this.leaveTypes[type].value === "STD") {
-            pay += this.leaveSummary[type] * parseFloat(this.payrate) * 0.6;
-          } else if (this.leaveTypes[type].value === "LW3") {
-            pay += this.leaveSummary[type] * parseFloat(this.payrate) * 0.0;
-          } else {
-            pay += this.leaveSummary[type] * parseFloat(this.payrate);
-          }
+          pay += this.leaveSummary[type] * parseFloat(this.payrate) * this.paid_percent(type);
         }
       }
       return { hours, pay };
     },
     classifiedEmp: function() {
-      for (var emp in this.classifiedEmpList) {
-        if (this.user.employee_classification == this.classifiedEmpList[emp]) {
-          console.log("classified");
-          return true;
-        }
-      }
-      console.log("not classified");
-      return false;
+      return this.classifiedEmpList.includes(this.user.employee_classification);
     },
     unclassifiedEmp: function() {
-      for (var emp in this.unclassifiedEmpList) {
-        if (
-          this.user.employee_classification == this.unclassifiedEmpList[emp]
-        ) {
-          console.log("unclassified");
-          return true;
-        }
-      }
-      console.log("not unclassified");
-      return false;
+      return this.unclassifiedEmpList.includes(this.user.employee_classification);
     },
     vacationHours: function() {
-      if (this.user.paid_leave_balances["AVAC"]) {
-        if (this.classifiedPicked == "yes") {
-          this.leaveMax[1] = this.user.paid_leave_balances["AVAC"] - 40;
-        } else if (this.unclassifiedPicked == "yes") {
-          this.leaveMax[1] = 0;
-        } else if (this.user.paid_leave_balances["AVAC"]) {
-          this.leaveMax[1] = this.user.paid_leave_balances["AVAC"];
-        } else {
-          this.leaveMax[1] = 0;
-        }
-        return this.leaveMax[1];
+      if (this.classifiedPicked === "yes") {
+        this.leaveMax.LTV = this.user.paid_leave_balances["AVAC"] - 40;
+      } else if (this.unclassifiedPicked === "yes") {
+        this.leaveMax.LTV = 0;
+      } else if (this.user.paid_leave_balances["AVAC"]) {
+        this.leaveMax.LTV = this.user.paid_leave_balances["AVAC"];
+      } else {
+        this.leaveMax.LTV = 0;
       }
-      return 0;
+      return this.leaveMax.LTV;
     },
     hardshipHours: function() {
       if (this.user.paid_leave_balances["XDON"]) {
-        this.leaveMax[2] += this.user.paid_leave_balances["XDON"];
+        this.leaveMax.LW1 += this.user.paid_leave_balances["XDON"];
         return this.user.paid_leave_balances["XDON"];
       }
       return 0;
@@ -608,21 +622,21 @@ export default {
     },
     nslaHours: function() {
       if (this.user.paid_leave_balances["NSLA"]) {
-        this.leaveMax[5] += this.user.paid_leave_balances["NSLA"];
+        this.leaveMax.LSA += this.user.paid_leave_balances["NSLA"];
         return this.user.paid_leave_balances["NSLA"];
       }
       return 0;
     },
     fslaHours: function() {
       if (this.user.paid_leave_balances["FSLA"]) {
-        this.leaveMax[5] += this.user.paid_leave_balances["FSLA"];
+        this.leaveMax.LSA += this.user.paid_leave_balances["FSLA"];
         return this.user.paid_leave_balances["FSLA"];
       }
       return 0;
     },
     personalHours: function() {
       if (this.user.paid_leave_balances["PERS"]) {
-        this.leaveMax[6] = this.user.paid_leave_balances["PERS"];
+        this.leaveMax.Per = this.user.paid_leave_balances["PERS"];
         return this.user.paid_leave_balances["PERS"];
       }
       return 0;
@@ -653,7 +667,7 @@ export default {
     },
     sickHours: function() {
       if (this.user.paid_leave_balances["ASIC"]) {
-        this.leaveMax[0] = this.user.paid_leave_balances["ASIC"];
+        this.leaveMax.LTS = this.user.paid_leave_balances["ASIC"];
         return this.user.paid_leave_balances["ASIC"];
       }
       return 0;
@@ -698,45 +712,32 @@ export default {
   },
   methods: {
     updateSummary() {
-      this.leaveSummary = [
-        0.0, // LTS
-        0.0, // LTV
-        0.0, // LW1
-        0.0, // STD
-        0.0, // LW3
-        0.0, // LSA
-        0.0 // Per
-      ];
+      this.leaveSummary = {
+        LTS: 0.0,
+        LTV: 0.0,
+        LW1: 0.0,
+        STD: 0.0,
+        LW3: 0.0,
+        LSA: 0.0,
+        Per: 0.0,
+      };
       console.log(this.leaveMax);
       for (var index in this.leavePlan) {
-        for (var type in this.leaveSummary) {
+        for (const type of Object.keys(this.leaveSummary)) {
           if (
-            this.leavePlan[index].leaveType === this.leaveTypes[type].value &&
+            this.leavePlan[index].leaveType === type &&
             this.leavePlan[index].leaveUsed !== ""
           ) {
+            this.leaveSummary[type] += parseFloat(
+              this.leavePlan[index].leaveUsed
+            );
             if (
               this.leavePlan[index].leaveType === "LW3" ||
-              (this.leaveSummary[type] <= this.leaveMax[type] &&
-                this.leaveSummary[type] +
-                  parseFloat(this.leavePlan[index].leaveUsed) <=
-                  this.leaveMax[type] &&
-                this.leavePlan[index].leaveUsed <= 40 * this.user.fte)
+              this.leaveSummary[type] > this.leaveMax[type]
             ) {
-              /*if (
-                this.leaveSummary[type] +
-                  parseFloat(this.leavePlan[index].leaveUsed) <=
-                this.leaveMax[type]
-              ) {*/
-              this.leaveSummary[type] += parseFloat(
-                this.leavePlan[index].leaveUsed
-              );
-              //}
+              this.showError("#leavePlan-" + index, this.errors.leaveHours.invalid);
             } else {
-              //TODO: highlight input box red
-              console.log("highlight border red");
-              console.log("max: ", this.leaveMax[type]);
-              //var leaveWeek = "#leaveWeek" + index
-              //this.showError(leaveWeek, this.errors.leaveHours.invalid);
+              this.removeError("#leavePlan-" + index)
             }
           }
         }
@@ -748,36 +749,19 @@ export default {
     removeLeaveType(index) {
       this.leavePlan.splice(index, 1);
     },
-    change_hours() {
-      for (var index in this.leavePlan) {
-        this.leavePlan[index].leaveUsed = parseFloat(this.hrs);
-      }
-    },
-    total_r() {
-      this.total_request = 0.0;
-      this.total_request =
-        parseFloat(this.full_time) + parseFloat(this.inter_time);
-    },
     validLeaveType(leavePlanIndex, leaveType) {
       let currentLeaveBalances = {
-        LTS: 0.0,
-        LTV: 0.0,
-        LW1: 0.0,
-        STD: 0.0,
-        LW3: 0.0,
-        LSA: 0.0,
-        Per: 0.0
+        LTS: this.leaveMax.LTS - this.leaveSummary.LTS,
+        LTV: this.leaveMax.LTV - this.leaveSummary.LTV,
+        LW1: this.leaveMax.LW1 - this.leaveSummary.LW1,
+        STD: this.leaveMax.STD - this.leaveSummary.STD,
+        LW3: this.leaveMax.LW3 - this.leaveSummary.LW3,
+        LSA: this.leaveMax.LSA - this.leaveSummary.LSA,
+        Per: this.leaveMax.Per - this.leaveSummary.Per
       };
-      currentLeaveBalances.LTS = this.leaveMax[0] - this.leaveSummary[0];
-      currentLeaveBalances.LTV = this.leaveMax[1] - this.leaveSummary[1];
-      currentLeaveBalances.LW1 = this.leaveMax[2] - this.leaveSummary[2];
-      currentLeaveBalances.STD = this.leaveMax[3] - this.leaveSummary[3];
-      currentLeaveBalances.LW3 = this.leaveMax[4] - this.leaveSummary[4];
-      currentLeaveBalances.LSA = this.leaveMax[5] - this.leaveSummary[5];
-      currentLeaveBalances.Per = this.leaveMax[6] - this.leaveSummary[6];
 
       if (this.lst) {
-        if (this.leavePlan[leavePlanIndex].week == 1) {
+        if (this.leavePlan[leavePlanIndex].week === 1) {
           if (currentLeaveBalances.LTS > 0) {
             return leaveType === "LTS";
           } else if (currentLeaveBalances.LTV > 0) {
@@ -796,33 +780,17 @@ export default {
           } else if (currentLeaveBalances.LTV > 0.0) {
             return leaveType === "LTV";
           } else if (leaveType === "LW1") {
-            if (currentLeaveBalances["LW1"] == 0) {
-              return false;
-            } else {
-              return true;
-            }
+            return currentLeaveBalances["LW1"] !== 0;
           } else if (leaveType === "LSA") {
-            if (currentLeaveBalances["LSA"] == 0) {
-              return false;
-            } else {
-              return true;
-            }
+            return currentLeaveBalances["LSA"] !== 0;
           } else if (leaveType === "Per") {
-            if (currentLeaveBalances["Per"] == 0) {
-              return false;
-            } else {
-              return true;
-            }
+            return currentLeaveBalances["Per"] !== 0;
           } else if (leaveType === "LW3") {
-            if (
-              currentLeaveBalances["Per"] == 0 &&
-              currentLeaveBalances["LSA"] == 0 &&
-              currentLeaveBalances["LW1"] == 0
-            ) {
-              return true;
-            } else {
-              return false;
-            }
+            return (
+              currentLeaveBalances["Per"] === 0 &&
+              currentLeaveBalances["LSA"] === 0 &&
+              currentLeaveBalances["LW1"] === 0
+            )
           } else if (leaveType === "STD") {
             return false;
           }
@@ -833,33 +801,17 @@ export default {
         } else if (currentLeaveBalances.LTV > 0.0) {
           return leaveType === "LTV";
         } else if (leaveType === "LW1") {
-          if (currentLeaveBalances["LW1"] == 0) {
-            return false;
-          } else {
-            return true;
-          }
+          return currentLeaveBalances["LW1"] !== 0;
         } else if (leaveType === "LSA") {
-          if (currentLeaveBalances["LSA"] == 0) {
-            return false;
-          } else {
-            return true;
-          }
+          return currentLeaveBalances["LSA"] !== 0;
         } else if (leaveType === "Per") {
-          if (currentLeaveBalances["Per"] == 0) {
-            return false;
-          } else {
-            return true;
-          }
+          return currentLeaveBalances["Per"] !== 0;
         } else if (leaveType === "LW3") {
-          if (
-            currentLeaveBalances["Per"] == 0 &&
-            currentLeaveBalances["LSA"] == 0 &&
-            currentLeaveBalances["LW1"] == 0
-          ) {
-            return true;
-          } else {
-            return false;
-          }
+          return (
+            currentLeaveBalances["Per"] === 0 &&
+            currentLeaveBalances["LSA"] === 0 &&
+            currentLeaveBalances["LW1"] === 0
+          )
         } else if (leaveType === "STD") {
           return false;
         }
@@ -883,48 +835,31 @@ export default {
       }
       this.numWeeks = Math.ceil(numWeeks);
     },
-
+    // Returns the paid percentage for the given leave type as a value between 0.0-1.0
     paid_percent(type) {
-      if (type == "STD") return 60;
-      else if (type == "LW3") return 0;
-      return 100;
+      switch(type) {
+        case "STD":
+          return 0.6;
+        case "LW3":
+          return 0.0;
+        default:
+          return 1.0;
+      }
     },
-    protect(week, type) {
+    is_protected(index, type) {
       //TODO: re-evaluate
       let protect_total = 0.0;
-      for (let weekIndex = 0; weekIndex <= week; weekIndex++) {
+      for (let evaluatedIndex = 0; evaluatedIndex <= index; evaluatedIndex++) {
         if (type !== "") {
-          if (this.leavePlan[weekIndex].leaveType === type) {
-            protect_total += parseFloat(this.leavePlan[weekIndex].leaveUsed);
+          if (this.leavePlan[evaluatedIndex].leaveType === type) {
+            protect_total += parseFloat(this.leavePlan[evaluatedIndex].leaveUsed);
           }
         }
       }
-      if (
-        type === "LTS" &&
-        (protect_total > this.leaveMax[0] || !this.leaveMax[0])
-      ) {
-        return "No";
-      } else if (
-        type === "LTV" &&
-        (protect_total > this.leaveMax[1] || !this.leaveMax[1])
-      ) {
-        return "No";
-      } else if (
-        type === "Per" &&
-        (protect_total > this.leaveMax[6] || !this.leaveMax[6])
-      ) {
-        return "No";
-      } else if (
-        type === "LSA" &&
-        (protect_total > this.leaveMax[5] || !this.leaveMax[5])
-      ) {
-        return "No";
-      } else if (type === "LW1" && protect_total > this.leaveMax[2]) {
-        return "No";
-      } else if (type === "LW3" && protect_total > this.unpaid_hours) {
-        return "No";
+      if (protect_total > this.leaveMax[type]) {
+        return false;
       } else {
-        return "Yes";
+        return true
       }
     },
     showError: function(id, title) {

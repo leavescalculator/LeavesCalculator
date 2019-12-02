@@ -210,6 +210,7 @@ export default {
       "report"
     ],
     // The types of leave and their corresponding acronyms
+    // TODO remove `n/a` when all try-catch issues are resolved
     leaveTypes: [
       { type: "Not Applicable",        value: "n/a" },
       { type: "Sick",                  value: "LTS" },
