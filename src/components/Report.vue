@@ -31,57 +31,83 @@
     </table>
     <hr />
 
-    <h3>Eligibility</h3>
+    <h3>Eligibility Status</h3>
     <table width="800">
       <tr>
-        <td>Look Back Hours: {{ user.month_lookback_12 }}</td>
+        <td>Look Back Hours (12 months): {{ user.month_lookback_12 }}</td>
         <td>FTE: {{ user.fte }}</td>
+        <td>FMLA: {{ fmlaEligibility }}</td>
       </tr>
       <tr>
-        <td>Months: {{ 0 }}</td>
+        <td>Look Back Hours (6 months): {{ user.month_lookback_6 }}</td>
         <td>E-Class: {{ this.user.employee_classification }}</td>
+        <td>OFLA: {{ oflaEligibility }}</td>
       </tr>
       <tr>
-        <td>FMLA: {{ user.fmla_eligibility }}</td>
-        <td>OFLA: {{ user.ofla_eligibility }}</td>
-      </tr>
-      <tr>
-        <td>Hours Eligible: {{0}}</td>
-        <td>* {{0}}</td>
-      </tr>
-      <tr>
-        <td>Worksite Location: {{0}}</td>
-        <td>Due to a Work Related Injury? {{0}}</td>
+        <td
+          v-if="fmlaEligibility!=='Not Eligible' && oflaEligibility!=='Not Eligible'"
+        >Coverage: FMLA/OFLA</td>
+        <td
+          v-else-if="fmlaEligibility==='Not Eligible' && oflaEligibility!=='Not Eligible'"
+        >Coverage: OFLA</td>
+        <td
+          v-else-if="fmlaEligibility!=='Not Eligible' && oflaEligibility==='Not Eligible'"
+        >Coverage: FMLA</td>
+        <!-- TODO: replace above with this when we handle exceptions<td
+          v-else-if="fmlaEligibility!=='Not Eligible' && oflaEligibility==='Not Eligible' && !exceptions"
+        >Coverage: FMLA</td>-->
+        <td v-else>Coverage: ADA</td>
       </tr>
     </table>
     <hr />
 
+    <h3>Reason</h3>
+    <div v-for="(path, index) in pathway" :key="index">{{path}}</div>
+    <hr />
+
     <h3>Leave Balance</h3>
-    <table width="800">
+    <table width="1200">
       <tr>
         <td>
-          <b>Total Paid Leave Available: {{ 0 }}</b>
+          <b>Protected Leave Taken: {{ user.protected_leave_hrs_taken }}</b>
         </td>
         <td>
-          <b>Total Leave Request: {{ total_request }}</b>
+          <b>Total Protected Leave Available: {{ max_protected_leave_hrs }}</b>
+        </td>
+        <td>
+          <b>Total Paid Leave Available: {{ total_paid_leave }}</b>
+        </td>
+        <td>
+          <b>Total Leave Request: {{ total.hours }}</b>
+          <!--<b>Total Leave Request: {{ total_request }}</b>-->
         </td>
       </tr>
       <tr>
-        <td>Sick Leave: {{ user.paid_leave_balances['ASIC'] }}</td>
-        <td>FSLA</td>
-        <td>Personal Leave: {{ user.paid_leave_balances['PERS'] }}</td>
-        <td>AAUP DSLB: {{ aaup ? "Yes" : "No" }}</td>
-      </tr>
-      <tr>
-        <td>Vacation Leave: {{ this.vacationHours }}</td>
-        <td>NSLA</td>
-        <td>Exchange: {{ user.paid_leave_balances['XCHG'] }}</td>
-        <td>DSLB Total: {{ dslb }}</td>
-      </tr>
-      <tr>
-        <td>ST Disability?: {{ lst ? "Yes" : "No" }}</td>
-        <td>PXS?: {{ pxs ? "Yes" : "No" }}</td>
+        <td>ST Disability: {{ lst ? "Yes" : "No" }}</td>
         <td>SEIU Hardship: {{ seiu ? "Yes" : "No" }}</td>
+        <td>AAUP DSLB: {{ aaup ? "Yes" : "No" }}</td>
+        <td>Flexible Spending for Childcare (PXS): {{ pxs ? "Yes" : "No" }}</td>
+      </tr>
+      <tr>
+        <td>ST Disability Leave: {{this.std_hours}}</td>
+        <td>Hardship (Donated) Leave: {{this.hardshipHours}}</td>
+        <td>AAUP DSLB Total: {{ dslb }}</td>
+        <td>PXS Leave: {{this.pxsHours}}</td>
+      </tr>
+      <tr>
+        <td>Sick Leave: {{ this.sickHours }}</td>
+        <td>Vacation Leave: {{ this.vacationHours }}</td>
+        <td>Personal Leave: {{ this.personalHours }}</td>
+        <td>Bereavement Leave: {{this.bereavementHours}}</td>
+      </tr>
+      <tr>
+        <td>Furlough Leave: {{this.furloughHours}}</td>
+        <td>Exchange Leave: {{ this.exchangeHours }}</td>
+        <td>NSLA (Comp Time) Leave: {{this.nslaHours}}</td>
+        <td>FSLA Leave: {{this.fslaHours}}</td>
+      </tr>
+      <tr>
+        <td>Other Leave: {{this.otherHours}}</td>
       </tr>
     </table>
     <hr />
@@ -177,12 +203,12 @@
     </table>
     <hr />
 
-    <h3>Your Balance</h3>
+    <!--<h3>Your Balance</h3>
     <div
       v-for="leaveCode in Object.keys(user.paid_leave_balances)"
       :key="leaveCode"
     >{{ leaveCode }}: {{ user.paid_leave_balances[leaveCode] }}</div>
-    <hr />
+    <hr />-->
     <h3>Leave Plan</h3>
     <!-- Classified employees can say they want to use hold 40 vacation hours if they have that much-->
     <div v-if="user.paid_leave_balances['AVAC'] >= 40 && this.classifiedEmp">
@@ -268,8 +294,9 @@
       <tr v-for="(amount, index) in leaveSummary" :key="index">
         <td>{{ leaveTypes[index].type }}</td>
         <td>{{ amount }}</td>
-        <td v-if="leaveTypes[index].value !== 'STD'">${{ (amount * payrate).toFixed(2) }}</td>
-        <td v-else>${{ (amount * payrate * 0.6).toFixed(2) }}</td>
+        <td v-if="leaveTypes[index].value === 'STD'">${{ (amount * payrate * 0.6).toFixed(2) }}</td>
+        <td v-else-if="leaveTypes[index].value === 'LW3'">${{ (amount * payrate * 0).toFixed(2) }}</td>
+        <td v-else>${{ (amount * payrate).toFixed(2) }}</td>
       </tr>
       <tr>
         <td>
@@ -308,6 +335,9 @@ export default {
       leaveEnd: {
         empty: "Input the date you'd like to end your leave",
         invalid: "Input an end date that occurs after the given start date"
+      },
+      leaveHours: {
+        invalid: "Input a value that does not exceed your max available hours"
       }
     },
     classifiedEmpList: ["CA", "CB", "CD", "CE", "GI", "GJ"],
@@ -342,17 +372,24 @@ export default {
       { type: "Vacation", value: "LTV" },
       { type: "AAUP/SEIU", value: "LW1" },
       { type: "Short Term Disability", value: "STD" },
-      { type: "Pregnancy", value: "PD" },
       { type: "Unpaid Leave", value: "LW3" },
       { type: "FLSA/NLFA", value: "LSA" },
       { type: "Personal Day", value: "Per" }
+    ],
+    leaveMax: [
+      0.0, // LTS
+      0.0, // LTV
+      0.0, // LW1
+      0.0, // STD
+      0.0, // LW3
+      0.0, // LSA
+      0.0 // Per
     ],
     leaveSummary: [
       0.0, // LTS
       0.0, // LTV
       0.0, // LW1
       0.0, // STD
-      0.0, // PD
       0.0, // LW3
       0.0, // LSA
       0.0 // Per
@@ -401,15 +438,80 @@ export default {
     ]
   }),
   computed: {
-    std_hours: function() {
-      let weeks = 0;
+    fmlaEligibility: function() {
+      if (this.user.fmla_eligibility == "T") {
+        return "Eligible";
+      }
+      return "Not Eligible";
+    },
+    oflaEligibility: function() {
+      if (this.user.ofla_eligibility == "T") {
+        return "Eligible";
+      } else if (this.user.ofla_eligibility == "B") {
+        return "Parental or Military Leave only";
+      } else if (this.user.ofla_eligibility == "M") {
+        return "Military Leave only";
+      } else if (this.user.ofla_eligibility == "P") {
+        return "Parental Leave only";
+      }
+      return "Not Eligible";
+    },
+    pathway: function() {
+      var reason = [];
       for (let i = 0; i < this.user.stack.length; i++) {
         let edge = this.Nodes[this.user.stack[i].node].options[
           this.user.stack[i].edge
         ];
-        if (edge.type === "STD") weeks += edge.weeks;
+        let title = this.user.stack[i].node;
+        reason[i] = title + ": " + edge.title;
       }
+      return reason;
+    },
+    pd_hours: function() {
+      let weeks = 0;
+      if (this.user.paid_leave_balances["PD"])
+        weeks += this.user.paid_leave_balances["PD"];
+      console.log("wek: ", weeks);
       return 40 * this.user.fte * weeks;
+    },
+    max_protected_leave_hrs: function() {
+      let weeks = 0;
+      if (this.user.paid_leave_balances["PD"])
+        weeks += this.user.paid_leave_balances["PD"];
+      if (weeks) {
+        return (
+          this.user.fte * (weeks + 12) * 40 -
+          this.user.protected_leave_hrs_taken
+        );
+      }
+      return this.user.fte * 480 - this.user.protected_leave_hrs_taken;
+    },
+    std_hours: function() {
+      if (this.lst) {
+        if (this.pd_hours) {
+          this.leaveMax[3] = this.pd_hours;
+          return this.pd_hours;
+        }
+        /*
+        TODO: check this
+        else if (serious health condition self; pre-existing condition){
+          this.leaveMax[3] = 40 * this.user.fte * 4;
+          return 40 * this.user.fte * 4;
+        }
+        else if (serious health condition self; not a pre-existing health condition){
+          this.leaveMax[3] = 40 * this.user.fte * 13;
+          return 40 * this.user.fte * 13;
+        }
+        */
+      }
+      return 0;
+    },
+    pxsHours: function() {
+      if (this.user.deductions_eligibility["PXS"]) {
+        //TODO: get some amount?
+        return 0;
+      }
+      return 0;
     },
     unpaid_hours: function() {
       let NoUnpaid_total = 0.0;
@@ -417,13 +519,10 @@ export default {
         if (this.leavePlan[week].leaveType !== "LW3")
           NoUnpaid_total += parseFloat(this.leavePlan[week].leaveUsed);
       }
-      return (
-        this.user.max_protected_leave_hrs -
-        this.user.protected_leave_hrs_taken -
-        NoUnpaid_total
-      );
+      return this.max_protected_leave_hrs - NoUnpaid_total;
     },
     dslb: function() {
+      this.leaveMax[2] += this.user.aaup ? this.user.fte * 320 : 0;
       return this.aaup ? this.user.fte * 320 : 0;
     },
     lst: function() {
@@ -446,6 +545,8 @@ export default {
         if (this.payrate) {
           if (this.leaveTypes[type].value === "STD") {
             pay += this.leaveSummary[type] * parseFloat(this.payrate) * 0.6;
+          } else if (this.leaveTypes[type].value === "LW3") {
+            pay += this.leaveSummary[type] * parseFloat(this.payrate) * 0.0;
           } else {
             pay += this.leaveSummary[type] * parseFloat(this.payrate);
           }
@@ -476,13 +577,103 @@ export default {
       return false;
     },
     vacationHours: function() {
-      if (this.classifiedPicked == "yes") {
-        return this.user.paid_leave_balances["AVAC"] - 40;
-      } else if (this.unclassifiedPicked == "yes") {
-        return 0.0;
-      } else {
-        return this.user.paid_leave_balances["AVAC"];
+      if (this.user.paid_leave_balances["AVAC"]) {
+        if (this.classifiedPicked == "yes") {
+          this.leaveMax[1] = this.user.paid_leave_balances["AVAC"] - 40;
+        } else if (this.unclassifiedPicked == "yes") {
+          this.leaveMax[1] = 0;
+        } else if (this.user.paid_leave_balances["AVAC"]) {
+          this.leaveMax[1] = this.user.paid_leave_balances["AVAC"];
+        } else {
+          this.leaveMax[1] = 0;
+        }
+        return this.leaveMax[1];
       }
+      return 0;
+    },
+    hardshipHours: function() {
+      if (this.user.paid_leave_balances["XDON"]) {
+        this.leaveMax[2] += this.user.paid_leave_balances["XDON"];
+        return this.user.paid_leave_balances["XDON"];
+      }
+      return 0;
+    },
+    exchangeHours: function() {
+      if (this.user.paid_leave_balances["XCHG"]) {
+        //TODO: which leave type does this go to?
+        //this.leaveMax[] = this.user.paid_leave_balances["XDON"];
+        return this.user.paid_leave_balances["XCHG"];
+      }
+      return 0;
+    },
+    nslaHours: function() {
+      if (this.user.paid_leave_balances["NSLA"]) {
+        this.leaveMax[5] += this.user.paid_leave_balances["NSLA"];
+        return this.user.paid_leave_balances["NSLA"];
+      }
+      return 0;
+    },
+    fslaHours: function() {
+      if (this.user.paid_leave_balances["FSLA"]) {
+        this.leaveMax[5] += this.user.paid_leave_balances["FSLA"];
+        return this.user.paid_leave_balances["FSLA"];
+      }
+      return 0;
+    },
+    personalHours: function() {
+      if (this.user.paid_leave_balances["PERS"]) {
+        this.leaveMax[6] = this.user.paid_leave_balances["PERS"];
+        return this.user.paid_leave_balances["PERS"];
+      }
+      return 0;
+    },
+    bereavementHours: function() {
+      if (this.user.paid_leave_balances["SBRV"]) {
+        //TODO: which leave type does this go to?
+        //this.leaveMax[] = this.user.paid_leave_balances["SBRV"];
+        return this.user.paid_leave_balances["SBRV"];
+      }
+      return 0;
+    },
+    furloughHours: function() {
+      if (this.user.paid_leave_balances["XFUR"]) {
+        //TODO: which leave type does this go to?
+        //this.leaveMax[] = this.user.paid_leave_balances["XFUR"];
+        return this.user.paid_leave_balances["XFUR"];
+      }
+      return 0;
+    },
+    otherHours: function() {
+      if (this.user.paid_leave_balances["XOTH"]) {
+        //TODO: which leave type does this go to?
+        //this.leaveMax[] = this.user.paid_leave_balances["XOTH"];
+        return this.user.paid_leave_balances["XOTH"];
+      }
+      return 0;
+    },
+    sickHours: function() {
+      if (this.user.paid_leave_balances["ASIC"]) {
+        this.leaveMax[0] = this.user.paid_leave_balances["ASIC"];
+        return this.user.paid_leave_balances["ASIC"];
+      }
+      return 0;
+    },
+    total_paid_leave: function() {
+      return (
+        this.sickHours +
+        this.otherHours +
+        this.furloughHours +
+        this.bereavementHours +
+        this.personalHours +
+        this.fslaHours +
+        this.nslaHours +
+        this.exchangeHours +
+        this.hardshipHours +
+        this.vacationHours +
+        this.std_hours +
+        this.pxsHours +
+        this.dslb
+      );
     }
   },
   mounted: function() {
@@ -512,20 +703,41 @@ export default {
         0.0, // LTV
         0.0, // LW1
         0.0, // STD
-        0.0, // PD
         0.0, // LW3
         0.0, // LSA
         0.0 // Per
       ];
+      console.log(this.leaveMax);
       for (var index in this.leavePlan) {
         for (var type in this.leaveSummary) {
           if (
             this.leavePlan[index].leaveType === this.leaveTypes[type].value &&
             this.leavePlan[index].leaveUsed !== ""
           ) {
-            this.leaveSummary[type] += parseFloat(
-              this.leavePlan[index].leaveUsed
-            );
+            if (
+              this.leavePlan[index].leaveType === "LW3" ||
+              (this.leaveSummary[type] <= this.leaveMax[type] &&
+                this.leaveSummary[type] +
+                  parseFloat(this.leavePlan[index].leaveUsed) <=
+                  this.leaveMax[type] &&
+                this.leavePlan[index].leaveUsed <= 40 * this.user.fte)
+            ) {
+              /*if (
+                this.leaveSummary[type] +
+                  parseFloat(this.leavePlan[index].leaveUsed) <=
+                this.leaveMax[type]
+              ) {*/
+              this.leaveSummary[type] += parseFloat(
+                this.leavePlan[index].leaveUsed
+              );
+              //}
+            } else {
+              //TODO: highlight input box red
+              console.log("highlight border red");
+              console.log("max: ", this.leaveMax[type]);
+              //var leaveWeek = "#leaveWeek" + index
+              //this.showError(leaveWeek, this.errors.leaveHours.invalid);
+            }
           }
         }
       }
@@ -546,53 +758,110 @@ export default {
       this.total_request =
         parseFloat(this.full_time) + parseFloat(this.inter_time);
     },
-    // TODO the leave balances are not being evaulated correctly in this method
     validLeaveType(leavePlanIndex, leaveType) {
-      let currentLeaveBalances = Object.assign(
-        {},
-        this.user.paid_leave_balances
-      );
-      let leavePlanElement = this.leavePlan[leavePlanIndex];
-      for (var index in this.leavePlan) {
-        if (index !== leavePlanIndex) {
-          switch (this.leavePlan[index].leaveType) {
-            case "LTS":
-              currentLeaveBalances["ASIC"] -= parseFloat(
-                this.leavePlan[index].leaveUsed
-              );
-              break;
-            case "LTV":
-              currentLeaveBalances["AVAC"] -= parseFloat(
-                this.leavePlan[index].leaveUsed
-              );
-              break;
-          }
-        }
-      }
+      let currentLeaveBalances = {
+        LTS: 0.0,
+        LTV: 0.0,
+        LW1: 0.0,
+        STD: 0.0,
+        LW3: 0.0,
+        LSA: 0.0,
+        Per: 0.0
+      };
+      currentLeaveBalances.LTS = this.leaveMax[0] - this.leaveSummary[0];
+      currentLeaveBalances.LTV = this.leaveMax[1] - this.leaveSummary[1];
+      currentLeaveBalances.LW1 = this.leaveMax[2] - this.leaveSummary[2];
+      currentLeaveBalances.STD = this.leaveMax[3] - this.leaveSummary[3];
+      currentLeaveBalances.LW3 = this.leaveMax[4] - this.leaveSummary[4];
+      currentLeaveBalances.LSA = this.leaveMax[5] - this.leaveSummary[5];
+      currentLeaveBalances.Per = this.leaveMax[6] - this.leaveSummary[6];
 
       if (this.lst) {
         if (this.leavePlan[leavePlanIndex].week == 1) {
-          if (currentLeaveBalances["ASIC"] > 0) {
+          if (currentLeaveBalances.LTS > 0) {
             return leaveType === "LTS";
-          } else if (currentLeaveBalances["AVAC"] > 0) {
+          } else if (currentLeaveBalances.LTV > 0) {
             return leaveType === "LTV";
           } else {
             return leaveType !== "STD";
           }
-        } else if (currentLeaveBalances["AVAC"] > 0) {
-          return leaveType === "LTV";
-        } else if (leavePlanElement.week <= 8) {
+        } else if (
+          this.leavePlan[leavePlanIndex].week <= 9 &&
+          currentLeaveBalances.STD > 0
+        ) {
           return leaveType === "STD";
         } else {
-          return leaveType !== "STD";
+          if (currentLeaveBalances.LTS > 0.0) {
+            return leaveType === "LTS";
+          } else if (currentLeaveBalances.LTV > 0.0) {
+            return leaveType === "LTV";
+          } else if (leaveType === "LW1") {
+            if (currentLeaveBalances["LW1"] == 0) {
+              return false;
+            } else {
+              return true;
+            }
+          } else if (leaveType === "LSA") {
+            if (currentLeaveBalances["LSA"] == 0) {
+              return false;
+            } else {
+              return true;
+            }
+          } else if (leaveType === "Per") {
+            if (currentLeaveBalances["Per"] == 0) {
+              return false;
+            } else {
+              return true;
+            }
+          } else if (leaveType === "LW3") {
+            if (
+              currentLeaveBalances["Per"] == 0 &&
+              currentLeaveBalances["LSA"] == 0 &&
+              currentLeaveBalances["LW1"] == 0
+            ) {
+              return true;
+            } else {
+              return false;
+            }
+          } else if (leaveType === "STD") {
+            return false;
+          }
         }
       } else {
-        if (currentLeaveBalances["ASIC"] > 0) {
+        if (currentLeaveBalances.LTS > 0.0) {
           return leaveType === "LTS";
-        } else if (currentLeaveBalances["AVAC"] > 0) {
+        } else if (currentLeaveBalances.LTV > 0.0) {
           return leaveType === "LTV";
-        } else {
-          return leaveType !== "STD";
+        } else if (leaveType === "LW1") {
+          if (currentLeaveBalances["LW1"] == 0) {
+            return false;
+          } else {
+            return true;
+          }
+        } else if (leaveType === "LSA") {
+          if (currentLeaveBalances["LSA"] == 0) {
+            return false;
+          } else {
+            return true;
+          }
+        } else if (leaveType === "Per") {
+          if (currentLeaveBalances["Per"] == 0) {
+            return false;
+          } else {
+            return true;
+          }
+        } else if (leaveType === "LW3") {
+          if (
+            currentLeaveBalances["Per"] == 0 &&
+            currentLeaveBalances["LSA"] == 0 &&
+            currentLeaveBalances["LW1"] == 0
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        } else if (leaveType === "STD") {
+          return false;
         }
       }
     },
@@ -616,12 +885,12 @@ export default {
     },
 
     paid_percent(type) {
-      if (type != "STD") return 100;
-      else {
-        return 60;
-      }
+      if (type == "STD") return 60;
+      else if (type == "LW3") return 0;
+      return 100;
     },
     protect(week, type) {
+      //TODO: re-evaluate
       let protect_total = 0.0;
       for (let weekIndex = 0; weekIndex <= week; weekIndex++) {
         if (type !== "") {
@@ -632,29 +901,25 @@ export default {
       }
       if (
         type === "LTS" &&
-        (protect_total > this.user.paid_leave_balances["ASIC"] ||
-          !this.user.paid_leave_balances["ASIC"])
+        (protect_total > this.leaveMax[0] || !this.leaveMax[0])
       ) {
         return "No";
       } else if (
         type === "LTV" &&
-        (protect_total > this.user.paid_leave_balances["AVAC"] ||
-          !this.user.paid_leave_balances["AVAC"])
+        (protect_total > this.leaveMax[1] || !this.leaveMax[1])
       ) {
         return "No";
       } else if (
         type === "Per" &&
-        (protect_total > this.user.paid_leave_balances["PERS"] ||
-          !this.user.paid_leave_balances["PERS"])
+        (protect_total > this.leaveMax[6] || !this.leaveMax[6])
       ) {
         return "No";
       } else if (
         type === "LSA" &&
-        (protect_total > this.user.paid_leave_balances["FLSA"] ||
-          !this.user.paid_leave_balances["FLSA"])
+        (protect_total > this.leaveMax[5] || !this.leaveMax[5])
       ) {
         return "No";
-      } else if (type === "LW1" && protect_total > this.dslb) {
+      } else if (type === "LW1" && protect_total > this.leaveMax[2]) {
         return "No";
       } else if (type === "LW3" && protect_total > this.unpaid_hours) {
         return "No";
@@ -717,6 +982,8 @@ export default {
             parseFloat(leavePlanElement.leaveUsed) * parseFloat(this.payrate);
           if (leavePlanElement.leaveType === "STD") {
             return "$" + (pay * 0.6).toFixed(2);
+          } else if (leavePlanElement.leaveType === "LW3") {
+            return "$" + (pay * 0).toFixed(2);
           } else {
             return "$" + pay.toFixed(2);
           }
