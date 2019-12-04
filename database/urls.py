@@ -13,5 +13,5 @@ urlpatterns = [
     path('savereport/', views.save_new_report, name='savereport'),
     path('updatereport/', views.update_existing_report, name='updatereport'),
     path('<str:usrname>/', views.employee, name='employee'),
-    path('employee/', views.employee, name='employe<e')
+    path('employee/', views.employee, name='employee')
 ]
