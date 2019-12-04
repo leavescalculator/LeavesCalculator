@@ -5,7 +5,6 @@ from django.forms.models import model_to_dict
 from database.models import *
 import json
 import requests
-
 import json
 
 def index(request):
@@ -95,6 +94,12 @@ def save_new_report(request):
         new_report = leavereports.objects.create(leavereports_pidm=body.get('EMPLOYEE_ID'), leavereports_report=body.get('REPORT'))
         return HttpResponse("Saved!")
     return HttpResponse("Not saved!")
+
+
+@csrf_exempt
+def get_reports(request, id):
+    reports = query_reports_id(id);
+    return JsonResponse(reports, safe=False)
 
 #This view will save the new updates to the report passed in the body of the request as a new
 #report if it exists. Otherwise, it will be saved as a new report.

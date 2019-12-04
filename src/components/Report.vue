@@ -323,6 +323,10 @@
           <h4>${{ total.pay.toFixed(2) }}</h4>
         </td>
       </tr>
+      <tr>
+        <button class="btn btn-success" @click="saveAsNewReport">Save As New Report</button>
+        <button class="btn btn-success" @click="saveReport">Update Report</button>
+      </tr>
     </table>
     <hr />
   </div>
@@ -343,7 +347,7 @@ import $ from "jquery";
 import "bootstrap";
 export default {
   name: "report",
-  props: ["user", "isAdmin", "Nodes"],
+  props: ["user", "auth", "report", "report-id", "Nodes"],
   data: () => ({
     // The various error messages that will appear in Boostrap tooltips when relevant
     errors: {
@@ -694,6 +698,39 @@ export default {
     this.showError("#payrate", this.errors.payrate.empty);
     this.showError("#leaveStart", this.errors.leaveStart.empty);
     this.showError("#leaveEnd", this.errors.leaveEnd.empty);
+      let B ={};
+      console.log("FOO: " + this.report);
+      //if(this.report != "") {
+      B = JSON.parse(this.report);
+      this.leavePlan = B.leavePlan;
+      for (var week in this.leavePlan) {
+          for (var type in this.leaveSummary) {
+              if (this.leavePlan[week].leaveType === this.leaveSummary[type].name) {
+                  if (this.leavePlan[week].hasOwnProperty("hours")){
+                      this.leaveSummary[type].hours += parseFloat(
+                          this.leavePlan[week].leaveUsed
+                      );
+                  }
+              }
+
+          }
+      }
+      this.total = 0.0;
+      for (var week in this.leavePlan) {
+          for (var type in this.leaveSummary) {
+              if (this.leavePlan[week].leaveType == this.leaveSummary[type].name)
+                  if (this.leavePlan[week].leaveUsed != 0) {
+                      this.total += parseFloat(this.leavePlan[week].leaveUsed);
+                  }
+          }
+      }
+
+      this.payrate = B.payrate;
+      this.leaveSummary = B.summary;
+      this.user.stack = B.stack;
+      this.endLeaveDate = B.endLeaveDate;
+      this.startLeaveDate = B.startLeaveDate;
+      //}
   },
   watch: {
     startLeaveDate: function() {
@@ -846,6 +883,42 @@ export default {
           return 1.0;
       }
     },
+    saveAsNewReport() {
+        //This function will allow admin/user to save a copy of the report
+        //they are working on, preserving the current report
+        var data = JSON.stringify({
+            EMPLOYEE_ID: this.user.employee_id,
+            REPORT: {
+                leavePlan: this.leavePlan,
+                payrate: this.payrate,
+                summary: this.leaveSummary,
+                stack: this.user.stack,
+                startLeaveDate: this.startLeaveDate,
+                endLeaveDate: this.endLeaveDate
+            }
+        });
+
+        fetch("http://localhost:8000/database/savereport/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: this.auth
+            },
+            body: data
+        })
+            .then(response => {
+                if (response.ok) {
+                    throw Error("Saving report failed.");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(JSON.stringify(data));
+            })
+            .catch(error => {
+                this.saveError = error;
+            });
+    },
     is_protected(index, type) {
       //TODO: re-evaluate
       let protect_total = 0.0;
@@ -909,6 +982,33 @@ export default {
           this.showError("#leaveEnd", this.errors.leaveEnd.invalid);
         }
       }
+    },
+    saveReport() {
+        //This function will allow admin/user to save the new updates of
+        //the report they are working on to itself
+
+        var tosend = JSON.stringify({
+            REPORT_ID: this.reportId,
+            EMPLOYEE_ID: this.user.employee_id,
+            REPORT: {
+                leavePlan: this.leavePlan,
+                payrate: this.payrate,
+                summary: this.leaveSummary,
+                stack: this.user.stack,
+                startLeaveDate: this.startLeaveDate,
+                endLeaveDate: this.endLeaveDate
+            }
+        });
+        console.log(tosend);
+        fetch("http://localhost:8000/database/updatereport/", {
+            method: "POST",
+            body: tosend,
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: this.auth
+            }
+        });
+        this.$emit("update-employee");
     },
     pay(leavePlanElement) {
       if (leavePlanElement.leaveUsed) {

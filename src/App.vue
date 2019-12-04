@@ -104,7 +104,6 @@ export default {
     getEmployee(name) {
       var data = JSON.stringify({ name });
       var emp_u = name.toUpperCase();
-      console.log(emp_u);
       fetch("http://localhost:8000/database/" + emp_u + "/", {
         method: "GET",
         headers: {
@@ -131,6 +130,9 @@ export default {
       this.username = "";
       this.isAdmin = false;
       this.user = {};
+      this.report = {};
+      this.infoError = "";
+      this.reportId = "";
     },
     addWeeks(n, type) {
       //change weeks here
@@ -209,8 +211,7 @@ export default {
     loadReport(report) {
       //This function will set the report display to the one passed in
       console.log("here");
-      console.log(report);
-      this.report = report;
+      this.report = report.leavereports_report;
       this.reportId = report.id;
     }
   },
