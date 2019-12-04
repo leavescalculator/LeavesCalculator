@@ -44,8 +44,11 @@
       <!-- This button allows for element removal to be undone -->
       <div class="col-2">
         <button @click="() => this.ur.undo()" class="btn btn-warning">Undo Element Removal</button>
+        <PopUp />
       </div>
     </div>
+
+    
 
     <div id="graph"></div>
 
@@ -179,6 +182,7 @@
     </div>
   </div>
 </template>
+
 <script>
 // For representing, viewing, and changing the graph
 import cytoscape from "cytoscape";
@@ -193,10 +197,13 @@ import popper from "cytoscape-popper";
 cytoscape.use(popper);
 // The styling for the Cytoscape.js graph
 import graph_style from "../assets/graph-style.json";
+// The popup component for database logic information
+import PopUp from "./PopUp";
 
 export default {
   name: "admin-dashboard",
   props: ["isAdmin", "Nodes", "graph-status", "graph-id", "Cords"],
+  components: { PopUp },
   data: () => ({
     // Will become an object with setters and getters for fields of the selected element on selection
     selectedElement: null,
