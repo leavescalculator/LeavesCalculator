@@ -365,6 +365,9 @@ export default {
       leaveHoursMax: {
          invalid: "Input value exceed max weekly working hours(40)"
       },
+      ProtectCheck: {
+        invalid: "You are not protected now"
+      },
     },
     // The classified employee types that are compared to `user.employee_classification`
     classifiedEmpList: ["CA", "CB", "CD", "CE", "GI", "GJ"],
@@ -740,7 +743,8 @@ export default {
             ) {
               this.showError("#leavePlan-" + index, this.errors.leaveHours.invalid);
             } else if(this.leavePlan[index].leaveUsed > 40)
-            { this.showError("#leavePlan-" + index, this.errors.leaveHoursMax.invalid);
+            {
+              this.showError("#leavePlan-" + index, this.errors.leaveHoursMax.invalid);
             } else {
               this.removeError("#leavePlan-" + index)
             }
@@ -862,6 +866,7 @@ export default {
         }
       }
       if (protect_total > this.leaveMax[type]) {
+        this.showError("#leavePlan-" + index, this.errors.ProtectCheck.invalid);
         return false;
       } else {
         return true
