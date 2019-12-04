@@ -19,8 +19,11 @@
         :graph-id="graphId"
         :graph-status="graphStatus"
         @change-report="changeReport"
-        :Report="report"
-
+        :report="report"
+        @update-employee="updateEmployee"
+        :addWeeks="addWeeks"
+        @getEmployee="getEmployee"
+        @stack="storeStack"
       ></router-view>
     </div>
     <div id="app" class="container" v-else>
@@ -44,7 +47,8 @@
             :Nodes="nodes"
             :Cords="cords"
             @change-report="changeReport"
-            :Report="report"
+            :report="report"
+            @update-employee="updateEmployee"
             @stack="storeStack"
           ></router-view>
         </div>
@@ -92,6 +96,10 @@ export default {
       } else {
         console.log("Nice try bozo.");
       }
+    },
+    updateEmployee() {
+      console.log(this.user.username);
+      this.getEmployee(this.user.odin_username);
     },
     getEmployee(name) {
       var data = JSON.stringify({ name });

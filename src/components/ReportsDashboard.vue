@@ -15,7 +15,7 @@ Vue.use(BootstrapVue);
 
 export default {
   name: "report-dashboard",
-  props: ["user", "Report"],
+  props: ["user", "report"],
   data: () => ({
     fields: [
       { key: "leavereports_pidm", sortable: true, label: "PIDM" },
