@@ -6,18 +6,10 @@
 <template>
   <div id="admin-dashboard" v-if="isAdmin">
     <div class="header row">
-      <!--
-        TODO: This textbox and associated buttons will be replaced with the
-        ability to save and load graphs from the database.
-      -->
       <div class="col-5">
-        <div id="jsonOrPositions" class="form-control" contenteditable="true">{{ jsonOrPositions }}</div>
         <br />
+        <p>Graph ID: {{ this.graphId }}</p>
         <div class="btn-group" role="group">
-          <button class="btn btn-info" @click="outputJson">Output JSON</button>
-          <button class="btn btn-info" @click="loadJson">Load JSON</button>
-          <button class="btn btn-info" @click="outputPositions">Output Positions</button>
-          <button class="btn btn-info" @click="loadPositions">Load Positions</button>
           <button class="btn btn-info" @click="saveAsNewGraph">Save As New Graph</button>
           <button class="btn btn-info" @click="saveGraph">Update Graph</button>
           <button class="btn btn-info" @click="activateGraph">Activate Graph</button>
@@ -52,8 +44,11 @@
       <!-- This button allows for element removal to be undone -->
       <div class="col-2">
         <button @click="() => this.ur.undo()" class="btn btn-warning">Undo Element Removal</button>
+        <PopUp />
       </div>
     </div>
+
+    
 
     <div id="graph"></div>
 
@@ -187,6 +182,7 @@
     </div>
   </div>
 </template>
+
 <script>
 // For representing, viewing, and changing the graph
 import cytoscape from "cytoscape";
@@ -201,18 +197,14 @@ import popper from "cytoscape-popper";
 cytoscape.use(popper);
 // The styling for the Cytoscape.js graph
 import graph_style from "../assets/graph-style.json";
-// The default graph representation
-// TODO: This file will be deleted and the graph will be stored on the DB
-import json from "../assets/nodes.json";
+// The popup component for database logic information
+import PopUp from "./PopUp";
 
 export default {
   name: "admin-dashboard",
   props: ["isAdmin", "Nodes", "graph-status", "graph-id", "Cords"],
+  components: { PopUp },
   data: () => ({
-    // The data stored in the large textbox within the header
-    // TODO: this field can be removed when we are saving and loading
-    // from the DB
-    jsonOrPositions: "",
     // Will become an object with setters and getters for fields of the selected element on selection
     selectedElement: null,
     // The available input fields for a node
@@ -225,15 +217,17 @@ export default {
       "report"
     ],
     // The types of leave and their corresponding acronyms
+    // TODO remove `n/a` when all try-catch issues are resolved
     leaveTypes: [
-      { type: "Not Applicable", value: "n/a" },
-      { type: "Sick", value: "LTS" },
-      { type: "Vacation", value: "LTV" },
-      { type: "AAUP/SEIU", value: "LW1" },
-      { type: "STD", value: "STD" },
-      { type: "Unpaid Leave", value: "LW3" },
-      { type: "FLSA/NLFA", value: "LSA" },
-      { type: "Personal Day", value: "Per" }
+      { type: "Not Applicable",        value: "n/a" },
+      { type: "Sick",                  value: "LTS" },
+      { type: "Vacation",              value: "LTV" },
+      { type: "AAUP/SEIU",             value: "LW1" },
+      { type: 'Short Term Disability', value: 'STD' },
+      { type: 'Pregnancy',             value: 'PD' },
+      { type: "Unpaid Leave",          value: "LW3" },
+      { type: "FLSA/NLFA",             value: "LSA" },
+      { type: "Personal Day",          value: "Per" }
     ]
   }),
   mounted: function() {
@@ -267,7 +261,7 @@ export default {
     });
 
     // Parsing the JSON graph
-    this.parseJson(json.Nodes);
+    this.parseJson(this.Nodes);
 
     // Displaying the graph as a tree
     this.cy
@@ -333,9 +327,8 @@ export default {
         }
       }
     },
-    // Creates the JSON structure to represent the graph based on the
-    // current state of the Cytoscape.js graph
-    outputJson() {
+    getGraphJson() {
+      //This function will get the nodes of the graph and its information in JSON
       let output = {};
       let nodes = this.cy.$(".graph-node");
       for (let node = 0; node < nodes.length; node++) {
@@ -364,23 +357,7 @@ export default {
           }
         }
       }
-      this.jsonOrPositions = JSON.stringify(output);
-    },
-    // Gets the positions of every graph node
-    outputPositions() {
-      let output = [];
-      let nodes = this.cy.$(".graph-node");
-      for (let node = 0; node < nodes.length; node++) {
-        output.push(nodes[node].relativePosition());
-      }
-      this.jsonOrPositions = JSON.stringify(output);
-    },
-    // Sets the positions for every graph node
-    loadPositions() {
-      let positions = this.cords;
-      for (let node = 0; node < positions.length; node++) {
-        this.cy.$(".graph-node")[node].relativePosition(positions[node]);
-      }
+      return output;
     },
     getPositions() {
       //This function will get the positions of the nodes of the graph in JSON
@@ -413,18 +390,6 @@ export default {
         this.ur.do("remove", this.cy.$(":selected")[0]);
         document.getElementById("elementInfo").style.visibility = "hidden";
       }
-    },
-    // Parses the JSON in the header's textbox and updates the graph's state
-    loadJson() {
-      this.cy.$(".graph-node").remove();
-      let nodes = JSON.parse(this.jsonOrPositions);
-      this.parseJson(nodes);
-      this.cy
-        .$(".graph-node, .graph-edge")
-        .layout({
-          name: "breadthfirst"
-        })
-        .run();
     },
     // Hides the popper element
     hideInfo() {
@@ -490,30 +455,6 @@ export default {
         }
       });
     },
-    getGraphJson() {
-      //This function will get the nodes of the graph and its information in JSON
-      let output = {};
-      let nodes = this.cy.$(".graph-node");
-      for (let node = 0; node < nodes.length; node++) {
-        let element = nodes[node];
-        let nodeId = element.data("id");
-        output[nodeId] = {
-          title: element.data("title"),
-          input: element.data("input"),
-          options: []
-        };
-        let edges = this.cy.edges('[source = "' + nodeId + '"]');
-        for (let edge = 0; edge < edges.length; edge++) {
-          element = edges[edge];
-          output[nodeId].options.push({
-            title: element.data("title"),
-            add_time: element.data("add_time"),
-            next_node: element.data("target")
-          });
-        }
-      }
-      return output;
-    },
     // Shows the popper element, which displays and allows the changing
     // of specific graph elements.
     showInfo() {
@@ -569,7 +510,10 @@ export default {
                 return element.data("input");
               },
               set input(input) {
+                // TODO call legendClass for `drop down`
+                element.removeClass(element.data('input'))
                 element.data("input", input);
+                element.addClass(input);
               }
             };
           }
@@ -597,7 +541,7 @@ export default {
       } else {
         return inputType;
       }
-    }
+    },
   }
 };
 </script>
@@ -628,15 +572,6 @@ export default {
   border: 2px solid #ccc;
   background: #fff;
   padding: 10px;
-}
-
-/* For the large textbox in the header
-   * TODO: Remove this when removing the textbox
-   */
-#jsonOrPositions {
-  height: 85px;
-  width: 490px;
-  overflow-y: auto;
 }
 
 #legend {

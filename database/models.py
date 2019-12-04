@@ -260,9 +260,6 @@ def dictfetchall(cursor):
 # - i.e. STD = short term disability. This also includes "AAUP" for AAUP/SIEU
 #paid_leave_balances: a JSON of of paid leave balances and the corresponding balance (i.e. LTS = sick pay)
 #protected_leave_hrs_taken: the total hours of protected leave already taken in the past 12 months
-#max_protected_leave_hrs: the maximum hours of protected leave that the employee can take
-#reports: a list of all the leave reports generated
-#graph: the currently active graph in deployment that the user should navigate
 class Employee(models.Model):
     permission_classes = [IsAuthenticated]
     employee_id  = models.IntegerField(primary_key=True)
@@ -281,10 +278,6 @@ class Employee(models.Model):
     deductions_eligibility = models.CharField(max_length=200)
     paid_leave_balances = models.TextField(default=0)
     protected_leave_hrs_taken = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    max_protected_leave_hrs = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    #reports = jsonfield.JSONField()
-    reports = models.TextField(null=True)
-    graph = jsonfield.JSONField(null=True)
 
     #This function will query for the employee id
     def query_employee_id(self):
