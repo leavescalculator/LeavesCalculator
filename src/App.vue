@@ -130,6 +130,9 @@ export default {
       this.username = "";
       this.isAdmin = false;
       this.user = {};
+      this.report = {};
+      this.infoError = "";
+      this.reportId = "";
     },
     addWeeks(n, type) {
       //change weeks here

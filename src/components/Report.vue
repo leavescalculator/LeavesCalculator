@@ -702,7 +702,7 @@ export default {
       console.log("FOO: " + this.report);
       //if(this.report != "") {
       B = JSON.parse(this.report);
-      this.leavePlan = B;
+      this.leavePlan = B.leavePlan;
       for (var week in this.leavePlan) {
           for (var type in this.leaveSummary) {
               if (this.leavePlan[week].leaveType === this.leaveSummary[type].name) {
@@ -724,6 +724,12 @@ export default {
                   }
           }
       }
+
+      this.payrate = B.payrate;
+      this.leaveSummary = B.summary;
+      this.user.stack = B.stack;
+      this.endLeaveDate = B.endLeaveDate;
+      this.startLeaveDate = B.startLeaveDate;
       //}
   },
   watch: {
@@ -882,7 +888,14 @@ export default {
         //they are working on, preserving the current report
         var data = JSON.stringify({
             EMPLOYEE_ID: this.user.employee_id,
-            REPORT: this.leavePlan
+            REPORT: {
+                leavePlan: this.leavePlan,
+                payrate: this.payrate,
+                summary: this.leaveSummary,
+                stack: this.user.stack,
+                startLeaveDate: this.startLeaveDate,
+                endLeaveDate: this.endLeaveDate
+            }
         });
 
         fetch("http://localhost:8000/database/savereport/", {
@@ -973,11 +986,20 @@ export default {
     saveReport() {
         //This function will allow admin/user to save the new updates of
         //the report they are working on to itself
+
         var tosend = JSON.stringify({
             REPORT_ID: this.reportId,
             EMPLOYEE_ID: this.user.employee_id,
-            REPORT: this.leavePlan
+            REPORT: {
+                leavePlan: this.leavePlan,
+                payrate: this.payrate,
+                summary: this.leaveSummary,
+                stack: this.user.stack,
+                startLeaveDate: this.startLeaveDate,
+                endLeaveDate: this.endLeaveDate
+            }
         });
+        console.log(tosend);
         fetch("http://localhost:8000/database/updatereport/", {
             method: "POST",
             body: tosend,
