@@ -65,8 +65,8 @@ def update_existing_graph(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     if body:
-        graph, created = graph.objects.update_or_create(
-            id=body.get('GRAPH_ID'), defaults={'graph_data': body.get('GRAPH_DATA'), graph_cords: body.get('CORDS'), graph_status: body.get('GRAPH_STATUS')},
+        updated_graph, created = graph.objects.update_or_create(
+            id=body.get('GRAPH_ID'), defaults={'graph_data': body.get('GRAPH_DATA'), 'graph_cords': body.get('CORDS'), 'graph_status': body.get('GRAPH_STATUS')},
         )
         return HttpResponse("200")
     return HttpResponse("400")

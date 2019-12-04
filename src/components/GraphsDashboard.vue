@@ -11,20 +11,7 @@
           :fields="fields"
           :tbody-tr-class="highlightActive"
           @row-clicked="loadGraph"
-        >
-          <!-- Redirect to admin dashboard with this graph if selected -->
-          <!--<template v-slot:cell(id)="data">
-          <router-link
-            to="/graph-dashboard"
-            class="nav-item nav-link"
-            tag="li"
-            active-class="active"
-            v-if="isAdmin"
-          >
-            <a>{{data.value}}</a>
-          </router-link>
-          </template>-->
-        </b-table>
+        ></b-table>
       </div>
     </div>
   </div>
