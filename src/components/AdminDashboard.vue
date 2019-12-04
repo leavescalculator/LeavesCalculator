@@ -217,15 +217,17 @@ export default {
       "report"
     ],
     // The types of leave and their corresponding acronyms
+    // TODO remove `n/a` when all try-catch issues are resolved
     leaveTypes: [
-      { type: "Not Applicable", value: "n/a" },
-      { type: "Sick", value: "LTS" },
-      { type: "Vacation", value: "LTV" },
-      { type: "AAUP/SEIU", value: "LW1" },
-      { type: "STD", value: "STD" },
-      { type: "Unpaid Leave", value: "LW3" },
-      { type: "FLSA/NLFA", value: "LSA" },
-      { type: "Personal Day", value: "Per" }
+      { type: "Not Applicable",        value: "n/a" },
+      { type: "Sick",                  value: "LTS" },
+      { type: "Vacation",              value: "LTV" },
+      { type: "AAUP/SEIU",             value: "LW1" },
+      { type: 'Short Term Disability', value: 'STD' },
+      { type: 'Pregnancy',             value: 'PD' },
+      { type: "Unpaid Leave",          value: "LW3" },
+      { type: "FLSA/NLFA",             value: "LSA" },
+      { type: "Personal Day",          value: "Per" }
     ]
   }),
   mounted: function() {
@@ -508,7 +510,10 @@ export default {
                 return element.data("input");
               },
               set input(input) {
+                // TODO call legendClass for `drop down`
+                element.removeClass(element.data('input'))
                 element.data("input", input);
+                element.addClass(input);
               }
             };
           }
@@ -536,7 +541,7 @@ export default {
       } else {
         return inputType;
       }
-    }
+    },
   }
 };
 </script>
