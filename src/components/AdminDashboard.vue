@@ -552,7 +552,7 @@ export default {
   background-color: #fff;
   border-bottom: 2px solid #999;
   width: 100%;
-  height: calc(200px - 42px);
+  height: calc(240px - 42px);
   padding-top: 8px;
   overflow-y: hidden;
 }
@@ -562,7 +562,7 @@ export default {
   width: 100%;
   height: 80%;
   position: absolute;
-  top: 200px;
+  top: 240px;
   left: 0px;
 }
 
