@@ -622,7 +622,7 @@ export default {
     exchangeHours: function() {
       if (this.user.paid_leave_balances["XCHG"]) {
         //TODO: which leave type does this go to?
-        //this.leaveMax[] = this.user.paid_leave_balances["XDON"];
+        //this.leaveMax[] = this.user.paid_leave_balances["XCHG"];
         return this.user.paid_leave_balances["XCHG"];
       }
       return 0;
@@ -767,6 +767,7 @@ export default {
             this.leavePlan[index].leaveType === type &&
             this.leavePlan[index].leaveUsed !== ""
           ) {
+            //Check if the input hours exceed that type's max hours
             if (
               this.leavePlan[index].leaveType === "LW3" ||
               (this.leaveSummary[type] <= this.leaveMax[type] &&
@@ -775,10 +776,25 @@ export default {
                   this.leaveMax[type] &&
                 this.leavePlan[index].leaveUsed <= 40 * this.user.fte)
             ) {
+              //TODO: Check if combined leaves for that week exceed max weekly hours: 40 * this.user.fte
+              /*var thisWeeksHours = 0;
+              for (var plan in this.leavePlan) {
+                if (this.leavePlan[plan].week === this.leavePlan[type].week) {
+                  thisWeeksHours += parseFloat(this.leavePlan[plan].leaveUsed);
+                }
+              }
+              if (thisWeeksHours <= 40 * this.fte) {*/
+              //If everything is good, add it to our plan and get rid of any error messages
               this.leaveSummary[type] += parseFloat(
                 this.leavePlan[index].leaveUsed
               );
               this.removeError("#leavePlan-" + index);
+              /*} else {
+                this.showError(
+                  "#leavePlan-" + index,
+                  this.errors.leaveHours.invalid
+                );
+              }*/
             } else {
               this.showError(
                 "#leavePlan-" + index,
@@ -929,18 +945,14 @@ export default {
         });
     },
     is_protected(index, type) {
-      //TODO: re-evaluate
+      //Will check to see if adding this week will exceed the protected leave limit
       let protect_total = 0.0;
       for (let evaluatedIndex = 0; evaluatedIndex <= index; evaluatedIndex++) {
         if (type !== "") {
-          if (this.leavePlan[evaluatedIndex].leaveType === type) {
-            protect_total += parseFloat(
-              this.leavePlan[evaluatedIndex].leaveUsed
-            );
-          }
+          protect_total += parseFloat(this.leavePlan[evaluatedIndex].leaveUsed);
         }
       }
-      if (protect_total > this.leaveMax[type]) {
+      if (protect_total > this.max_protected_leave_hrs) {
         return false;
       } else {
         return true;
