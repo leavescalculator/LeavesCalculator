@@ -1,4 +1,4 @@
-Django==2.2.7
+Django==2.2.8
 DjangoRestFramework
 Django-import-export
 django-cors-headers
