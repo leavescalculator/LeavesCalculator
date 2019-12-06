@@ -186,29 +186,21 @@
           </select>
         </td>
       </tr>
-        <!-- TODO possibly remove since this appears to have originally been used to estimate
+      <!-- TODO possibly remove since this appears to have originally been used to estimate
           the leave summary in the excel document with the HR/Week field.  Alternatively, this
-          should be done in `computed` rather than having textboxes -->
+      should be done in `computed` rather than having textboxes-->
       <tr class="form-group">
         <td class="input-group">
           <div class="input-group-prepend">
             <label for="fullTime" class="input-group-text">Full Time Leave:</label>
           </div>
-          <input
-            class="form-control"
-            type="text"
-            id="fullTime"
-          />
+          <input class="form-control" type="text" id="fullTime" />
         </td>
         <td class="input-group">
           <div class="input-group-prepend">
             <label for="interTime" class="input-group-text">Intermittent Leave:</label>
           </div>
-          <input
-            class="form-control"
-            type="text"
-            id="interTime"
-          />
+          <input class="form-control" type="text" id="interTime" />
         </td>
       </tr>
     </table>
@@ -265,10 +257,16 @@
         data-trigger="manual"
       >
         <td v-if="index===0||leavePlanElement.week!==leavePlan[index-1].week">
-          <button @click="addLeaveType(index) || updateSummary()" class="btn btn-info">Add Leave Type</button>
+          <button
+            @click="addLeaveType(index) || updateSummary()"
+            class="btn btn-info"
+          >Add Leave Type</button>
         </td>
         <td v-else>
-          <button @click="removeLeaveType(index) || updateSummary()" class="btn btn-danger">Remove Leave Type</button>
+          <button
+            @click="removeLeaveType(index) || updateSummary()"
+            class="btn btn-danger"
+          >Remove Leave Type</button>
         </td>
         <td>&nbsp;{{ leavePlanElement.week }}</td>
         <td>&nbsp;{{ is_protected(index,leavePlanElement.leaveType) ? "Yes" : "No" }}</td>
@@ -412,7 +410,7 @@ export default {
       STD: "Short Term Disability",
       LW3: "Unpaid Leave",
       LSA: "FLSA/NLFA",
-      Per: "Personal Day",
+      Per: "Personal Day"
     },
     leaveMax: {
       LTS: 0.0,
@@ -421,7 +419,7 @@ export default {
       STD: 0.0,
       LW3: 0.0,
       LSA: 0.0,
-      Per: 0.0,
+      Per: 0.0
     },
     // The summary of the number of hours used for each leave type within `leavePlan`
     // Is updated in the `updateSummary` method
@@ -432,7 +430,7 @@ export default {
       STD: 0.0,
       LW3: 0.0,
       LSA: 0.0,
-      Per: 0.0,
+      Per: 0.0
     },
     leaveStatus: [
       "FMLA-Female EE's pregnancy and care of newborn",
@@ -485,7 +483,7 @@ export default {
       return "Not Eligible";
     },
     oflaEligibility: function() {
-      switch(this.user.ofla_eligibility) {
+      switch (this.user.ofla_eligibility) {
         case "T":
           return "Eligible";
         case "B":
@@ -586,7 +584,10 @@ export default {
       for (const type of Object.keys(this.leaveSummary)) {
         hours += this.leaveSummary[type];
         if (this.payrate) {
-          pay += this.leaveSummary[type] * parseFloat(this.payrate) * this.paid_percent(type);
+          pay +=
+            this.leaveSummary[type] *
+            parseFloat(this.payrate) *
+            this.paid_percent(type);
         }
       }
       return { hours, pay };
@@ -595,7 +596,9 @@ export default {
       return this.classifiedEmpList.includes(this.user.employee_classification);
     },
     unclassifiedEmp: function() {
-      return this.unclassifiedEmpList.includes(this.user.employee_classification);
+      return this.unclassifiedEmpList.includes(
+        this.user.employee_classification
+      );
     },
     vacationHours: function() {
       if (this.classifiedPicked === "yes") {
@@ -698,39 +701,38 @@ export default {
     this.showError("#payrate", this.errors.payrate.empty);
     this.showError("#leaveStart", this.errors.leaveStart.empty);
     this.showError("#leaveEnd", this.errors.leaveEnd.empty);
-      let B ={};
-      console.log("FOO: " + this.report);
-      //if(this.report != "") {
-      B = JSON.parse(this.report);
-      this.leavePlan = B.leavePlan;
-      for (var week in this.leavePlan) {
-          for (var type in this.leaveSummary) {
-              if (this.leavePlan[week].leaveType === this.leaveSummary[type].name) {
-                  if (this.leavePlan[week].hasOwnProperty("hours")){
-                      this.leaveSummary[type].hours += parseFloat(
-                          this.leavePlan[week].leaveUsed
-                      );
-                  }
-              }
-
+    let B = {};
+    console.log("FOO: " + this.report);
+    //if(this.report != "") {
+    B = JSON.parse(this.report);
+    this.leavePlan = B.leavePlan;
+    for (var week in this.leavePlan) {
+      for (var type in this.leaveSummary) {
+        if (this.leavePlan[week].leaveType === this.leaveSummary[type].name) {
+          if (this.leavePlan[week].hasOwnProperty("hours")) {
+            this.leaveSummary[type].hours += parseFloat(
+              this.leavePlan[week].leaveUsed
+            );
+          }
+        }
+      }
+    }
+    this.total = 0.0;
+    for (var week in this.leavePlan) {
+      for (var type in this.leaveSummary) {
+        if (this.leavePlan[week].leaveType == this.leaveSummary[type].name)
+          if (this.leavePlan[week].leaveUsed != 0) {
+            this.total += parseFloat(this.leavePlan[week].leaveUsed);
           }
       }
-      this.total = 0.0;
-      for (var week in this.leavePlan) {
-          for (var type in this.leaveSummary) {
-              if (this.leavePlan[week].leaveType == this.leaveSummary[type].name)
-                  if (this.leavePlan[week].leaveUsed != 0) {
-                      this.total += parseFloat(this.leavePlan[week].leaveUsed);
-                  }
-          }
-      }
+    }
 
-      this.payrate = B.payrate;
-      this.leaveSummary = B.summary;
-      this.user.stack = B.stack;
-      this.endLeaveDate = B.endLeaveDate;
-      this.startLeaveDate = B.startLeaveDate;
-      //}
+    this.payrate = B.payrate;
+    this.leaveSummary = B.summary;
+    this.user.stack = B.stack;
+    this.endLeaveDate = B.endLeaveDate;
+    this.startLeaveDate = B.startLeaveDate;
+    //}
   },
   watch: {
     startLeaveDate: function() {
@@ -756,7 +758,7 @@ export default {
         STD: 0.0,
         LW3: 0.0,
         LSA: 0.0,
-        Per: 0.0,
+        Per: 0.0
       };
       console.log(this.leaveMax);
       for (var index in this.leavePlan) {
@@ -765,16 +767,23 @@ export default {
             this.leavePlan[index].leaveType === type &&
             this.leavePlan[index].leaveUsed !== ""
           ) {
-            this.leaveSummary[type] += parseFloat(
-              this.leavePlan[index].leaveUsed
-            );
             if (
               this.leavePlan[index].leaveType === "LW3" ||
-              this.leaveSummary[type] > this.leaveMax[type]
+              (this.leaveSummary[type] <= this.leaveMax[type] &&
+                this.leaveSummary[type] +
+                  parseFloat(this.leavePlan[index].leaveUsed) <=
+                  this.leaveMax[type] &&
+                this.leavePlan[index].leaveUsed <= 40 * this.user.fte)
             ) {
-              this.showError("#leavePlan-" + index, this.errors.leaveHours.invalid);
+              this.leaveSummary[type] += parseFloat(
+                this.leavePlan[index].leaveUsed
+              );
+              this.removeError("#leavePlan-" + index);
             } else {
-              this.removeError("#leavePlan-" + index)
+              this.showError(
+                "#leavePlan-" + index,
+                this.errors.leaveHours.invalid
+              );
             }
           }
         }
@@ -827,7 +836,7 @@ export default {
               currentLeaveBalances["Per"] === 0 &&
               currentLeaveBalances["LSA"] === 0 &&
               currentLeaveBalances["LW1"] === 0
-            )
+            );
           } else if (leaveType === "STD") {
             return false;
           }
@@ -848,7 +857,7 @@ export default {
             currentLeaveBalances["Per"] === 0 &&
             currentLeaveBalances["LSA"] === 0 &&
             currentLeaveBalances["LW1"] === 0
-          )
+          );
         } else if (leaveType === "STD") {
           return false;
         }
@@ -874,7 +883,7 @@ export default {
     },
     // Returns the paid percentage for the given leave type as a value between 0.0-1.0
     paid_percent(type) {
-      switch(type) {
+      switch (type) {
         case "STD":
           return 0.6;
         case "LW3":
@@ -884,40 +893,40 @@ export default {
       }
     },
     saveAsNewReport() {
-        //This function will allow admin/user to save a copy of the report
-        //they are working on, preserving the current report
-        var data = JSON.stringify({
-            EMPLOYEE_ID: this.user.employee_id,
-            REPORT: {
-                leavePlan: this.leavePlan,
-                payrate: this.payrate,
-                summary: this.leaveSummary,
-                stack: this.user.stack,
-                startLeaveDate: this.startLeaveDate,
-                endLeaveDate: this.endLeaveDate
-            }
-        });
+      //This function will allow admin/user to save a copy of the report
+      //they are working on, preserving the current report
+      var data = JSON.stringify({
+        EMPLOYEE_ID: this.user.employee_id,
+        REPORT: {
+          leavePlan: this.leavePlan,
+          payrate: this.payrate,
+          summary: this.leaveSummary,
+          stack: this.user.stack,
+          startLeaveDate: this.startLeaveDate,
+          endLeaveDate: this.endLeaveDate
+        }
+      });
 
-        fetch("http://localhost:8000/database/savereport/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: this.auth
-            },
-            body: data
+      fetch("http://localhost:8000/database/savereport/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: this.auth
+        },
+        body: data
+      })
+        .then(response => {
+          if (response.ok) {
+            throw Error("Saving report failed.");
+          }
+          return response.json();
         })
-            .then(response => {
-                if (response.ok) {
-                    throw Error("Saving report failed.");
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(JSON.stringify(data));
-            })
-            .catch(error => {
-                this.saveError = error;
-            });
+        .then(data => {
+          console.log(JSON.stringify(data));
+        })
+        .catch(error => {
+          this.saveError = error;
+        });
     },
     is_protected(index, type) {
       //TODO: re-evaluate
@@ -925,14 +934,16 @@ export default {
       for (let evaluatedIndex = 0; evaluatedIndex <= index; evaluatedIndex++) {
         if (type !== "") {
           if (this.leavePlan[evaluatedIndex].leaveType === type) {
-            protect_total += parseFloat(this.leavePlan[evaluatedIndex].leaveUsed);
+            protect_total += parseFloat(
+              this.leavePlan[evaluatedIndex].leaveUsed
+            );
           }
         }
       }
       if (protect_total > this.leaveMax[type]) {
         return false;
       } else {
-        return true
+        return true;
       }
     },
     showError: function(id, title) {
@@ -984,31 +995,31 @@ export default {
       }
     },
     saveReport() {
-        //This function will allow admin/user to save the new updates of
-        //the report they are working on to itself
+      //This function will allow admin/user to save the new updates of
+      //the report they are working on to itself
 
-        var tosend = JSON.stringify({
-            REPORT_ID: this.reportId,
-            EMPLOYEE_ID: this.user.employee_id,
-            REPORT: {
-                leavePlan: this.leavePlan,
-                payrate: this.payrate,
-                summary: this.leaveSummary,
-                stack: this.user.stack,
-                startLeaveDate: this.startLeaveDate,
-                endLeaveDate: this.endLeaveDate
-            }
-        });
-        console.log(tosend);
-        fetch("http://localhost:8000/database/updatereport/", {
-            method: "POST",
-            body: tosend,
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: this.auth
-            }
-        });
-        this.$emit("update-employee");
+      var tosend = JSON.stringify({
+        REPORT_ID: this.reportId,
+        EMPLOYEE_ID: this.user.employee_id,
+        REPORT: {
+          leavePlan: this.leavePlan,
+          payrate: this.payrate,
+          summary: this.leaveSummary,
+          stack: this.user.stack,
+          startLeaveDate: this.startLeaveDate,
+          endLeaveDate: this.endLeaveDate
+        }
+      });
+      console.log(tosend);
+      fetch("http://localhost:8000/database/updatereport/", {
+        method: "POST",
+        body: tosend,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: this.auth
+        }
+      });
+      this.$emit("update-employee");
     },
     pay(leavePlanElement) {
       if (leavePlanElement.leaveUsed) {
