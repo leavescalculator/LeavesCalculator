@@ -760,7 +760,9 @@ export default {
         LSA: 0.0,
         Per: 0.0
       };
-      console.log(this.leaveMax);
+      console.log("maths: ", 0 + 0);
+      console.log("maths: ", 0 + 0.0);
+      console.log("maths: ", 0.0 + 0.0);
       for (var index in this.leavePlan) {
         for (const type of Object.keys(this.leaveSummary)) {
           if (
@@ -776,25 +778,25 @@ export default {
                   this.leaveMax[type] &&
                 this.leavePlan[index].leaveUsed <= 40 * this.user.fte)
             ) {
-              //TODO: Check if combined leaves for that week exceed max weekly hours: 40 * this.user.fte
-              /*var thisWeeksHours = 0;
+              //Check if combined leaves for that week exceed max weekly hours: 40 * this.user.fte
+              var thisWeeksHours = 0;
               for (var plan in this.leavePlan) {
-                if (this.leavePlan[plan].week === this.leavePlan[type].week) {
+                if (this.leavePlan[plan].week === this.leavePlan[index].week) {
                   thisWeeksHours += parseFloat(this.leavePlan[plan].leaveUsed);
                 }
               }
-              if (thisWeeksHours <= 40 * this.fte) {*/
-              //If everything is good, add it to our plan and get rid of any error messages
-              this.leaveSummary[type] += parseFloat(
-                this.leavePlan[index].leaveUsed
-              );
-              this.removeError("#leavePlan-" + index);
-              /*} else {
+              if (thisWeeksHours <= 40 * this.user.fte) {
+                //If everything is good, add it to our plan and get rid of any error messages
+                this.leaveSummary[type] += parseFloat(
+                  this.leavePlan[index].leaveUsed
+                );
+                this.removeError("#leavePlan-" + index);
+              } else {
                 this.showError(
                   "#leavePlan-" + index,
                   this.errors.leaveHours.invalid
                 );
-              }*/
+              }
             } else {
               this.showError(
                 "#leavePlan-" + index,
