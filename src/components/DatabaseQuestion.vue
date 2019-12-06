@@ -42,22 +42,25 @@ export default {
 
             }
             return false;
+        },
+        load() {
+            let i = 0;
+            while (i < this.options.length) {
+                if (this.options[i].hasOwnProperty('title')) {
+                    if (this.parse(this.options[i].title)) {
+                        this.$emit('option-selected', i);
+                        return;
+                    }
+                }
+                i++;
+            }
         }
     },
     mounted() {
-      console.log("Options: " + this.options.length);
-        let i = 0;
-      while (i < this.options.length) {
-          console.log('DB: ' + i);
-          if (this.options[i].hasOwnProperty('title')) {
-              if (this.parse(this.options[i].title)) {
-                  this.$emit('option-selected', i);
-                  console.log("Selected " + i);
-                  return;
-              }
-          }
-          i++;
-      }
+      this.load();
+    },
+    updated() {
+      this.load();
     }
 
 
