@@ -64,9 +64,6 @@
         <td
           v-else-if="fmlaEligibility!=='Not Eligible' && oflaEligibility==='Not Eligible'"
         >Coverage: FMLA</td>
-        <!-- TODO: replace above with this when we handle exceptions<td
-          v-else-if="fmlaEligibility!=='Not Eligible' && oflaEligibility==='Not Eligible' && !exceptions"
-        >Coverage: FMLA</td>-->
         <td v-else>Coverage: ADA</td>
       </tr>
     </table>
