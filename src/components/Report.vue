@@ -582,7 +582,7 @@ export default {
       let hours = 0.0;
       let pay = 0.0;
       for (const type of Object.keys(this.leaveSummary)) {
-        hours += this.leaveSummary[type];
+        hours = parseFloat(hours) + parseFloat(this.leaveSummary[type]);
         if (this.payrate) {
           pay +=
             this.leaveSummary[type] *
@@ -590,6 +590,7 @@ export default {
             this.paid_percent(type);
         }
       }
+      hours = Number.parseFloat(hours).toFixed(2);
       return { hours, pay };
     },
     classifiedEmp: function() {
@@ -760,9 +761,6 @@ export default {
         LSA: 0.0,
         Per: 0.0
       };
-      console.log("maths: ", 0 + 0);
-      console.log("maths: ", 0 + 0.0);
-      console.log("maths: ", 0.0 + 0.0);
       for (var index in this.leavePlan) {
         for (const type of Object.keys(this.leaveSummary)) {
           if (
@@ -770,26 +768,34 @@ export default {
             this.leavePlan[index].leaveUsed !== ""
           ) {
             //Check if the input hours exceed that type's max hours
+            var potentialHours =
+              parseFloat(this.leaveSummary[type]) +
+              parseFloat(this.leavePlan[index].leaveUsed);
+            potentialHours = Number.parseFloat(potentialHours).toFixed(2);
             if (
               this.leavePlan[index].leaveType === "LW3" ||
               (this.leaveSummary[type] <= this.leaveMax[type] &&
-                this.leaveSummary[type] +
-                  parseFloat(this.leavePlan[index].leaveUsed) <=
+                /*this.leaveSummary[type] +
+                  parseFloat(this.leavePlan[index].leaveUsed)*/ potentialHours <=
                   this.leaveMax[type] &&
                 this.leavePlan[index].leaveUsed <= 40 * this.user.fte)
             ) {
               //Check if combined leaves for that week exceed max weekly hours: 40 * this.user.fte
-              var thisWeeksHours = 0;
+              var thisWeeksHours = 0.0;
               for (var plan in this.leavePlan) {
                 if (this.leavePlan[plan].week === this.leavePlan[index].week) {
-                  thisWeeksHours += parseFloat(this.leavePlan[plan].leaveUsed);
+                  thisWeeksHours =
+                    parseFloat(thisWeeksHours) +
+                    parseFloat(this.leavePlan[plan].leaveUsed);
+                  thisWeeksHours = Number.parseFloat(thisWeeksHours).toFixed(2);
                 }
               }
               if (thisWeeksHours <= 40 * this.user.fte) {
                 //If everything is good, add it to our plan and get rid of any error messages
-                this.leaveSummary[type] += parseFloat(
+                /*this.leaveSummary[type] += parseFloat(
                   this.leavePlan[index].leaveUsed
-                );
+                );*/
+                this.leaveSummary[type] = potentialHours;
                 this.removeError("#leavePlan-" + index);
               } else {
                 this.showError(
@@ -954,6 +960,7 @@ export default {
           protect_total += parseFloat(this.leavePlan[evaluatedIndex].leaveUsed);
         }
       }
+      protect_total = Number.parseFloat(protect_total).toFixed(2);
       if (protect_total > this.max_protected_leave_hrs) {
         return false;
       } else {
