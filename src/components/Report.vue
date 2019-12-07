@@ -775,9 +775,7 @@ export default {
             if (
               this.leavePlan[index].leaveType === "LW3" ||
               (this.leaveSummary[type] <= this.leaveMax[type] &&
-                /*this.leaveSummary[type] +
-                  parseFloat(this.leavePlan[index].leaveUsed)*/ potentialHours <=
-                  this.leaveMax[type] &&
+                potentialHours <= this.leaveMax[type] &&
                 this.leavePlan[index].leaveUsed <= 40 * this.user.fte)
             ) {
               //Check if combined leaves for that week exceed max weekly hours: 40 * this.user.fte
@@ -792,9 +790,6 @@ export default {
               }
               if (thisWeeksHours <= 40 * this.user.fte) {
                 //If everything is good, add it to our plan and get rid of any error messages
-                /*this.leaveSummary[type] += parseFloat(
-                  this.leavePlan[index].leaveUsed
-                );*/
                 this.leaveSummary[type] = potentialHours;
                 this.removeError("#leavePlan-" + index);
               } else {
