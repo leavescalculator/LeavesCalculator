@@ -48,8 +48,6 @@
       </div>
     </div>
 
-    
-
     <div id="graph"></div>
 
     <!-- The popper element for displaying and changing element properties -->
@@ -219,15 +217,15 @@ export default {
     // The types of leave and their corresponding acronyms
     // TODO remove `n/a` when all try-catch issues are resolved
     leaveTypes: [
-      { type: "Not Applicable",        value: "n/a" },
-      { type: "Sick",                  value: "LTS" },
-      { type: "Vacation",              value: "LTV" },
-      { type: "AAUP/SEIU",             value: "LW1" },
-      { type: 'Short Term Disability', value: 'STD' },
-      { type: 'Pregnancy',             value: 'PD' },
-      { type: "Unpaid Leave",          value: "LW3" },
-      { type: "FLSA/NLFA",             value: "LSA" },
-      { type: "Personal Day",          value: "Per" }
+      { type: "Not Applicable", value: "n/a" },
+      { type: "Sick", value: "LTS" },
+      { type: "Vacation", value: "LTV" },
+      { type: "AAUP/SEIU", value: "LW1" },
+      { type: "Short Term Disability", value: "STD" },
+      { type: "Pregnancy", value: "PD" },
+      { type: "Unpaid Leave", value: "LW3" },
+      { type: "FLSA/NLFA", value: "LSA" },
+      { type: "Personal Day", value: "Per" }
     ]
   }),
   mounted: function() {
@@ -381,6 +379,9 @@ export default {
         },
         classes: ["graph-node", this.legendClass(input)]
       });
+      if (input === "display") {
+        node.data("description", " ");
+      }
       node.on("select", this.showInfo);
       node.on("unselect", this.hideInfo);
     },
@@ -511,7 +512,7 @@ export default {
               },
               set input(input) {
                 // TODO call legendClass for `drop down`
-                element.removeClass(element.data('input'))
+                element.removeClass(element.data("input"));
                 element.data("input", input);
                 element.addClass(input);
               }
@@ -541,7 +542,7 @@ export default {
       } else {
         return inputType;
       }
-    },
+    }
   }
 };
 </script>
